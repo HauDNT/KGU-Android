@@ -1,6 +1,8 @@
 package com.application.application.database;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.DatabaseErrorHandler;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -35,8 +37,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + "phone_number VARCHAR(15),"
                 + "address VARCHAR(255),"
                 + "is_admin INTEGER NOT NULL,"
-                + "created_at DEFAULT CURRENT_TIMESTAMP,"
-                + "updated_at DEFAULT CURRENT_TIMESTAMP"
+                + "created_at DATETIME DEFAULT CURRENT_TIMESTAMP,"
+                + "updated_at DATETIME DEFAULT CURRENT_TIMESTAMP"
+
                 + ");";
         db.execSQL(createUsersTable);
 
@@ -106,4 +109,48 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         onCreate(db);
     }
+
+    public boolean isUserExists(String username) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM users WHERE username = ?", new String[]{username});
+
+        boolean exists = cursor.moveToFirst();
+        cursor.close();
+        return exists;
+    }
+
+    public boolean isEmailExists(String email) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM users WHERE email = ?", new String[]{email});
+
+        boolean exists = cursor.moveToFirst();
+        cursor.close();
+        return exists;
+    }
+
+
+    public long insertUser(ContentValues values) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.insert("users", null, values);
+    }
+
+    public boolean isEmailValid(String email, String hashedPassword) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM users WHERE email = ? AND password = ?", new String[]{email, hashedPassword});
+
+        boolean valid = cursor.moveToFirst();
+        cursor.close();
+        return valid;
+    }
+
+    public boolean isUserValid(String username, String hashedPassword) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM users WHERE username = ? AND password = ?", new String[]{username, hashedPassword});
+
+        boolean valid = cursor.moveToFirst();
+        cursor.close();
+        return valid;
+    }
+
+
 }
