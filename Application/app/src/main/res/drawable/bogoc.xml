@@ -1,0 +1,5 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="16dp" /> <!-- Thay đổi giá trị này để điều chỉnh độ bo góc -->
+    <solid android:color="@android:drawable/screen_background_light" /> <!-- Màu nền -->
+</shape>
