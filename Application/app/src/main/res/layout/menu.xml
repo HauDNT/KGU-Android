@@ -63,23 +63,23 @@
                 android:layout_height="150dp"
                 android:layout_marginEnd="8dp"
                 android:background="@drawable/bogoc"
-            android:gravity="center"
-            android:orientation="vertical">
+                android:gravity="center"
+                android:orientation="vertical">
 
-            <ImageView
-                android:layout_width="63dp"
-                android:layout_height="58dp"
-                android:contentDescription="Pizza"
-                android:src="@drawable/pizza" />
+                <ImageView
+                    android:layout_width="63dp"
+                    android:layout_height="58dp"
+                    android:contentDescription="Pizza"
+                    android:src="@drawable/pizza" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Pizza"
-                android:textColor="#000"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Pizza"
+                    android:textColor="#000"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
                 <Button
                     android:id="@+id/button_pizza"
@@ -93,60 +93,60 @@
                 android:layout_height="150dp"
                 android:layout_marginEnd="8dp"
                 android:background="@drawable/bogoc"
-            android:gravity="center"
-            android:orientation="vertical">
+                android:gravity="center"
+                android:orientation="vertical">
 
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:contentDescription="Burger"
-                android:src="@drawable/burger" />
+                <ImageView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:contentDescription="Burger"
+                    android:src="@drawable/burger" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Burger"
-                android:textColor="#000"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Burger"
+                    android:textColor="#000"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
                 <Button
                     android:id="@+id/button_burger"
                     android:layout_width="match_parent"
                     android:layout_height="37dp"
                     android:text="Xem Thêm" />
-        </LinearLayout>
+            </LinearLayout>
             <!-- Popcorn -->
             <LinearLayout
                 android:layout_width="120dp"
                 android:layout_height="150dp"
                 android:layout_marginEnd="8dp"
                 android:background="@drawable/bogoc"
-            android:gravity="center"
-            android:orientation="vertical">
+                android:gravity="center"
+                android:orientation="vertical">
 
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:contentDescription="Popcorn"
-                android:src="@drawable/popcorn" />
+                <ImageView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:contentDescription="Popcorn"
+                    android:src="@drawable/popcorn" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Popcorn"
-                android:textColor="#000"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Popcorn"
+                    android:textColor="#000"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
                 <Button
                     android:id="@+id/button_popcorn"
                     android:layout_width="match_parent"
                     android:layout_height="37dp"
                     android:text="Xem Thêm" />
-        </LinearLayout>
+            </LinearLayout>
 
             <!-- Drink -->
             <LinearLayout
@@ -154,30 +154,30 @@
                 android:layout_height="150dp"
                 android:layout_marginEnd="8dp"
                 android:background="@drawable/bogoc"
-            android:gravity="center"
-            android:orientation="vertical">
+                android:gravity="center"
+                android:orientation="vertical">
 
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:contentDescription="Drink"
-                android:src="@drawable/soda" />
+                <ImageView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:contentDescription="Drink"
+                    android:src="@drawable/soda" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Drink"
-                android:textColor="#000"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Drink"
+                    android:textColor="#000"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
                 <Button
                     android:id="@+id/button_drink"
                     android:layout_width="match_parent"
                     android:layout_height="37dp"
                     android:text="Xem Thêm" />
-        </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
     </HorizontalScrollView>
 
