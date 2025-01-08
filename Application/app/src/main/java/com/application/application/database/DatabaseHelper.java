@@ -113,8 +113,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public boolean isUserExists(String username) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM users WHERE username = ?", new String[]{username});
-
-        boolean exists = cursor.moveToFirst();
+        boolean exists = (cursor.getCount() > 0);
         cursor.close();
         return exists;
     }
@@ -122,12 +121,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public boolean isEmailExists(String email) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM users WHERE email = ?", new String[]{email});
-
-        boolean exists = cursor.moveToFirst();
+        boolean exists = (cursor.getCount() > 0);
         cursor.close();
         return exists;
     }
-
 
     public long insertUser(ContentValues values) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -137,7 +134,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public boolean isEmailValid(String email, String hashedPassword) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM users WHERE email = ? AND password = ?", new String[]{email, hashedPassword});
-
         boolean valid = cursor.moveToFirst();
         cursor.close();
         return valid;
