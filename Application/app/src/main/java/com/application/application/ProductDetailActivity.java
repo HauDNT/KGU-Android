@@ -10,12 +10,12 @@ public class ProductDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.product_detail);
+        setContentView(R.layout.item_popular);
 
-        TextView nameTextView = findViewById(R.id.nameTextView);
-        TextView descriptionTextView = findViewById(R.id.descriptionTextView);
-        TextView priceTextView = findViewById(R.id.priceTextView);
-        ImageView imageView = findViewById(R.id.imageView);
+        TextView nameTextView = findViewById(R.id.itemName);
+        TextView descriptionTextView = findViewById(R.id.itemDescription);
+        TextView priceTextView = findViewById(R.id.itemPrice);
+        ImageView imageView = findViewById(R.id.itemImage);
 
         // Nhận dữ liệu từ Intent
         String name = getIntent().getStringExtra("name");

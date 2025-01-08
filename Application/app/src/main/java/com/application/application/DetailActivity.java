@@ -11,7 +11,7 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.product_detail); // Tạo layout cho DetailActivity
+        setContentView(R.layout.item_popular); // Tạo layout cho DetailActivity
 
         // Nhận dữ liệu từ Intent
         String productName = getIntent().getStringExtra("productName");
@@ -20,10 +20,10 @@ public class DetailActivity extends AppCompatActivity {
         int productImage = getIntent().getIntExtra("productImage", -1);
 
         // Hiển thị dữ liệu
-        TextView nameTextView = findViewById(R.id.nameTextView);
-        TextView descriptionTextView = findViewById(R.id.descriptionTextView);
-        TextView priceTextView = findViewById(R.id.priceTextView);
-        ImageView imageView = findViewById(R.id.imageView);
+        TextView nameTextView = findViewById(R.id.itemName);
+        TextView descriptionTextView = findViewById(R.id.itemDescription);
+        TextView priceTextView = findViewById(R.id.itemPrice);
+        ImageView imageView = findViewById(R.id.itemImage);
 
         nameTextView.setText(productName);
         descriptionTextView.setText(productDescription);
