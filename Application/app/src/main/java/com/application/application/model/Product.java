@@ -1,4 +1,4 @@
-package com.application.application;
+package com.application.application.model;
 
 public class Product {
     private String name;

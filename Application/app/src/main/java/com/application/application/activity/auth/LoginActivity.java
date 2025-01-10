@@ -1,4 +1,4 @@
-package com.application.application;
+package com.application.application.activity.auth;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +15,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.application.application.activity.dashboard.DashboardActivity;
+import com.application.application.R;
 import com.application.application.database.DatabaseHelper;
 
 import java.security.MessageDigest;
@@ -94,7 +96,7 @@ public class LoginActivity extends AppCompatActivity {
         if (isLoginValid) {
             //Thông tin đăng nhập đúng, chuyển sang màn hình Đơn đặt hàng
             Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(LoginActivity.this, OrderListActivity.class); // Chuyển đến danh sách đơn đặt hàng
+            Intent intent = new Intent(LoginActivity.this, DashboardActivity.class); // Chuyển đến danh sách đơn đặt hàng
             startActivity(intent);
             finish();
         } else {

@@ -1,4 +1,4 @@
-package com.application.application;
+package com.application.application.activity.auth;
 
 import android.content.ContentValues;
 import android.content.Intent;
@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.application.application.LoginActivity;
 import com.application.application.R;
 import com.application.application.database.DatabaseHelper;
 

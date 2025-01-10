@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools" >
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -14,35 +14,30 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Application"
-        tools:targetApi="31">
+        tools:targetApi="31" >
         <activity
-            android:name=".OrderListActivity"
+            android:name=".activity.category.CategoryActivity"
             android:exported="false" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".activity.order.OrderListActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.dashboard.DashboardActivity"
             android:exported="false" />
         <activity
-            android:name=".RegisterActivity"
-            android:exported="true">
+            android:name=".activity.auth.RegisterActivity"
+            android:exported="true" />
+        <activity android:name=".activity.detail_food.DetailFoodActivity" />
+        <activity android:name=".activity.food.FoodListActivity" />
+        <activity
+            android:name=".activity.auth.LoginActivity"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
-
-    <activity android:name=".ProductDetailActivity" />
-    <activity android:name=".DetailActivity"/>
-    <activity android:name=".MoreDetailsActivity"/>
-        <activity android:name=".MoreProductsActivity"/>
-    <activity
-        android:name=".Activity"
-        android:exported="true">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
-    </activity>
-
-</application>
+    </application>
 
 </manifest>
