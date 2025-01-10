@@ -1,8 +1,10 @@
-package com.application.application;
+package com.application.application.activity.order;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.application.application.R;
 
 public class OrderListActivity extends AppCompatActivity {
 

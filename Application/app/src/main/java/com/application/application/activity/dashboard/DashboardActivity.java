@@ -1,4 +1,4 @@
-package com.application.application;
+package com.application.application.activity.dashboard;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,10 +12,16 @@ import android.widget.ListView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.application.application.activity.detail_food.DetailFoodActivity;
+import com.application.application.activity.food.FoodListActivity;
+import com.application.application.common.PosterAdapter;
+import com.application.application.model.Product;
+import com.application.application.R;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class Activity extends AppCompatActivity {
+public class DashboardActivity extends AppCompatActivity {
 
     private List<Product> productList;
     private ViewPager2 viewPager;
@@ -144,7 +150,7 @@ public class Activity extends AppCompatActivity {
 
     private void openDetailActivity(int position) {
         Product selectedProduct = productList.get(position);
-        Intent intent = new Intent(Activity.this, DetailActivity.class);
+        Intent intent = new Intent(DashboardActivity.this, DetailFoodActivity.class);
         intent.putExtra("productName", selectedProduct.getName());
         intent.putExtra("productDescription", selectedProduct.getDescription());
         intent.putExtra("productPrice", selectedProduct.getPrice());
@@ -153,7 +159,7 @@ public class Activity extends AppCompatActivity {
     }
 
     private void openMoreProductsActivity(String category) {
-        Intent intent = new Intent(Activity.this, MoreProductsActivity.class);
+        Intent intent = new Intent(DashboardActivity.this, FoodListActivity.class);
         intent.putExtra("category", category);
         startActivity(intent);
     }

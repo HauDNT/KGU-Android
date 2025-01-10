@@ -1,10 +1,9 @@
-package com.application.application;
+package com.application.application.activity.auth;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class Utils {
-
     //Phương thức mã hóa mật khẩu bằng SHA-256
     public static String hashPassword(String password) {
         try {

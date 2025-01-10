@@ -1,4 +1,4 @@
-package com.application.application;
+package com.application.application.activity.food;
 
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
@@ -6,10 +6,12 @@ import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.application.application.R;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class MoreProductsActivity extends AppCompatActivity {
+public class FoodListActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
