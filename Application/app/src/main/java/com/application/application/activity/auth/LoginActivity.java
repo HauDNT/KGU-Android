@@ -19,9 +19,6 @@ import com.application.application.activity.dashboard.DashboardActivity;
 import com.application.application.R;
 import com.application.application.database.DatabaseHelper;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 public class LoginActivity extends AppCompatActivity {
 
     private EditText usernameEditText, passwordEditText;
@@ -48,27 +45,6 @@ public class LoginActivity extends AppCompatActivity {
         redirectToRegisterScreen();
     }
 
-    //Phương thức mã hóa mật khẩu bằng SHA-256
-    public static String hashPassword(String password) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hashBytes = digest.digest(password.getBytes());
-
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hashBytes) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) {
-                    hexString.append('0');
-                }
-                hexString.append(hex);
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     private void loginUser() {
         String usernameOrEmail = usernameEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
@@ -79,24 +55,24 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        //Mã hóa mật khẩu nhập vào
-        String hashedPassword = hashPassword(password);
+        //Mã hóa mật khẩu nhập vào bằng hàm từ Utils
+        String hashedPassword = Utils.hashPassword(password);
 
         //Kiểm tra xem nhập liệu có phải là email hay username
-        boolean isLoginValid = false;
+        boolean isLoginValid;
 
         if (isEmail(usernameOrEmail)) {
-            //Kiểm tra Email có trong db ko
+            //Kiểm tra Email có trong db không
             isLoginValid = databaseHelper.isEmailValid(usernameOrEmail, hashedPassword);
         } else {
-            //Kiểm tra usernmae có trong db ko
+            //Kiểm tra username có trong db không
             isLoginValid = databaseHelper.isUserValid(usernameOrEmail, hashedPassword);
         }
 
         if (isLoginValid) {
-            //Thông tin đăng nhập đúng, chuyển sang màn hình Đơn đặt hàng
+            //Thông tin đăng nhập đúng, chuyển sang màn hình Dashboard
             Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(LoginActivity.this, DashboardActivity.class); // Chuyển đến danh sách đơn đặt hàng
+            Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
             startActivity(intent);
             finish();
         } else {

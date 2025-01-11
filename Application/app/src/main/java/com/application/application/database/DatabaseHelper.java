@@ -12,11 +12,14 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.application.application.BuildConfig;
+import com.application.application.model.Food;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = BuildConfig.DATABASE_NAME;
@@ -50,8 +53,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + "price REAL NOT NULL,"
                 + "status INTEGER NOT NULL,"
                 + "image_url TEXT,"
-                + "created_at DEFAULT CURRENT_TIMESTAMP,"
-                + "updated_at DEFAULT CURRENT_TIMESTAMP"
+                + "created_at DATETIME DEFAULT CURRENT_TIMESTAMP,"
+                + "updated_at DATETIME DEFAULT CURRENT_TIMESTAMP"
                 + ");";
         db.execSQL(createFoodsTable);
 
@@ -148,5 +151,73 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return valid;
     }
 
+    //Thêm sản phẩm
+    public long insertFood(ContentValues values) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.insert("foods", null, values);
+    }
+
+    //Sửa sản phẩm
+    public int updateFood(int id, ContentValues values) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.update("foods", values, "id = ?", new String[]{String.valueOf(id)});
+    }
+
+    //Xóa sản phẩm
+    public void deleteFood(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete("foods", "id = ?", new String[]{String.valueOf(id)});
+    }
+
+    public List<Food> getAllFoods() {
+        List<Food> foodList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase(); // Lấy cơ sở dữ liệu đọc
+        Cursor cursor = null;
+
+        try {
+            //Truy vấn tất cả các bản ghi từ bảng foods
+            cursor = db.query("foods", null, null, null, null, null, null);
+
+            //Kiểm tra xem con trỏ có dữ liệu hay không
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    //Lấy dữ liệu từ con trỏ
+                    int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                    String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+                    String description = cursor.getString(cursor.getColumnIndexOrThrow("description"));
+                    double price = cursor.getDouble(cursor.getColumnIndexOrThrow("price"));
+                    int status = cursor.getInt(cursor.getColumnIndexOrThrow("status"));
+                    String imageUrl = cursor.getString(cursor.getColumnIndexOrThrow("image_url"));
+
+                    //Tạo đối tượng Food và thêm vào danh sách
+                    Food food = new Food(id, name, description, price, status, imageUrl);
+                    foodList.add(food);
+                } while (cursor.moveToNext()); //Di chuyển đến bản ghi tiếp theo
+            }
+        } catch (Exception e) {
+            Log.e("DatabaseHelper", "Error getting all foods: " + e.getMessage());
+        } finally {
+            //Đóng con trỏ nếu nó không null
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return foodList; //Trả về danh sách các món ăn
+    }
+
+    public List<String> getAllCategories() {
+        List<String> categories = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT name FROM categories", null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                categories.add(cursor.getString(0)); //Lấy tên loại sản phẩm
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return categories;
+    }
 
 }

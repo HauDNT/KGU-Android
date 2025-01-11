@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    tools:context=".activity.category.CategoryActivity">
+    tools:context=".activity.food.FoodActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,7 +15,7 @@
         android:gravity="end">
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_create_category"
+            android:id="@+id/btn_create_food"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Thêm"
@@ -31,7 +31,7 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/category_title"
+        android:id="@+id/food_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Danh mục sản phẩm"
@@ -41,7 +41,7 @@
         android:textStyle="bold"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/category_list"
+        android:id="@+id/food_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="8dp" />

@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">Application</string>
-    <string name="category_item_image_desc">Category</string>
+    <string name="category_item_image_desc">Hình ảnh danh mục</string>
+    <string name="delete_item">Xóa sản phẩm</string>
+    <string name="food_added_success">Thêm sản phẩm thành công</string>
+    <string name="food_add_error">Lỗi khi thêm sản phẩm</string>
+    <string name="complete_info_required">Vui lòng điền đầy đủ thông tin và tải lên hình ảnh.</string>
+    <string name="invalid_price">Đơn giá không hợp lệ.</string>
+    <string name="product_deleted">Sản phẩm đã được xóa</string>
 </resources>
