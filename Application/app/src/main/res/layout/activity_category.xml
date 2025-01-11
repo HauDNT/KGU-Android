@@ -9,6 +9,7 @@
     tools:context=".activity.category.CategoryActivity">
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_create_category"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
@@ -17,14 +18,15 @@
         android:textColor="@color/black"
         android:backgroundTint="@color/white"
         app:cornerRadius="@dimen/cud_btn_corner_radius"
-        app:strokeColor="@color/cud_btn_border"
+        app:strokeColor="@color/grayCorner"
         app:strokeWidth="@dimen/cud_btn_corner_width"
         app:icon="@drawable/ic_add"
         app:iconTint="@null"
         app:iconSize="@dimen/cud_btn_icon_size"
         />
 
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/category_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

@@ -2,6 +2,8 @@ package com.application.application.activity.auth;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Utils {
     //Phương thức mã hóa mật khẩu bằng SHA-256
@@ -29,5 +31,12 @@ public class Utils {
             e.printStackTrace();
             return null;
         }
+    }
+
+    // Hàm kiểm tra chuỗi hợp lệ theo Regex
+    public static Boolean regexVerify(String text, String regex) {
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(text.trim());
+        return matcher.matches();
     }
 }

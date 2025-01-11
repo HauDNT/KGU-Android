@@ -2,7 +2,7 @@
 <resources>
     <!-- CUD button -->
     <dimen name="cud_btn_corner_radius">10dp</dimen>
-    <dimen name="cud_btn_corner_width">3dp</dimen>
+    <dimen name="cud_btn_corner_width">1dp</dimen>
     <dimen name="cud_btn_icon_size">23dp</dimen>
     <dimen name="cud_btn_title_size">18dp</dimen>
 </resources>

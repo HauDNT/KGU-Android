@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Application</string>
+    <string name="category_item_image_desc">Category</string>
 </resources>

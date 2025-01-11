@@ -16,7 +16,7 @@
         android:theme="@style/Theme.Application"
         tools:targetApi="31" >
         <activity
-            android:name=".activity.category.CategoryActivity"
+            android:name=".activity.auth.LoginActivity"
             android:exported="false" />
         <activity
             android:name=".activity.order.OrderListActivity"
@@ -30,7 +30,7 @@
         <activity android:name=".activity.detail_food.DetailFoodActivity" />
         <activity android:name=".activity.food.FoodListActivity" />
         <activity
-            android:name=".activity.auth.LoginActivity"
+            android:name=".activity.category.CategoryActivity"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
