@@ -8,17 +8,11 @@
     android:layout_margin="5dp"
     android:background="@drawable/dialog_create_category_background">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/dialog_create_category_icon"
-        android:layout_gravity="center_horizontal"/>
-
     <TextView
-        android:id="@+id/dialog_create_food_title"
+        android:id="@+id/dialog_edit_product_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Tạo sản phẩm mới"
+        android:text="Chỉnh sửa sản phẩm"
         android:textSize="25sp"
         android:textStyle="bold"
         android:textColor="@color/black"
@@ -35,7 +29,7 @@
         android:layout_marginTop="10dp"/>
 
     <EditText
-        android:id="@+id/dialog_create_food_name"
+        android:id="@+id/dialog_edit_product_name"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:background="@drawable/rounded_edit_text_dialog"
@@ -53,7 +47,7 @@
         android:layout_marginTop="10dp"/>
 
     <EditText
-        android:id="@+id/dialog_create_food_description"
+        android:id="@+id/dialog_edit_product_description"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:background="@drawable/rounded_edit_text_dialog"
@@ -72,7 +66,7 @@
         android:layout_marginTop="10dp"/>
 
     <EditText
-        android:id="@+id/dialog_create_food_price"
+        android:id="@+id/dialog_edit_product_price"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:background="@drawable/rounded_edit_text_dialog"
@@ -90,18 +84,11 @@
         android:textStyle="bold"
         android:layout_marginTop="10dp"/>
 
-    <LinearLayout
+    <Spinner
+        android:id="@+id/dialog_edit_product_category"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/rounded_corners"
-        android:padding="2dp"
-        android:layout_marginTop="5dp">
-
-        <Spinner
-            android:id="@+id/dialog_create_food_category"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
+        android:layout_marginTop="5dp"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -111,18 +98,11 @@
         android:textStyle="bold"
         android:layout_marginTop="10dp"/>
 
-    <LinearLayout
+    <Spinner
+        android:id="@+id/dialog_edit_product_status"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/rounded_corners"
-        android:padding="2dp"
-        android:layout_marginTop="5dp">
-
-        <Spinner
-            android:id="@+id/dialog_create_food_status"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
+        android:layout_marginTop="5dp"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -132,41 +112,24 @@
         android:textStyle="bold"
         android:layout_marginTop="10dp"/>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/image_preview"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/rounded_corners"
+        android:layout_marginTop="5dp"/>
+
+    <Button
+        android:id="@+id/dialog_edit_product_btn_upload"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp">
-
-        <ImageView
-            android:id="@+id/image_preview"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_alignParentLeft="true"
-            android:layout_marginRight="10dp"
-            android:background="@drawable/rounded_corners"/>
-
-        <Button
-            android:id="@+id/dialog_create_food_btn_upload"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Tải lên"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:backgroundTint="@color/successText"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"/>
-    </RelativeLayout>
-
-    <TextView
-        android:id="@+id/dialog_create_food_alert"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Alert"
-        android:textSize="16sp"
+        android:text="Tải lên"
+        android:textSize="14sp"
         android:textStyle="bold"
-        android:textColor="@color/alertText"
-        android:layout_marginTop="3dp"
-        android:visibility="gone"/>
+        android:backgroundTint="@color/successText"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="5dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -175,21 +138,21 @@
         android:layout_marginTop="30dp">
 
         <Button
-            android:id="@+id/dialog_create_food_btn_create"
+            android:id="@+id/dialog_edit_product_btn_save"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Tạo"
+            android:text="Lưu"
             android:textSize="20sp"
             android:textStyle="bold"
             android:backgroundTint="@color/colorPrimary"/>
 
         <Button
-            android:id="@+id/dialog_create_food_btn_close"
+            android:id="@+id/dialog_edit_product_btn_cancel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Đóng"
+            android:text="Hủy"
             android:textSize="18sp"
             android:textStyle="bold"
             android:backgroundTint="@android:color/holo_red_dark"

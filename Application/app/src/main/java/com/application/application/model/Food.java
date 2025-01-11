@@ -5,10 +5,10 @@ public class Food {
     private String name;
     private String description;
     private Double price;
-    private int status;
+    private int status; //0: Còn hàng, 1: Hết hàng
     private String imageUrl;
 
-    // Constructor
+    //Constructor
     public Food(int id, String name, String description, Double price, int status, String imageUrl) {
         this.id = id;
         this.name = name;
