@@ -154,7 +154,9 @@
             android:textStyle="bold"
             android:backgroundTint="@color/successText"
             android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"/>
+            android:layout_centerVertical="true"
+            android:drawableLeft="@drawable/ic_upload"
+            android:drawablePadding="8dp"/>
     </RelativeLayout>
 
     <TextView
