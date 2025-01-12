@@ -19,9 +19,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.application.application.R;
 import com.application.application.database.DatabaseHelper;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 public class RegisterActivity extends AppCompatActivity {
 
     private EditText usernameEditText, passwordEditText, fullnameEditText, emailEditText, phoneNumberEditText, addressEditText;
@@ -59,27 +56,6 @@ public class RegisterActivity extends AppCompatActivity {
         redirectToLoginScreen();
     }
 
-    //Phương thức mã hóa mật khẩu bằng SHA-256
-    public static String hashPassword(String password) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hashBytes = digest.digest(password.getBytes());
-
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hashBytes) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) {
-                    hexString.append('0');
-                }
-                hexString.append(hex);
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     private void registerUser() {
         String username = usernameEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
@@ -101,14 +77,14 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        //Kiểm tra trùng mail
+        //Kiểm tra trùng email
         if (databaseHelper.isEmailExists(email)) {
             Toast.makeText(this, "Email này đã được đăng ký!", Toast.LENGTH_SHORT).show();
             return;
         }
 
         //Mã hóa mật khẩu trước khi lưu vào cơ sở dữ liệu
-        String hashedPassword = hashPassword(password);
+        String hashedPassword = Utils.hashPassword(password);
 
         //Thêm người dùng vào cơ sở dữ liệu
         ContentValues values = new ContentValues();

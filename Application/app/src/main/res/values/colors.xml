@@ -9,4 +9,5 @@
     <color name="alertText">#F93827</color>
     <color name="successText">#5CB338</color>
     <color name="grayCorner">#B0BEC5</color>
+    <color name="orange">#FFA500</color>
 </resources>
