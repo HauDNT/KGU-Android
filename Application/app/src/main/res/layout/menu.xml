@@ -191,12 +191,19 @@
         android:textSize="18sp"
         android:textStyle="bold" />
 
-    <!-- Bottom Navigation -->
+    <!-- Bottom ListView -->
     <ListView
         android:id="@+id/productListView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" /> <!-- Thay đổi chiều cao thành 0dp và sử dụng layout_weight -->
 
+    <!-- Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:menu="@menu/bottom_navigation_menu" />
 
 </LinearLayout>

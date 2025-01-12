@@ -33,6 +33,9 @@
     <activity android:name=".DetailActivity"/>
     <activity android:name=".MoreDetailsActivity"/>
         <activity android:name=".MoreProductsActivity"/>
+        <activity android:name=".SaleActivity" />
+        <activity android:name=".CartActivity" />
+        <activity android:name=".AccountActivity" />
     <activity
         android:name=".Activity"
         android:exported="true">

@@ -3,14 +3,17 @@ package com.application.application;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +39,9 @@ public class Activity extends AppCompatActivity {
 
         // Khởi tạo ViewPager2 cho các poster
         setupViewPager();
+
+        // Khởi tạo Bottom Navigation
+        setupBottomNavigation();
     }
 
     private void initializeProductList() {
@@ -156,5 +162,26 @@ public class Activity extends AppCompatActivity {
         Intent intent = new Intent(Activity.this, MoreProductsActivity.class);
         intent.putExtra("category", category);
         startActivity(intent);
+    }
+
+    private void setupBottomNavigation() {
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            if (item.getItemId() == R.id.home) {
+                // Handle Home action
+                return true;
+            } else if (item.getItemId() == R.id.sale) {
+                startActivity(new Intent(Activity.this, SaleActivity.class));
+                return true;
+            } else if (item.getItemId() == R.id.cart) {
+                startActivity(new Intent(Activity.this, CartActivity.class));
+                return true;
+            } else if (item.getItemId() == R.id.account) {
+                startActivity(new Intent(Activity.this, AccountActivity.class));
+                return true;
+            }
+            return false;
+        });
     }
 }
