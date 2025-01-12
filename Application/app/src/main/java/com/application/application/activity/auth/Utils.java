@@ -35,8 +35,11 @@ public class Utils {
 
     // Hàm kiểm tra chuỗi hợp lệ theo Regex
     public static Boolean regexVerify(String text, String regex) {
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(text.trim());
-        return matcher.matches();
+        if (text.length() > 0) {
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(text.trim());
+            return matcher.matches();
+        }
+        return false;
     }
 }

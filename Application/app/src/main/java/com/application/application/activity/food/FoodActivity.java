@@ -220,6 +220,7 @@ public class FoodActivity extends AppCompatActivity {
 
         alertDialog.show();
     }
+  
     private void updateSelectedCategoriesDisplay() {
         TextView categoryInfo = dialogView.findViewById(R.id.dialog_create_food_category_info);
         ChipGroup chipGroupCategories = dialogView.findViewById(R.id.dialog_create_food_category_group);

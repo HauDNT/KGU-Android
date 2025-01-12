@@ -279,6 +279,49 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return categories;
     }
 
+    // Hàm kiểm tra tồn tại theo 1 điều kiện:
+    public Boolean isExistsCategory(String selection, String value) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        boolean exists = false;
+        Cursor cursor;
+
+        if (selection.equals("id")) {
+            cursor = db.query("categories", null, selection + " = ?", new String[]{value}, null, null, null);
+        } else {
+            cursor = db.query("categories", null, selection + " COLLATE NOCASE = ?", new String[]{value}, null, null, null);
+        }
+
+        if (cursor != null) {
+            exists = cursor.moveToFirst();
+        }
+
+        cursor.close();
+        return exists;
+    }
+
+    // Hàm thêm một danh mục mới
+    public long insertCategory(ContentValues values) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        long result = db.insert("categories", null, values);
+        db.close();
+
+        return result;
+    }
+
+    // Hàm xoá một danh mục
+    public long deleteCategory(int id) {
+        boolean checkExists = isExistsCategory("id", String.valueOf(id));
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        if (checkExists) {
+            long result = db.delete("categories", "id = ?", new String[]{String.valueOf(id)});
+            db.close();
+            return result;
+        }
+
+        return 0;
+    }
+      
     public long getCategoryIdByName(String categoryName) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT id FROM categories WHERE name = ?", new String[]{categoryName});
