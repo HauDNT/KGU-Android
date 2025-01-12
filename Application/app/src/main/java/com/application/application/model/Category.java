@@ -36,7 +36,7 @@ public class Category {
     public String getUpdated_at() {
         return updated_at;
     }
-
+  
     public void setName(String name) {
         this.name = name;
     }

@@ -38,18 +38,19 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull FoodViewHolder holder, int position) {
-        //Kiểm tra xem foodList có rỗng hay không
         if (foodList != null && position < foodList.size()) {
             Food food = foodList.get(position);
-            if (food != null) {  //Kiểm tra food có phải là null không
+
+            if (food != null) {
                 holder.foodTitle.setText(food.getName() != null ? food.getName() : "Không có tên");
-                holder.foodPrice.setText("Đơn giá: " +
-                        (food.getPrice() != null ? food.getPrice() : 0.0) + " VND");
+                holder.foodPrice.setText("Đơn giá: " + (food.getPrice() != null ? food.getPrice() : 0.0) + " VND");
                 holder.foodDescription.setText("Mô tả: " + (food.getDescription() != null ? food.getDescription() : "Không có mô tả"));
                 holder.foodCode.setText("Mã sản phẩm: " + food.getId());
 
-                //Hiển thị trạng thái
-                String status = food.getStatus() == 0 ? "Còn hàng" : "Hết hàng"; //0 là còn hàng, 1 là hết hàng
+                List<String> categories = dbHelper.getCategoriesByFoodId(food.getId());
+                holder.foodType.setText("Loại sản phẩm: " + String.join(", ", categories));
+
+                String status = food.getStatus() == 0 ? "Còn hàng" : "Hết hàng";
                 holder.foodStatus.setText(status);
                 holder.foodStatus.setTextColor(food.getStatus() == 0 ? Color.GREEN : Color.RED);
 
@@ -58,14 +59,14 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
                         Uri imageUri = Uri.parse(food.getImageUrl());
                         holder.foodImage.setImageURI(imageUri);
                     } else {
-                        holder.foodImage.setImageResource(R.drawable.dialog_create_category_icon); //Hình ảnh mặc định
+                        holder.foodImage.setImageResource(R.drawable.dialog_create_category_icon);
                     }
                 } catch (Exception e) {
                     Log.e("FoodAdapter", "Error setting image: " + e.getMessage());
                     holder.foodImage.setImageResource(R.drawable.dialog_create_category_icon);
                 }
+
                 holder.iconDelete.setOnClickListener(v -> {
-                    //Xóa sản phẩm
                     dbHelper.deleteFood(food.getId());
                     foodList.remove(position);
                     notifyItemRemoved(position);
@@ -76,14 +77,13 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
         }
     }
 
-
     @Override
     public int getItemCount() {
         return foodList != null ? foodList.size() : 0;
     }
 
     public static class FoodViewHolder extends RecyclerView.ViewHolder {
-        TextView foodTitle, foodPrice, foodDescription, foodCode, foodStatus;
+        TextView foodTitle, foodPrice, foodDescription, foodCode, foodStatus, foodType;
         ImageView foodImage, iconDelete;
 
         public FoodViewHolder(View itemView) {
@@ -95,6 +95,7 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
             foodCode = itemView.findViewById(R.id.food_code);
             iconDelete = itemView.findViewById(R.id.icon_delete);
             foodStatus = itemView.findViewById(R.id.food_status);
+            foodType = itemView.findViewById(R.id.food_type);
         }
     }
 }

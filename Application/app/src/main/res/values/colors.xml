@@ -10,4 +10,5 @@
     <color name="successText">#5CB338</color>
     <color name="grayCorner">#B0BEC5</color>
     <color name="orange">#FFA500</color>
+    <color name="silver">#C0C0C0</color>
 </resources>

@@ -100,6 +100,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + "FOREIGN KEY (order_id) REFERENCES orders(id)"
                 + ");";
         db.execSQL(createOrderItemTable);
+
     }
 
     @Override
@@ -152,17 +153,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return valid;
     }
 
+    public boolean isFoodExists(String foodName) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM foods WHERE name = ?", new String[]{foodName});
+        boolean exists = (cursor.getCount() > 0);
+        cursor.close();
+        return exists;
+    }
+
     //Thêm sản phẩm
     public long insertFood(ContentValues values) {
         SQLiteDatabase db = this.getWritableDatabase();
-        return db.insert("foods", null, values);
+        long newRowId = -1;
+
+        try {
+            newRowId = db.insert("foods", null, values);
+        } catch (Exception e) {
+            Log.e("DatabaseHelper", "Lỗi khi thêm sản phẩm: " + e.getMessage());
+        } finally {
+            db.close(); // Đảm bảo đóng cơ sở dữ liệu
+        }
+
+        return newRowId;
     }
 
     //Sửa sản phẩm
-    public int updateFood(int id, ContentValues values) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        return db.update("foods", values, "id = ?", new String[]{String.valueOf(id)});
-    }
+//    public int updateFood(int id, ContentValues values) {
+//        SQLiteDatabase db = this.getWritableDatabase();
+//        return db.update("foods", values, "id = ?", new String[]{String.valueOf(id)});
+//    }
 
     //Xóa sản phẩm
     public void deleteFood(int id) {
@@ -172,17 +191,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public List<Food> getAllFoods() {
         List<Food> foodList = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase(); // Lấy cơ sở dữ liệu đọc
+        SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = null;
 
         try {
-            //Truy vấn tất cả các bản ghi từ bảng foods
             cursor = db.query("foods", null, null, null, null, null, null);
 
-            //Kiểm tra xem con trỏ có dữ liệu hay không
             if (cursor != null && cursor.moveToFirst()) {
                 do {
-                    //Lấy dữ liệu từ con trỏ
                     int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
                     String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
                     String description = cursor.getString(cursor.getColumnIndexOrThrow("description"));
@@ -190,7 +206,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     int status = cursor.getInt(cursor.getColumnIndexOrThrow("status"));
                     String imageUrl = cursor.getString(cursor.getColumnIndexOrThrow("image_url"));
 
-                    //Tạo đối tượng Food và thêm vào danh sách
                     Food food = new Food(id, name, description, price, status, imageUrl);
                     foodList.add(food);
                 } while (cursor.moveToNext()); //Di chuyển đến bản ghi tiếp theo
@@ -198,16 +213,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } catch (Exception e) {
             Log.e("DatabaseHelper", "Error getting all foods: " + e.getMessage());
         } finally {
-            //Đóng con trỏ nếu nó không null
             if (cursor != null) {
                 cursor.close();
             }
         }
 
-        return foodList; //Trả về danh sách các món ăn
+        return foodList;
     }
 
-    // Lấy danh sách danh mục
     public List<Category> getCategoriesList(String[] columns) {
         List<Category> categories = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -307,5 +320,55 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         return 0;
+    }
+      
+    public long getCategoryIdByName(String categoryName) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT id FROM categories WHERE name = ?", new String[]{categoryName});
+        if (cursor != null && cursor.moveToFirst()) {
+            long id = cursor.getLong(0);
+            cursor.close();
+            return id;
+        }
+        return -1;
+    }
+
+    public long insertFoodCategory(long foodId, long categoryId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("food_id", foodId);
+        values.put("category_id", categoryId);
+        return db.insert("food_category", null, values);
+    }
+
+    public List<String> getCategoriesByFoodId(long foodId) {
+        List<String> categories = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String query = "SELECT c.name AS category_name FROM food_category fc " +
+                "JOIN categories c ON fc.category_id = c.id " +
+                "WHERE fc.food_id = ?";
+
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(foodId)});
+
+        Log.d("DatabaseHelper", "Column Count: " + cursor.getColumnCount());
+
+        if (cursor != null) {
+            try {
+                while (cursor.moveToNext()) {
+                    int columnIndex = cursor.getColumnIndex("category_name");
+                    if (columnIndex != -1) {
+                        String categoryName = cursor.getString(columnIndex);
+                        categories.add(categoryName);
+                    } else {
+                        Log.e("DatabaseHelper", "Column 'category_name' not found");
+                    }
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+
+        return categories;
     }
 }
