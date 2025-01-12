@@ -56,51 +56,14 @@ public class CategoryActivity extends AppCompatActivity {
     }
 
     // Hàm xây dựng recycle view (danh sách loại sản phẩm)
-    @SuppressLint("WrongViewCast")
     private void initCategoryRecycleView() {
         categoryRecyclerView = findViewById(R.id.category_list);
         categoryRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         categoryList = new ArrayList<>();
-
-        getAllCatagoriesAndApplyToRecycleView(categoryList);
-
-        categoryAdapter = new CategoryAdapter(categoryList);
+        categoryList = dbHelper.getCategoriesList(new String[] {"id", "name"});
+        categoryAdapter = new CategoryAdapter(this, categoryList);
         categoryRecyclerView.setAdapter(categoryAdapter);
-    }
-
-    private void getAllCatagoriesAndApplyToRecycleView(List<Category> list) {
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        String[] columns = { "id", "name" };
-
-        try (
-                Cursor cursor = db.query(
-                        "categories",
-                        columns,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null
-                )
-        ) {
-            if (cursor.getCount() > 0) {
-                while (cursor.moveToNext()) {   // Lặp qua từng dòng dữ liệu để lấy id và name của category và đưa vào hàm constructor Category(id, name) { }
-                    int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
-                    String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
-
-                    // Mỗi lần lặp sẽ thêm 1 category vào list
-                    list.add(new Category(id, name));
-                }
-            }
-            else {
-                list.add(new Category(0, "Không có dữ liệu"));
-            }
-        } catch (Exception e) {
-            Log.e("CategoryActivity", "Lỗi khi tải danh sách loại sản phẩm", e);
-        } finally {
-            db.close();
-        }
     }
 
     // Hàm hiển thị Dialog tạo loại sản phẩm và xử lý sự kiện ấn nút tạo
@@ -135,20 +98,18 @@ public class CategoryActivity extends AppCompatActivity {
         boolean isValid = Utils.regexVerify(name, regex);
 
         if (isValid) {
-            boolean checkExistsCategory = isExistsCategory(name);
-            if (!checkExistsCategory) {
-                SQLiteDatabase db = dbHelper.getWritableDatabase();
-                ContentValues values = new ContentValues();
+            boolean checkExistsCategory = dbHelper.isExistsCategory("name", name);
 
+            if (!checkExistsCategory) {
+                ContentValues values = new ContentValues();
                 values.put("name", name);
-                db.insert("categories", null, values);
-                db.close();
+                dbHelper.insertCategory(values);
 
                 categoryNameField.setText("");
                 Toast.makeText(this, "Thêm loại sản phẩm thành công!", Toast.LENGTH_LONG).show();
 
-                // Gọi lại hàm load dữ liệu loại sản phẩm vào recycle view
-                initCategoryRecycleView();
+                // Gọi lại hàm load dữ liệu loại sản phẩm để cập nhật Recycle View UI
+                categoryAdapter.updateCategoryOnUI(dbHelper.getCategoriesList(new String[] {"id", "name"}));
             } else {
                 alertText.setVisibility(View.VISIBLE);
                 alertText.setText("Loại sản phẩm đã tồn tại");
@@ -157,38 +118,6 @@ public class CategoryActivity extends AppCompatActivity {
         {
             alertText.setVisibility(View.VISIBLE);
             alertText.setText("Tên loại phải là tiếng Việt, gồm 1 - 10 từ.");
-        }
-    }
-
-    // Hàm kiểm tra xem trong DB đã tồn tại tên loại sản phẩm này chưa?
-    private Boolean isExistsCategory(String categoryName) {
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        String[] columns = {"name"};
-
-        // Điều kiện Where đưa vào Cursor có thể viết như sau:
-        // String selection = "name = ?";
-        // String[] selectionArgs = new String[] { categoryName };
-
-        try (
-                Cursor cursor = db.query(
-                        "categories",
-                        columns,
-                        "name = ?",
-                        new String[] { categoryName },
-                        null,
-                        null,
-                        null
-                );
-        ) {
-            if (cursor.getCount() > 0) {
-                return true;
-            }
-            return false;
-        } catch (Exception e) {
-            Log.e("CategoryActivity","Xảy ra lỗi khi truy vấn tên loại trong bảng Categories", e);
-            return false;
-        } finally {
-            db.close();
         }
     }
 }

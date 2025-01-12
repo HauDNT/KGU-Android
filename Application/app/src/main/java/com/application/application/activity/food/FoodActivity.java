@@ -28,9 +28,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.application.application.R;
 import com.application.application.database.DatabaseHelper;
+import com.application.application.model.Category;
 import com.application.application.model.Food;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FoodActivity extends AppCompatActivity {
@@ -176,8 +178,14 @@ public class FoodActivity extends AppCompatActivity {
     }
 
     private void setupCategorySpinner(Spinner spinnerCategory) {
-        List<String> categories = dbHelper.getAllCategories(); // Lấy danh sách loại sản phẩm từ database
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
+        List<Category> categories = dbHelper.getCategoriesList(new String[] { "id", "name"}); // Lấy danh sách loại sản phẩm từ database
+        List<String> categoryName = new ArrayList<>();
+
+        for (Category category : categories) {
+            categoryName.add(category.getName());
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categoryName);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCategory.setAdapter(adapter);
     }

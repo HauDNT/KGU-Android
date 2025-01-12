@@ -12,6 +12,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.application.application.BuildConfig;
+import com.application.application.model.Category;
 import com.application.application.model.Food;
 
 import java.io.FileOutputStream;
@@ -206,18 +207,105 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return foodList; //Trả về danh sách các món ăn
     }
 
-    public List<String> getAllCategories() {
-        List<String> categories = new ArrayList<>();
+    // Lấy danh sách danh mục
+    public List<Category> getCategoriesList(String[] columns) {
+        List<Category> categories = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT name FROM categories", null);
 
-        if (cursor.moveToFirst()) {
-            do {
-                categories.add(cursor.getString(0)); //Lấy tên loại sản phẩm
-            } while (cursor.moveToNext());
+        try (
+                Cursor cursor = db.query(
+                        "categories",
+                        columns,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null
+                )
+        ) {
+            if (cursor.getCount() > 0) {
+                while (cursor.moveToNext()) {
+                    Integer id = null;
+                    String name = null;
+                    String created_at = null;
+                    String updated_at = null;
+
+                    for (String column : columns) {
+                        switch (column) {
+                            case "id":
+                                id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                                break;
+                            case "name":
+                                name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+                                break;
+                            case "created_at":
+                                created_at = cursor.getString(cursor.getColumnIndexOrThrow("created_at"));
+                                break;
+                            case "updated_at":
+                                updated_at = cursor.getString(cursor.getColumnIndexOrThrow("updated_at"));
+                                break;
+                        }
+                    }
+
+                    if (created_at == null & updated_at == null) {
+                        categories.add(new Category(id, name));
+                    } else {
+                        categories.add(new Category(id, name, created_at, updated_at));
+                    }
+                }
+            }
+            else {
+                categories.add(new Category(0, "Không có dữ liệu"));
+            }
+        } catch (Exception e) {
+            Log.e("CategoryActivity", "Lỗi khi tải danh sách loại sản phẩm", e);
+        } finally {
+            db.close();
         }
-        cursor.close();
+
         return categories;
     }
 
+    // Hàm kiểm tra tồn tại theo 1 điều kiện:
+    public Boolean isExistsCategory(String selection, String value) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        boolean exists = false;
+        Cursor cursor;
+
+        if (selection.equals("id")) {
+            cursor = db.query("categories", null, selection + " = ?", new String[]{value}, null, null, null);
+        } else {
+            cursor = db.query("categories", null, selection + " COLLATE NOCASE = ?", new String[]{value}, null, null, null);
+        }
+
+        if (cursor != null) {
+            exists = cursor.moveToFirst();
+        }
+
+        cursor.close();
+        return exists;
+    }
+
+    // Hàm thêm một danh mục mới
+    public long insertCategory(ContentValues values) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        long result = db.insert("categories", null, values);
+        db.close();
+
+        return result;
+    }
+
+    // Hàm xoá một danh mục
+    public long deleteCategory(int id) {
+        boolean checkExists = isExistsCategory("id", String.valueOf(id));
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        if (checkExists) {
+            long result = db.delete("categories", "id = ?", new String[]{String.valueOf(id)});
+            db.close();
+            return result;
+        }
+
+        return 0;
+    }
 }

@@ -3,7 +3,6 @@ package com.application.application.model;
 public class Category {
     int id;
     String name;
-    String image_url;
     String created_at;
     String updated_at;
 
@@ -15,10 +14,9 @@ public class Category {
         this.name = name;
     }
 
-    public Category(int id, String name, String image_url, String created_at, String updated_at) {
+    public Category(int id, String name, String created_at, String updated_at) {
         this.id = id;
         this.name = name;
-        this.image_url = image_url;
         this.created_at = created_at;
         this.updated_at = updated_at;
     }
@@ -39,10 +37,6 @@ public class Category {
         return updated_at;
     }
 
-    public String getImage_url() {
-        return image_url;
-    }
-
     public void setName(String name) {
         this.name = name;
     }
@@ -53,9 +47,5 @@ public class Category {
 
     public void setUpdated_at(String updated_at) {
         this.updated_at = updated_at;
-    }
-
-    public void setImage_url(String image_url) {
-        this.image_url = image_url;
     }
 }
