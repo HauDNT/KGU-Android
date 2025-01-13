@@ -12,11 +12,15 @@ import android.widget.ListView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.application.application.activity.account.AccountActivity;
+import com.application.application.activity.cart.CartActivity;
 import com.application.application.activity.detail_food.DetailFoodActivity;
 import com.application.application.activity.food.FoodListActivity;
+import com.application.application.activity.sale.SaleActivity;
 import com.application.application.common.PosterAdapter;
 import com.application.application.model.Product;
 import com.application.application.R;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +46,9 @@ public class DashboardActivity extends AppCompatActivity {
 
         // Khởi tạo ViewPager2 cho các poster
         setupViewPager();
+
+        // Khởi tạo Bottom Navigation
+        setupBottomNavigation();
     }
 
     private void initializeProductList() {
@@ -162,5 +169,26 @@ public class DashboardActivity extends AppCompatActivity {
         Intent intent = new Intent(DashboardActivity.this, FoodListActivity.class);
         intent.putExtra("category", category);
         startActivity(intent);
+    }
+
+    private void setupBottomNavigation() {
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            if (item.getItemId() == R.id.home) {
+                // Handle Home action
+                return true;
+            } else if (item.getItemId() == R.id.sale) {
+                startActivity(new Intent(DashboardActivity.this, SaleActivity.class));
+                return true;
+            } else if (item.getItemId() == R.id.cart) {
+                startActivity(new Intent(DashboardActivity.this, CartActivity.class));
+                return true;
+            } else if (item.getItemId() == R.id.account) {
+                startActivity(new Intent(DashboardActivity.this, AccountActivity.class));
+                return true;
+            }
+            return false;
+        });
     }
 }
