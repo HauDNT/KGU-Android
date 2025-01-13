@@ -1,10 +1,11 @@
-package com.application.application;
+package com.application.application.activity.auth;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Utils {
-
     //Phương thức mã hóa mật khẩu bằng SHA-256
     public static String hashPassword(String password) {
         try {
@@ -30,5 +31,15 @@ public class Utils {
             e.printStackTrace();
             return null;
         }
+    }
+
+    // Hàm kiểm tra chuỗi hợp lệ theo Regex
+    public static Boolean regexVerify(String text, String regex) {
+        if (text.length() > 0) {
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(text.trim());
+            return matcher.matches();
+        }
+        return false;
     }
 }

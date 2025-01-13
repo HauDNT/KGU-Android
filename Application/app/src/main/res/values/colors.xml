@@ -2,4 +2,13 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="cud_btn_border">#E5E3D4</color>
+    <color name="colorPrimary">#0D92F4</color>
+    <color name="colorPrimaryDark">#FF3700B3</color>
+    <color name="colorAccent">#FF03DAC5</color>
+    <color name="alertText">#F93827</color>
+    <color name="successText">#5CB338</color>
+    <color name="grayCorner">#B0BEC5</color>
+    <color name="orange">#FFA500</color>
+    <color name="silver">#C0C0C0</color>
 </resources>
