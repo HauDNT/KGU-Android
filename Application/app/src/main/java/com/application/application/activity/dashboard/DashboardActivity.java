@@ -3,14 +3,17 @@ package com.application.application.activity.dashboard;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import com.application.application.activity.account.AccountActivity;
 import com.application.application.activity.cart.CartActivity;
@@ -180,6 +183,12 @@ public class DashboardActivity extends AppCompatActivity {
                 return true;
             } else if (item.getItemId() == R.id.sale) {
                 startActivity(new Intent(DashboardActivity.this, SaleActivity.class));
+                return true;
+            } else if (item.getItemId() == R.id.cart) {
+                startActivity(new Intent(DashboardActivity.this, CartActivity.class));
+                return true;
+            } else if (item.getItemId() == R.id.account) {
+                startActivity(new Intent(DashboardActivity.this, AccountActivity.class));
                 return true;
             } else if (item.getItemId() == R.id.cart) {
                 startActivity(new Intent(DashboardActivity.this, CartActivity.class));
