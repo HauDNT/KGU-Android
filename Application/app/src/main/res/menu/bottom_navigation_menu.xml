@@ -1,0 +1,18 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/home"
+        android:icon="@drawable/home"
+    android:title="Trang Chủ" />
+    <item
+        android:id="@+id/sale"
+        android:icon="@drawable/discount"
+    android:title="Sale" />
+    <item
+        android:id="@+id/cart"
+        android:icon="@drawable/shopping_cart"
+    android:title="Giỏ Hàng" />
+    <item
+        android:id="@+id/account"
+        android:icon="@drawable/user"
+    android:title="Thông Tin Khách Hàng" />
+</menu>
