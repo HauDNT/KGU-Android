@@ -308,6 +308,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result;
     }
 
+    public long updateCategoryName(ContentValues values) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        long result = db.update("categories", values, "id = ?", new String[]{String.valueOf(values.get("id"))});
+        return result;
+    }
+
     // Hàm xoá một danh mục
     public long deleteCategory(int id) {
         boolean checkExists = isExistsCategory("id", String.valueOf(id));
