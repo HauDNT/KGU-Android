@@ -107,6 +107,7 @@ public class CategoryActivity extends AppCompatActivity {
 
                 categoryNameField.setText("");
                 Toast.makeText(this, "Thêm loại sản phẩm thành công!", Toast.LENGTH_LONG).show();
+                alertText.setVisibility(View.GONE);
 
                 // Gọi lại hàm load dữ liệu loại sản phẩm để cập nhật Recycle View UI
                 categoryAdapter.updateCategoryOnUI(dbHelper.getCategoriesList(new String[] {"id", "name"}));
