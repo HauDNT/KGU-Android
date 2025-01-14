@@ -19,13 +19,18 @@ import com.application.application.model.Food;
 
 import java.util.List;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
 public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder> {
     private List<Food> foodList;
     private DatabaseHelper dbHelper;
+    private FoodActivity foodActivity;
 
-    public FoodAdapter(List<Food> foodList, DatabaseHelper dbHelper) {
+    public FoodAdapter(List<Food> foodList, DatabaseHelper dbHelper, FoodActivity foodActivity) {
         this.foodList = foodList;
         this.dbHelper = dbHelper;
+        this.foodActivity = foodActivity;
     }
 
     @NonNull
@@ -43,17 +48,20 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
 
             if (food != null) {
                 holder.foodTitle.setText(food.getName() != null ? food.getName() : "Không có tên");
-                holder.foodPrice.setText("Đơn giá: " + (food.getPrice() != null ? food.getPrice() : 0.0) + " VND");
+                NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+                String formattedPrice = currencyFormat.format(food.getPrice());
+                holder.foodPrice.setText("Đơn giá: " + formattedPrice);
                 holder.foodDescription.setText("Mô tả: " + (food.getDescription() != null ? food.getDescription() : "Không có mô tả"));
                 holder.foodCode.setText("Mã sản phẩm: " + food.getId());
 
-                List<String> categories = dbHelper.getCategoriesByFoodId(food.getId());
+                List<String> categories = dbHelper.getCategoriesForFood(food.getId());
                 holder.foodType.setText("Loại sản phẩm: " + String.join(", ", categories));
 
                 String status = food.getStatus() == 0 ? "Còn hàng" : "Hết hàng";
                 holder.foodStatus.setText(status);
                 holder.foodStatus.setTextColor(food.getStatus() == 0 ? Color.GREEN : Color.RED);
 
+                //Xử lý hình ảnh
                 try {
                     if (food.getImageUrl() != null && !food.getImageUrl().isEmpty()) {
                         Uri imageUri = Uri.parse(food.getImageUrl());
@@ -65,6 +73,11 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
                     Log.e("FoodAdapter", "Error setting image: " + e.getMessage());
                     holder.foodImage.setImageResource(R.drawable.dialog_create_category_icon);
                 }
+
+                //Xử lý sự kiện chỉnh sửa sản phẩm
+                holder.itemView.setOnClickListener(v -> {
+                    foodActivity.showEditFoodDialog(food);
+                });
 
                 holder.iconDelete.setOnClickListener(v -> {
                     dbHelper.deleteFood(food.getId());
