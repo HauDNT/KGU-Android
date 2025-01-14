@@ -1,6 +1,8 @@
 package com.application.application.activity.food;
 
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -34,6 +36,8 @@ import com.application.application.model.Food;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +77,7 @@ public class FoodActivity extends AppCompatActivity {
 
     private void loadFoodList() {
         List<Food> foodList = dbHelper.getAllFoods();
-        foodAdapter = new FoodAdapter(foodList, dbHelper);
+        foodAdapter = new FoodAdapter(foodList, dbHelper, this);
         recyclerView.setAdapter(foodAdapter);
     }
 
@@ -101,7 +105,7 @@ public class FoodActivity extends AppCompatActivity {
         setupSpinner(spinnerStatus);
 
         //Thiết lập sự kiện cho loại sản phẩm
-        categoryInfo.setOnClickListener(v -> showCategorySelectionDialog());
+        categoryInfo.setOnClickListener(v -> showCategorySelectionDialog(categoryInfo, chipGroupCategories)); // Gọi hàm hiển thị dialog
 
         AlertDialog alertDialog = dialogBuilder.create();
 
@@ -129,6 +133,13 @@ public class FoodActivity extends AppCompatActivity {
 
             int status = spinnerStatus.getSelectedItemPosition();
 
+            //Kiểm tra trùng tên
+            if (dbHelper.isFoodExists(name)) {
+                alertText.setText("Sản phẩm với tên '" + name + "' đã tồn tại.");
+                alertText.setVisibility(View.VISIBLE);
+                return;
+            }
+
             //Chuyển danh sách categories đã chọn thành chuỗi
             String categories = String.join(", ", selectedCategories);
 
@@ -140,13 +151,6 @@ public class FoodActivity extends AppCompatActivity {
             values.put("price", price);
             values.put("status", status);
             values.put("image_url", imageUri.toString());
-
-            //Kiểm tra sản phẩm có tên trùng không
-            if (dbHelper.isFoodExists(name)) {
-                alertText.setText("Sản phẩm với tên '" + name + "' đã tồn tại.");
-                alertText.setVisibility(View.VISIBLE);
-                return;
-            }
 
             long newRowId = dbHelper.insertFood(values);
             if (newRowId != -1) {
@@ -175,8 +179,7 @@ public class FoodActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerStatus.setAdapter(adapter);
     }
-
-    private void showCategorySelectionDialog() {
+    private void showCategorySelectionDialog(TextView categoryInfo, ChipGroup chipGroup) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         LayoutInflater inflater = this.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_select_category, null);
@@ -186,14 +189,31 @@ public class FoodActivity extends AppCompatActivity {
         Button buttonConfirm = dialogView.findViewById(R.id.button_confirm_selection);
         Button btnAddCategory = dialogView.findViewById(R.id.button_add_category);
 
-        //Lấy danh sách loại sản phẩm từ cơ sở dữ liệu
+        //Lấy danh sách loại sản phẩm từ db
         String[] columns = {"id", "name", "created_at", "updated_at"};
         List<Category> categories = dbHelper.getCategoriesList(columns);
 
         for (Category category : categories) {
             Chip chip = new Chip(this);
-            chip.setText(category.getName()); //Lấy tên từ đối tượng Category
+            chip.setText(category.getName()); //Lấy tên từ Category
             chip.setCheckable(true);
+
+            chip.setChipBackgroundColorResource(R.color.chip_background);
+            chip.setTextColor(getResources().getColor(R.color.chip_text_color));
+
+            chip.setChipStrokeWidth(5);
+            chip.setChipStrokeColorResource(R.color.chip_stroke_color);
+
+            chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked) {
+                    chip.setChipBackgroundColorResource(R.color.chip_selected_background);
+                    chip.setChipStrokeColorResource(R.color.chip_stroke_selected_color);
+                } else {
+                    chip.setChipBackgroundColorResource(R.color.chip_background);
+                    chip.setChipStrokeColorResource(R.color.chip_stroke_color);
+                }
+            });
+
             chipGroupCategories.addView(chip);
         }
 
@@ -207,7 +227,7 @@ public class FoodActivity extends AppCompatActivity {
                     selectedCategories.add(chip.getText().toString());
                 }
             }
-            updateSelectedCategoriesDisplay();
+            updateSelectedCategoriesDisplay(categoryInfo, chipGroup);
             alertDialog.dismiss();
         });
 
@@ -220,14 +240,13 @@ public class FoodActivity extends AppCompatActivity {
 
         alertDialog.show();
     }
-  
-    private void updateSelectedCategoriesDisplay() {
-        TextView categoryInfo = dialogView.findViewById(R.id.dialog_create_food_category_info);
-        ChipGroup chipGroupCategories = dialogView.findViewById(R.id.dialog_create_food_category_group);
-        chipGroupCategories.removeAllViews();
+
+    private void updateSelectedCategoriesDisplay(TextView categoryInfo, ChipGroup chipGroup) {
+        chipGroup.removeAllViews(); //Xóa các tag hiện tại
 
         if (selectedCategories.isEmpty()) {
             categoryInfo.setVisibility(View.VISIBLE);
+            categoryInfo.setText("Chọn loại sản phẩm (Nhấn vào để chọn)");
         } else {
             categoryInfo.setVisibility(View.GONE);
             for (String category : selectedCategories) {
@@ -236,9 +255,9 @@ public class FoodActivity extends AppCompatActivity {
                 chip.setCloseIconVisible(true);
                 chip.setOnCloseIconClickListener(v -> {
                     selectedCategories.remove(category);
-                    updateSelectedCategoriesDisplay();
+                    updateSelectedCategoriesDisplay(categoryInfo, chipGroup);
                 });
-                chipGroupCategories.addView(chip);
+                chipGroup.addView(chip);
             }
             categoryInfo.setText("Loại sản phẩm: " + String.join(", ", selectedCategories));
         }
@@ -259,9 +278,141 @@ public class FoodActivity extends AppCompatActivity {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
                 ImageView imagePreview = dialogView.findViewById(R.id.image_preview);
                 imagePreview.setImageBitmap(bitmap);
+                saveImageToInternalStorage(bitmap, "food_image"); //Lưu hình ảnh
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void saveImageToInternalStorage(Bitmap bitmap, String name) {
+        File directory = new File(getFilesDir(), "images");
+        if (!directory.exists()) {
+            directory.mkdirs(); //Tạo thư mục nếu chưa tồn tại
+        }
+        String uniqueName = name + "_" + System.currentTimeMillis() + ".jpg"; //Tên tệp độc nhất
+        File file = new File(directory, uniqueName);
+        try (FileOutputStream out = new FileOutputStream(file)) {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            imageUri = Uri.fromFile(file); //Lưu đường dẫn
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void showEditFoodDialog(Food food) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        dialogView = inflater.inflate(R.layout.dialog_edit_food_layout, null);
+        dialogBuilder.setView(dialogView);
+
+        EditText editName = dialogView.findViewById(R.id.dialog_edit_food_name);
+        EditText editDescription = dialogView.findViewById(R.id.dialog_edit_food_description);
+        EditText editPrice = dialogView.findViewById(R.id.dialog_edit_food_price);
+        ChipGroup chipGroupCategories = dialogView.findViewById(R.id.dialog_edit_food_category_group);
+        Spinner spinnerStatus = dialogView.findViewById(R.id.dialog_edit_food_status);
+        Button btnSave = dialogView.findViewById(R.id.dialog_edit_food_btn_save);
+        Button btnClose = dialogView.findViewById(R.id.dialog_edit_food_btn_close);
+        ImageView imagePreview = dialogView.findViewById(R.id.image_preview);
+        TextView alertText = dialogView.findViewById(R.id.dialog_edit_food_alert);
+        TextView categoryInfo = dialogView.findViewById(R.id.dialog_edit_food_category_info);
+        Button btnUpload = dialogView.findViewById(R.id.dialog_edit_food_btn_upload);
+
+        //Điền thông tin sản phẩm vào các trường
+        editName.setText(food.getName());
+        editDescription.setText(food.getDescription());
+        editPrice.setText(String.valueOf((int) food.getPrice()));
+
+        //Tải ảnh cũ nếu có
+        if (food.getImageUrl() != null && !food.getImageUrl().isEmpty()) {
+            Uri imageUri = Uri.parse(food.getImageUrl());
+            imagePreview.setImageURI(imageUri);
+        } else {
+            imagePreview.setImageResource(R.drawable.dialog_create_category_icon); //Ảnh mặc định nếu không có
+        }
+
+        //Cập nhật danh sách loại sản phẩm đã chọn
+        selectedCategories = dbHelper.getCategoriesForFood(food.getId());
+        updateSelectedCategoriesDisplay(categoryInfo, chipGroupCategories); //Gọi hàm cập nhật
+
+        //Thiết lập giá trị cho Spinner trạng thái
+        setupSpinner(spinnerStatus);
+
+        //Thêm sự kiện click cho danh mục
+        categoryInfo.setOnClickListener(v -> showCategorySelectionDialog(categoryInfo, chipGroupCategories)); // Gọi hàm hiển thị dialog
+
+        AlertDialog alertDialog = dialogBuilder.create();
+
+        btnUpload.setOnClickListener(v -> openFileChooser());
+
+        btnSave.setOnClickListener(v -> {
+            String name = editName.getText().toString().trim();
+            String description = editDescription.getText().toString().trim();
+            String priceString = editPrice.getText().toString().trim();
+
+            if (name.isEmpty() || description.isEmpty() || priceString.isEmpty()) {
+                alertText.setText("Vui lòng điền đầy đủ thông tin.");
+                alertText.setVisibility(View.VISIBLE);
+                return;
+            }
+
+            int price;
+            try {
+                price = Integer.parseInt(priceString);
+            } catch (NumberFormatException e) {
+                alertText.setText("Đơn giá không hợp lệ.");
+                alertText.setVisibility(View.VISIBLE);
+                return;
+            }
+
+            //Kiểm tra trùng tên
+            if (dbHelper.isFoodExists(name) && !name.equals(food.getName())) {
+                alertText.setText("Sản phẩm với tên '" + name + "' đã tồn tại.");
+                alertText.setVisibility(View.VISIBLE);
+                return;
+            }
+
+            int status = spinnerStatus.getSelectedItemPosition();
+
+            ContentValues values = new ContentValues();
+            values.put("name", name);
+            values.put("description", description);
+            values.put("price", price);
+            values.put("status", status);
+
+            //Cập nhật hình ảnh nếu có
+            if (imageUri != null) {
+                Bitmap bitmap;
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+                    saveImageToInternalStorage(bitmap, name); //Lưu hình ảnh
+                    values.put("image_url", imageUri.toString()); //Cập nhật đường dẫn hình ảnh
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    alertText.setText("Lỗi khi lưu hình ảnh.");
+                    alertText.setVisibility(View.VISIBLE);
+                    return;
+                }
+            } else {
+                //Giữ nguyên hình ảnh cũ nếu không có hình ảnh mới
+                values.put("image_url", food.getImageUrl());
+            }
+
+            //Cập nhật sản phẩm trong cơ sở dữ liệu
+            int rowsUpdated = dbHelper.updateFood(food.getId(), values);
+            if (rowsUpdated > 0) {
+                dbHelper.updateFoodCategories(food.getId(), selectedCategories);
+                Toast.makeText(FoodActivity.this, "Cập nhật sản phẩm thành công", Toast.LENGTH_SHORT).show();
+                alertDialog.dismiss();
+                loadFoodList();
+            } else {
+                Toast.makeText(FoodActivity.this, "Lỗi khi cập nhật sản phẩm", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        btnClose.setOnClickListener(v -> alertDialog.dismiss());
+
+        alertDialog.show();
+        updateSelectedCategoriesDisplay(categoryInfo, chipGroupCategories); //Gọi hàm cập nhật
     }
 }
