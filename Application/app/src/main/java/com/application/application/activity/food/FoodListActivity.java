@@ -2,7 +2,9 @@ package com.application.application.activity.food;
 
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -18,31 +20,22 @@ public class FoodListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_more_products);
 
-        ListView listView = findViewById(R.id.moreProductsListView);
-        String category = getIntent().getStringExtra("category");
+        // Nhận dữ liệu từ Intent
+        String productName = getIntent().getStringExtra("productName");
+        String productDescription = getIntent().getStringExtra("productDescription");
+        String productPrice = getIntent().getStringExtra("productPrice");
+        int productImage = getIntent().getIntExtra("productImage", 0);
 
-        List<String> products = new ArrayList<>();
-        if ("pizza".equals(category)) {
-            products.add("Margherita Pizza");
-            products.add("Pepperoni Pizza");
-            products.add("Veggie Pizza");
-            // Thêm các loại pizza khác nếu có
-        } else if ("burger".equals(category)) {
-            products.add("Cheeseburger");
-            products.add("Bacon Burger");
-            products.add("Veggie Burger");
-            // Thêm các loại burger khác nếu có
-        } else if ("popcorn".equals(category)) {
-            products.add("Butter Popcorn");
-            products.add("Cheese Popcorn");
-            // Thêm các loại popcorn khác nếu có
-        } else if ("drink".equals(category)) {
-            products.add("Cola");
-            products.add("Lemonade");
-            // Thêm các loại drink khác nếu có
-        }
+        // Hiển thị thông tin sản phẩm
+        TextView nameTextView = findViewById(R.id.product_name);
+        TextView descriptionTextView = findViewById(R.id.product_description);
+        TextView priceTextView = findViewById(R.id.product_price);
+        ImageView imageView = findViewById(R.id.product_image);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, products);
-        listView.setAdapter(adapter);
+        nameTextView.setText(productName);
+        descriptionTextView.setText(productDescription);
+        priceTextView.setText(productPrice);
+        imageView.setImageResource(productImage);
     }
+
 }
