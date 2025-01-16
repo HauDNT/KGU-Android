@@ -3,18 +3,18 @@ package com.application.application.activity.dashboard;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import com.application.application.activity.bottomNav.BottomNavigationHelper;
+import com.application.application.activity.bottomNav.OnBottomNavItemSelectedListener;
+import com.application.application.R;
 import com.application.application.activity.account.AccountActivity;
 import com.application.application.activity.cart.CartActivity;
 import com.application.application.activity.detail_food.DetailFoodActivity;
@@ -22,13 +22,12 @@ import com.application.application.activity.food.FoodListActivity;
 import com.application.application.activity.sale.SaleActivity;
 import com.application.application.common.PosterAdapter;
 import com.application.application.model.Product;
-import com.application.application.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DashboardActivity extends AppCompatActivity {
+public class DashboardActivity extends AppCompatActivity implements OnBottomNavItemSelectedListener {
 
     private List<Product> productList;
     private ViewPager2 viewPager;
@@ -85,54 +84,26 @@ public class DashboardActivity extends AppCompatActivity {
 
     private void setupMoreButtons() {
         Button buttonPizza = findViewById(R.id.button_pizza);
-        buttonPizza.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openMoreProductsActivity("pizza"); // Chuyển tới danh sách Pizza
-            }
-        });
+        buttonPizza.setOnClickListener(v -> openProductDetailActivity(productList.get(0))); // Pizza
 
         Button buttonBurger = findViewById(R.id.button_burger);
-        buttonBurger.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openMoreProductsActivity("burger"); // Chuyển tới danh sách Burger
-            }
-        });
+        buttonBurger.setOnClickListener(v -> openProductDetailActivity(productList.get(1))); // Hamburger
 
         Button buttonPopcorn = findViewById(R.id.button_popcorn);
-        buttonPopcorn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openMoreProductsActivity("popcorn"); // Chuyển tới danh sách Popcorn
-            }
-        });
+        buttonPopcorn.setOnClickListener(v -> openProductDetailActivity(productList.get(2))); // Popcorn
 
         Button buttonDrink = findViewById(R.id.button_drink);
-        buttonDrink.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openMoreProductsActivity("drink"); // Chuyển tới danh sách Drink
-            }
-        });
+        buttonDrink.setOnClickListener(v -> openProductDetailActivity(productList.get(3))); // Drink
     }
 
     private void setupViewPager() {
         viewPager = findViewById(R.id.viewPager);
-
-        // Mảng các poster
-        int[] posterImages = {
-                R.drawable.poster1,
-                R.drawable.poster2,
-                R.drawable.poster3,
-                // Thêm các poster khác nếu có
-        };
+        int[] posterImages = {R.drawable.poster1, R.drawable.poster2, R.drawable.poster3};
 
         PosterAdapter adapterViewPager = new PosterAdapter(this, posterImages);
         viewPager.setAdapter(adapterViewPager);
-        viewPager.setOffscreenPageLimit(2); // Giữ 2 trang bên cạnh trong bộ nhớ
+        viewPager.setOffscreenPageLimit(2);
 
-        // Thiết lập Handler và Runnable để tự động chuyển động
         handler = new Handler();
         runnable = new Runnable() {
             @Override
@@ -141,7 +112,7 @@ public class DashboardActivity extends AppCompatActivity {
                     currentPage = 0;
                 }
                 viewPager.setCurrentItem(currentPage++, true);
-                handler.postDelayed(this, 3000); // Thay đổi sau mỗi 3 giây
+                handler.postDelayed(this, 3000);
             }
         };
     }
@@ -149,13 +120,13 @@ public class DashboardActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        handler.postDelayed(runnable, 3000); // Bắt đầu tự động chuyển động
+        handler.postDelayed(runnable, 3000);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        handler.removeCallbacks(runnable); // Dừng tự động chuyển động khi không còn hiển thị
+        handler.removeCallbacks(runnable);
     }
 
     private void openDetailActivity(int position) {
@@ -168,36 +139,42 @@ public class DashboardActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void openMoreProductsActivity(String category) {
-        Intent intent = new Intent(DashboardActivity.this, FoodListActivity.class);
-        intent.putExtra("category", category);
+    private void openProductDetailActivity(Product product) {
+        Intent intent = new Intent(DashboardActivity.this, DetailFoodActivity.class);
+        intent.putExtra("productName", product.getName());
+        intent.putExtra("productDescription", product.getDescription());
+        intent.putExtra("productPrice", product.getPrice());
+        intent.putExtra("productImage", product.getImageResource());
         startActivity(intent);
     }
 
+
     private void setupBottomNavigation() {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        BottomNavigationHelper.setupBottomNavigation(bottomNavigationView, this);
+    }
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-            if (item.getItemId() == R.id.home) {
-                // Handle Home action
-                return true;
-            } else if (item.getItemId() == R.id.sale) {
-                startActivity(new Intent(DashboardActivity.this, SaleActivity.class));
-                return true;
-            } else if (item.getItemId() == R.id.cart) {
-                startActivity(new Intent(DashboardActivity.this, CartActivity.class));
-                return true;
-            } else if (item.getItemId() == R.id.account) {
-                startActivity(new Intent(DashboardActivity.this, AccountActivity.class));
-                return true;
-            } else if (item.getItemId() == R.id.cart) {
-                startActivity(new Intent(DashboardActivity.this, CartActivity.class));
-                return true;
-            } else if (item.getItemId() == R.id.account) {
-                startActivity(new Intent(DashboardActivity.this, AccountActivity.class));
-                return true;
-            }
-            return false;
-        });
+    @Override
+    public void onBottomNavItemSelected(int itemId) {
+        if (itemId == R.id.home) {
+            // Đang ở DashboardActivity, không cần chuyển
+        } else if (itemId == R.id.sale) {
+            startActivity(new Intent(DashboardActivity.this, SaleActivity.class));
+        } else if (itemId == R.id.cart) {
+            startActivity(new Intent(DashboardActivity.this, CartActivity.class));
+        } else if (itemId == R.id.account) {
+            startActivity(new Intent(DashboardActivity.this, AccountActivity.class));
+        }
+    }
+
+
+
+    private void openProductDetailActivity(String productName, String productDescription, String productPrice, int productImage) {
+        Intent intent = new Intent(DashboardActivity.this, DetailFoodActivity.class);
+        intent.putExtra("productName", productName);
+        intent.putExtra("productDescription", productDescription);
+        intent.putExtra("productPrice", productPrice);
+        intent.putExtra("productImage", productImage);
+        startActivity(intent);
     }
 }
