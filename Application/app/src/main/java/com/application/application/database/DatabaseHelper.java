@@ -161,7 +161,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return exists;
     }
 
-    //Thêm sản phẩm
+    //Thêm món ăn mới
     public long insertFood(ContentValues values) {
         SQLiteDatabase db = this.getWritableDatabase();
         long newRowId = -1;
@@ -177,18 +177,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return newRowId;
     }
 
-    //Sửa sản phẩm
-//    public int updateFood(int id, ContentValues values) {
-//        SQLiteDatabase db = this.getWritableDatabase();
-//        return db.update("foods", values, "id = ?", new String[]{String.valueOf(id)});
-//    }
+    //Cập nhật thông tin món ăn
+    public int updateFood(int foodId, ContentValues values) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int rowsUpdated = db.update("foods", values, "id = ?", new String[]{String.valueOf(foodId)});
+        db.close();
+        return rowsUpdated;
+    }
 
-    //Xóa sản phẩm
+    //Xóa món ăn
     public void deleteFood(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete("foods", "id = ?", new String[]{String.valueOf(id)});
     }
 
+    //Hàm truy xuất tất cả các món ăn từ cơ sở dữ liệu và trả về danh sách các đối tượng
     public List<Food> getAllFoods() {
         List<Food> foodList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -202,13 +205,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
                     String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
                     String description = cursor.getString(cursor.getColumnIndexOrThrow("description"));
-                    double price = cursor.getDouble(cursor.getColumnIndexOrThrow("price"));
+                    int price = cursor.getInt(cursor.getColumnIndexOrThrow("price"));
                     int status = cursor.getInt(cursor.getColumnIndexOrThrow("status"));
-                    String imageUrl = cursor.getString(cursor.getColumnIndexOrThrow("image_url"));
+                    String imageUrl = cursor.getString(cursor.getColumnIndexOrThrow("image_url")); //Lấy đường dẫn hình ảnh
 
                     Food food = new Food(id, name, description, price, status, imageUrl);
                     foodList.add(food);
-                } while (cursor.moveToNext()); //Di chuyển đến bản ghi tiếp theo
+                } while (cursor.moveToNext());
             }
         } catch (Exception e) {
             Log.e("DatabaseHelper", "Error getting all foods: " + e.getMessage());
@@ -217,7 +220,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 cursor.close();
             }
         }
-
         return foodList;
     }
 
@@ -308,6 +310,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result;
     }
 
+    public long updateCategoryName(ContentValues values) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        long result = db.update("categories", values, "id = ?", new String[]{String.valueOf(values.get("id"))});
+        return result;
+    }
+
     // Hàm xoá một danh mục
     public long deleteCategory(int id) {
         boolean checkExists = isExistsCategory("id", String.valueOf(id));
@@ -321,7 +329,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return 0;
     }
-      
+
+    //Hàm lấy id của category dựa trên name
     public long getCategoryIdByName(String categoryName) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT id FROM categories WHERE name = ?", new String[]{categoryName});
@@ -333,6 +342,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return -1;
     }
 
+    //Hàm thêm dữ liệu vào bảng food_category
     public long insertFoodCategory(long foodId, long categoryId) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -341,7 +351,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return db.insert("food_category", null, values);
     }
 
-    public List<String> getCategoriesByFoodId(long foodId) {
+    //Hàm cập nhật lại danh mục loại sản phẩm cho món ăn
+    public void updateFoodCategories(int foodId, List<String> selectedCategories) {
+        SQLiteDatabase db = this.getWritableDatabase(); // Khởi tạo biến db
+
+        //Xóa tất cả các loại hiện tại
+        db.execSQL("DELETE FROM food_category WHERE food_id = ?", new String[]{String.valueOf(foodId)});
+
+        //Thêm lại các loại đã chọn
+        for (String category : selectedCategories) {
+            long categoryId = getCategoryIdByName(category);
+            if (categoryId != -1) {
+                insertFoodCategory(foodId, categoryId);
+            }
+        }
+
+        db.close();
+    }
+
+    //Hàm lấy danh sách loại sản phẩm theo id món ăn
+    public List<String> getCategoriesForFood(long foodId) {
         List<String> categories = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -350,8 +379,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "WHERE fc.food_id = ?";
 
         Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(foodId)});
-
-        Log.d("DatabaseHelper", "Column Count: " + cursor.getColumnCount());
 
         if (cursor != null) {
             try {

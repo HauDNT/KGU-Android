@@ -9,16 +9,16 @@
     android:background="@drawable/dialog_create_category_background">
 
     <ImageView
-        android:src="@drawable/dialog_create_category_icon"
-        android:layout_gravity="center_horizontal"
         android:layout_width="100dp"
-        android:layout_height="100dp"/>
+        android:layout_height="100dp"
+        android:src="@drawable/dialog_create_category_icon"
+        android:layout_gravity="center_horizontal"/>
 
     <TextView
         android:id="@+id/dialog_create_category_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Tạo loại sản phẩm mới"
+        android:text="Cập nhật loại sản phẩm"
         android:textSize="25dp"
         android:textStyle="bold"
         android:textColor="@color/black"
@@ -35,7 +35,7 @@
         />
 
     <EditText
-        android:id="@+id/dialog_create_category_name"
+        android:id="@+id/dialog_info_category_name"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:background="@drawable/rounded_edit_text_dialog"
@@ -46,7 +46,7 @@
         android:layout_marginTop="10dp"/>
 
     <TextView
-        android:id="@+id/dialog_create_category_alert"
+        android:id="@+id/dialog_info_category_alert"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Alert"
@@ -58,10 +58,10 @@
         />
 
     <Button
-        android:id="@+id/dialog_create_category_btn_create"
+        android:id="@+id/dialog_info_category_btn_update"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Tạo"
+        android:text="Cập nhật"
         android:textSize="20sp"
         android:textStyle="bold"
         android:backgroundTint="@color/colorPrimary"
@@ -69,7 +69,7 @@
         />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/dialog_create_category_btn_close"
+        android:id="@+id/dialog_info_category_btn_close"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Đóng"
