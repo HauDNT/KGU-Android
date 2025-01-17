@@ -19,6 +19,10 @@ import com.application.application.activity.account.AccountActivity;
 import com.application.application.activity.cart.CartActivity;
 import com.application.application.activity.detail_food.DetailFoodActivity;
 import com.application.application.activity.food.FoodListActivity;
+import com.application.application.activity.foodlist.BurgerListActivity;
+import com.application.application.activity.foodlist.DrinkListActivity;
+import com.application.application.activity.foodlist.PizzaListActivity;
+import com.application.application.activity.foodlist.PopcornListActivity;
 import com.application.application.activity.sale.SaleActivity;
 import com.application.application.common.PosterAdapter;
 import com.application.application.model.Product;
@@ -84,16 +88,28 @@ public class DashboardActivity extends AppCompatActivity implements OnBottomNavI
 
     private void setupMoreButtons() {
         Button buttonPizza = findViewById(R.id.button_pizza);
-        buttonPizza.setOnClickListener(v -> openProductDetailActivity(productList.get(0))); // Pizza
+        buttonPizza.setOnClickListener(v -> {
+            Intent intent = new Intent(DashboardActivity.this,  PizzaListActivity.class);
+            startActivity(intent);
+        });
 
         Button buttonBurger = findViewById(R.id.button_burger);
-        buttonBurger.setOnClickListener(v -> openProductDetailActivity(productList.get(1))); // Hamburger
+        buttonBurger.setOnClickListener(v -> {
+            Intent intent = new Intent(DashboardActivity.this, BurgerListActivity.class);
+            startActivity(intent);
+        });
 
         Button buttonPopcorn = findViewById(R.id.button_popcorn);
-        buttonPopcorn.setOnClickListener(v -> openProductDetailActivity(productList.get(2))); // Popcorn
+        buttonPopcorn.setOnClickListener(v -> {
+            Intent intent = new Intent(DashboardActivity.this, PopcornListActivity.class);
+            startActivity(intent);
+        });
 
         Button buttonDrink = findViewById(R.id.button_drink);
-        buttonDrink.setOnClickListener(v -> openProductDetailActivity(productList.get(3))); // Drink
+        buttonDrink.setOnClickListener(v -> {
+            Intent intent = new Intent(DashboardActivity.this, DrinkListActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void setupViewPager() {
