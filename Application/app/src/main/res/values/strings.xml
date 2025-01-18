@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Application</string>
+    <string name="app_name">Yummy Dash</string>
     <string name="category_item_image_desc">Hình ảnh danh mục</string>
     <string name="delete_item">Xóa sản phẩm</string>
     <string name="food_added_success">Thêm sản phẩm thành công</string>
