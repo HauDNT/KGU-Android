@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.application.application.R;
 import com.application.application.database.DatabaseHelper;
+import com.google.android.material.textfield.TextInputLayout;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -25,13 +26,13 @@ public class RegisterActivity extends AppCompatActivity {
     private Button registerButton;
     private TextView loginLink;
     private DatabaseHelper databaseHelper;
+    private TextInputLayout usernameTextInputLayout, passwordTextInputLayout, fullnameTextInputLayout, emailTextInputLayout, phoneNumberTextInputLayout, addressTextInputLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        //Khởi tạo DatabaseHelper
         databaseHelper = new DatabaseHelper(this);
 
         usernameEditText = findViewById(R.id.username);
@@ -43,16 +44,14 @@ public class RegisterActivity extends AppCompatActivity {
         registerButton = findViewById(R.id.register_button);
         loginLink = findViewById(R.id.login_link);
 
-        //Xử lý khi nhấn nút "Đăng ký"
+        usernameTextInputLayout = findViewById(R.id.textInputLayoutUsername);
+        passwordTextInputLayout = findViewById(R.id.textInputLayoutPassword);
+        fullnameTextInputLayout = findViewById(R.id.textInputLayoutFullname);
+        emailTextInputLayout = findViewById(R.id.textInputLayoutEmail);
+        phoneNumberTextInputLayout = findViewById(R.id.textInputLayoutPhoneNumber);
+        addressTextInputLayout = findViewById(R.id.textInputLayoutAddress);
+
         registerButton.setOnClickListener(v -> registerUser());
-
-        //Chuyển sang màn hình đăng nhập
-        loginLink.setOnClickListener(v -> {
-            Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-            startActivity(intent);
-            finish();
-        });
-
         redirectToLoginScreen();
     }
 
@@ -64,37 +63,71 @@ public class RegisterActivity extends AppCompatActivity {
         String phoneNumber = phoneNumberEditText.getText().toString().trim();
         String address = addressEditText.getText().toString().trim();
 
-        //Kiểm tra nếu để trống 1 trong các trường
-        if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password) || TextUtils.isEmpty(fullname) ||
-                TextUtils.isEmpty(email) || TextUtils.isEmpty(phoneNumber) || TextUtils.isEmpty(address)) {
-            Toast.makeText(this, "Vui lòng điền đầy đủ thông tin!", Toast.LENGTH_SHORT).show();
-            return;
+        boolean isValid = true;
+
+        //Kiểm tra các trường nhập liệu
+        if (TextUtils.isEmpty(username)) {
+            usernameTextInputLayout.setError("Tên đăng nhập không được để trống.");
+            isValid = false;
+        } else {
+            usernameTextInputLayout.setError(null);
+        }
+        if (TextUtils.isEmpty(password)) {
+            passwordTextInputLayout.setError("Mật khẩu không được để trống.");
+            isValid = false;
+        } else if (!Utils.isValidPassword(password)) {
+            passwordTextInputLayout.setError("Mật khẩu phải gồm chữ hoa, chữ thường và số và có độ dài tối thiểu 8 ký tự!");
+            isValid = false;
+        } else {
+            passwordTextInputLayout.setError(null);
+        }
+        if (TextUtils.isEmpty(fullname)) {
+            fullnameTextInputLayout.setError("Họ và tên không được để trống.");
+            isValid = false;
+        } else {
+            fullnameTextInputLayout.setError(null);
+        }
+        if (TextUtils.isEmpty(email)) {
+            emailTextInputLayout.setError("Email không được để trống.");
+            isValid = false;
+        } else {
+            emailTextInputLayout.setError(null);
+        }
+        if (TextUtils.isEmpty(phoneNumber)) {
+            phoneNumberTextInputLayout.setError("Số điện thoại không được để trống.");
+            isValid = false;
+        } else {
+            phoneNumberTextInputLayout.setError(null);
+        }
+        if (TextUtils.isEmpty(address)) {
+            addressTextInputLayout.setError("Địa chỉ không được để trống.");
+            isValid = false;
+        } else {
+            addressTextInputLayout.setError(null);
         }
 
-        //Kiểm tra trùng username
+        if (!isValid) return;
+
+        //Kiểm tra trùng username và email
         if (databaseHelper.isUserExists(username)) {
-            Toast.makeText(this, "Tên đăng nhập đã tồn tại!", Toast.LENGTH_SHORT).show();
+            usernameTextInputLayout.setError("Tên đăng nhập đã tồn tại!");
             return;
         }
-
-        //Kiểm tra trùng email
         if (databaseHelper.isEmailExists(email)) {
-            Toast.makeText(this, "Email này đã được đăng ký!", Toast.LENGTH_SHORT).show();
+            emailTextInputLayout.setError("Email này đã được đăng ký!");
             return;
         }
 
-        //Mã hóa mật khẩu trước khi lưu vào cơ sở dữ liệu
         String hashedPassword = Utils.hashPassword(password);
 
-        //Thêm người dùng vào cơ sở dữ liệu
         ContentValues values = new ContentValues();
         values.put("username", username);
-        values.put("password", hashedPassword); //Lưu mật khẩu đã mã hóa
+        values.put("password", hashedPassword);
         values.put("fullname", fullname);
         values.put("email", email);
         values.put("phone_number", phoneNumber);
         values.put("address", address);
-        values.put("is_admin", 0); //Mặc định người dùng không phải admin
+        values.put("is_admin", 0);
 
         long result = databaseHelper.insertUser(values);
         if (result != -1) {
