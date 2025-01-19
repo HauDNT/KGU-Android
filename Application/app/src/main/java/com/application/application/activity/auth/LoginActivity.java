@@ -58,6 +58,9 @@ public class LoginActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(usernameOrEmail)) {
             usernameTextInputLayout.setError("Tài khoản không được để trống.");
             isValid = false;
+        } else if (isEmail(usernameOrEmail) && !Utils.isValidEmail(usernameOrEmail)) {
+            usernameTextInputLayout.setError("Email không hợp lệ.");
+            isValid = false;
         } else {
             usernameTextInputLayout.setError(null);
         }

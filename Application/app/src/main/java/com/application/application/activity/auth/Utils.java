@@ -53,4 +53,10 @@ public class Utils {
         boolean hasDigit = password.matches(".*\\d.*");
         return hasUpperCase && hasLowerCase && hasDigit;
     }
+
+    //Phương thức kiểm tra tính hợp lệ của email
+    public static boolean isValidEmail(String email) {
+        String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
+        return regexVerify(email, emailPattern);
+    }
 }

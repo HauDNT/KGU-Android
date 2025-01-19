@@ -9,8 +9,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="48dp"
         android:orientation="vertical"
+        android:background="@drawable/register_background"
         android:padding="16dp">
 
         <TextView
@@ -20,7 +21,7 @@
             android:text="ĐĂNG KÝ"
             android:fontFamily="sans-serif-condensed-light"
             android:layout_gravity="center"
-            android:textColor="#330033"
+            android:textColor="#0000CC"
             android:textSize="35sp"
             android:textStyle="bold" />
 
@@ -205,7 +206,7 @@
                 android:text="Đăng ký"
                 android:textColor="@android:color/white"
                 android:textSize="15sp"
-                app:backgroundTint="#9900FF"
+                app:backgroundTint="#0000FF"
                 app:cornerRadius="20dp" />
 
             <TextView
@@ -214,7 +215,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/register_button"
                 android:layout_alignParentEnd="true"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginEnd="82dp"
                 android:clickable="true"
                 android:text="Đã có tài khoản? Đăng nhập"

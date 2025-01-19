@@ -90,6 +90,9 @@ public class RegisterActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(email)) {
             emailTextInputLayout.setError("Email không được để trống.");
             isValid = false;
+        } else if (!Utils.isValidEmail(email)) {
+            emailTextInputLayout.setError("Email không hợp lệ.");
+            isValid = false;
         } else {
             emailTextInputLayout.setError(null);
         }
