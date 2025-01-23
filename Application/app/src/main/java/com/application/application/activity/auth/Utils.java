@@ -42,4 +42,21 @@ public class Utils {
         }
         return false;
     }
+
+    //Phương thức kiểm tra tính hợp lệ của mật khẩu
+    public static boolean isValidPassword(String password) {
+        //Kiểm tra độ dài mật khẩu tối thiểu là 8 ký tự
+        if (password.length() < 8) return false;
+        //Kiểm tra mật khẩu có ít nhất một chữ hoa, một chữ thường và một số
+        boolean hasUpperCase = !password.equals(password.toLowerCase());
+        boolean hasLowerCase = !password.equals(password.toUpperCase());
+        boolean hasDigit = password.matches(".*\\d.*");
+        return hasUpperCase && hasLowerCase && hasDigit;
+    }
+
+    //Phương thức kiểm tra tính hợp lệ của email
+    public static boolean isValidEmail(String email) {
+        String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
+        return regexVerify(email, emailPattern);
+    }
 }
