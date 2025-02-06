@@ -323,13 +323,9 @@ public class FoodActivity extends AppCompatActivity {
         editDescription.setText(food.getDescription());
         editPrice.setText(String.valueOf((int) food.getPrice()));
 
-        //Tải ảnh cũ nếu có
-        if (food.getImageUrl() != null && !food.getImageUrl().isEmpty()) {
-            Uri imageUri = Uri.parse(food.getImageUrl());
-            imagePreview.setImageURI(imageUri);
-        } else {
-            imagePreview.setImageResource(R.drawable.dialog_create_category_icon); //Ảnh mặc định nếu không có
-        }
+        //Khởi tạo imageUri từ hình ảnh hiện tại
+        imageUri = Uri.parse(food.getImageUrl());
+        imagePreview.setImageURI(imageUri); // Hiển thị ảnh hiện tại
 
         //Cập nhật danh sách loại sản phẩm đã chọn
         selectedCategories = dbHelper.getCategoriesForFood(food.getId());
@@ -357,13 +353,13 @@ public class FoodActivity extends AppCompatActivity {
             }
 
             int price;
-            try {
-                price = Integer.parseInt(priceString);
-            } catch (NumberFormatException e) {
-                alertText.setText("Đơn giá không hợp lệ.");
-                alertText.setVisibility(View.VISIBLE);
-                return;
-            }
+                try {
+                    price = Integer.parseInt(priceString);
+                } catch (NumberFormatException e) {
+                    alertText.setText("Đơn giá không hợp lệ.");
+                    alertText.setVisibility(View.VISIBLE);
+                    return;
+                }
 
             //Kiểm tra trùng tên
             if (dbHelper.isFoodExists(name) && !name.equals(food.getName())) {
@@ -380,22 +376,9 @@ public class FoodActivity extends AppCompatActivity {
             values.put("price", price);
             values.put("status", status);
 
-            //Cập nhật hình ảnh nếu có
+            //Nếu người dùng không chọn ảnh mới, giữ nguyên URL ảnh cũ
             if (imageUri != null) {
-                Bitmap bitmap;
-                try {
-                    bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
-                    saveImageToInternalStorage(bitmap, name); //Lưu hình ảnh
-                    values.put("image_url", imageUri.toString()); //Cập nhật đường dẫn hình ảnh
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    alertText.setText("Lỗi khi lưu hình ảnh.");
-                    alertText.setVisibility(View.VISIBLE);
-                    return;
-                }
-            } else {
-                //Giữ nguyên hình ảnh cũ nếu không có hình ảnh mới
-                values.put("image_url", food.getImageUrl());
+                values.put("image_url", imageUri.toString());
             }
 
             //Cập nhật sản phẩm trong cơ sở dữ liệu
