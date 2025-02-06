@@ -17,4 +17,16 @@
     <color name="chip_stroke_color">#00000000</color>
     <color name="chip_stroke_selected_color">#3F51B5</color>
     <color name="chip_selected_background">#E1BEE7</color>
+
+    <color name="barColor1">#FF5722</color>
+    <color name="barColor2">#4CAF50</color>
+    <color name="barColor3">#2196F3</color>
+    <color name="barColor4">#9C27B0</color>
+    <color name="barColor5">#FFC107</color>
+
+    <color name="pieColor1">#FF5722</color>
+    <color name="pieColor2">#4CAF50</color>
+    <color name="pieColor3">#2196F3</color>
+    <color name="pieColor4">#9C27B0</color>
+    <color name="pieColor5">#FFC107</color>
 </resources>

@@ -6,7 +6,6 @@ public class OrderItem {
     private int order_id;
     private int quantity;
     private double totalPrice;
-
     private String food_name;
 
     public OrderItem() {

@@ -165,19 +165,29 @@ public class StatisticsActivity extends AppCompatActivity {
         }
     }
 
-    //BarChart: hiển thị số lượng bán được cho mỗi món
+    //BarChart: hiển thị số lượng bán được cho mỗi món.
     private void setBarChartData(List<OrderItem> items) {
         List<BarEntry> entries = new ArrayList<>();
         List<String> foodNames = new ArrayList<>();
 
-        for (int i = 0; i < items.size(); i++) {
+        //Giả sử chúng ta chỉ hiển thị top 5
+        int limit = Math.min(items.size(), 5);
+        for (int i = 0; i < limit; i++) {
             OrderItem item = items.get(i);
             entries.add(new BarEntry(i, item.getQuantity()));
             foodNames.add(item.getFood_name());
         }
 
         BarDataSet dataSet = new BarDataSet(entries, "Số lượng bán được");
-        dataSet.setColor(ContextCompat.getColor(this, R.color.colorPrimary));
+        //Định nghĩa mảng màu cho top 5 cột
+        int[] barColors = new int[] {
+                ContextCompat.getColor(this, R.color.barColor1),
+                ContextCompat.getColor(this, R.color.barColor2),
+                ContextCompat.getColor(this, R.color.barColor3),
+                ContextCompat.getColor(this, R.color.barColor4),
+                ContextCompat.getColor(this, R.color.barColor5)
+        };
+        dataSet.setColors(barColors);
         BarData data = new BarData(dataSet);
         data.setBarWidth(0.9f);
 
@@ -201,21 +211,31 @@ public class StatisticsActivity extends AppCompatActivity {
         barChart.invalidate();
     }
 
-    //PieChart: hiển thị tổng tiền bán được cho mỗi món (doanh thu)
+    //PieChart: hiển thị tổng tiền bán được cho mỗi món.
     private void setPieChartData(List<OrderItem> items) {
         List<PieEntry> entries = new ArrayList<>();
 
-        for (OrderItem item : items) {
+        int limit = Math.min(items.size(), 5);
+        for (int i = 0; i < limit; i++) {
+            OrderItem item = items.get(i);
             entries.add(new PieEntry((float) item.getTotalPrice(), item.getFood_name()));
         }
 
         PieDataSet dataSet = new PieDataSet(entries, "Tổng tiền bán được");
-        dataSet.setColors(new int[]{R.color.colorPrimary, R.color.colorAccent}, this);
+        //Định nghĩa mảng màu cho top 5 lát trong PieChart
+        int[] pieColors = new int[] {
+                ContextCompat.getColor(this, R.color.pieColor1),
+                ContextCompat.getColor(this, R.color.pieColor2),
+                ContextCompat.getColor(this, R.color.pieColor3),
+                ContextCompat.getColor(this, R.color.pieColor4),
+                ContextCompat.getColor(this, R.color.pieColor5)
+        };
+        dataSet.setColors(pieColors);
         PieData data = new PieData(dataSet);
 
         pieChart.setData(data);
         Description description = new Description();
-        description.setText("Biểu đồ tròn (Doanh thu)");
+        description.setText("Biểu đồ tròn (Tổng tiền)");
         pieChart.setDescription(description);
         pieChart.invalidate();
     }
