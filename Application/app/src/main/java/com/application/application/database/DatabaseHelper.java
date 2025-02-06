@@ -530,9 +530,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = null;
 
         try {
-            String query = "SELECT oi.food_id, SUM(oi.quantity) AS total_quantity " +
+            String query = "SELECT oi.food_id, f.name AS food_name, SUM(oi.quantity) AS total_quantity " +
                     "FROM order_item oi " +
                     "JOIN orders o ON oi.order_id = o.id " +
+                    "JOIN foods f ON oi.food_id = f.id " +
                     "WHERE o.created_at BETWEEN ? AND ? " +
                     "GROUP BY oi.food_id " +
                     "ORDER BY total_quantity DESC";
@@ -541,14 +542,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             if (cursor != null && cursor.moveToFirst()) {
                 do {
                     int foodId = cursor.getInt(cursor.getColumnIndexOrThrow("food_id"));
+                    //Lấy tên món ăn từ cột food_name
+                    String foodName = cursor.getString(cursor.getColumnIndexOrThrow("food_name"));
                     int totalQuantity = cursor.getInt(cursor.getColumnIndexOrThrow("total_quantity"));
 
-                    //Lấy giá sản phẩm theo foodId
+                    //Lấy giá bán của sản phẩm theo foodId
                     double foodPrice = getFoodPrice(foodId);
 
                     //Tạo đối tượng OrderItem chứa thông tin thống kê của sản phẩm
                     OrderItem orderItem = new OrderItem();
                     orderItem.setFood_id(foodId);
+                    orderItem.setFood_name(foodName);
                     orderItem.setQuantity(totalQuantity);
                     orderItem.setTotalPrice((float) (totalQuantity * foodPrice));
 

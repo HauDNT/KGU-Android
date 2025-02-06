@@ -21,6 +21,7 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -54,7 +55,7 @@ public class StatisticsActivity extends AppCompatActivity {
 
         databaseHelper = new DatabaseHelper(this);
 
-        //Tạo dữ liệu mẫu để kiểm thử (chỉ cần tạo 1 lần)
+        //Tạo dữ liệu mẫu để kiểm thử
         databaseHelper.createTestData();
 
         //Thiết lập DatePicker cho trường ngày bắt đầu
@@ -64,7 +65,6 @@ public class StatisticsActivity extends AppCompatActivity {
             MaterialDatePicker<Long> datePicker = builder.build();
             datePicker.show(getSupportFragmentManager(), "START_DATE_PICKER");
             datePicker.addOnPositiveButtonClickListener(selection -> {
-                //Định dạng lại timestamp sang chuỗi theo mẫu yyyy-MM-dd
                 String formattedDate = DateFormat.format("yyyy-MM-dd", selection).toString();
                 startDateEditText.setText(formattedDate);
             });
@@ -93,37 +93,40 @@ public class StatisticsActivity extends AppCompatActivity {
         List<OrderItem> bestSellingItems = databaseHelper.getBestSellingItems(startDate, endDate);
 
         if (bestSellingItems.isEmpty()) {
+            //Không có dữ liệu => hiển thị thông báo và ẩn CardView kết quả thống kê cùng biểu đồ
             statsTextView.setText("Không có dữ liệu trong khoảng thời gian này.");
-            //Ẩn biểu đồ nếu không có dữ liệu
+            findViewById(R.id.statsCardView).setVisibility(View.GONE);
             barChart.setVisibility(View.GONE);
             pieChart.setVisibility(View.GONE);
         } else {
-            StringBuilder stats = new StringBuilder("Đơn hàng bán chạy nhất:\n");
+            //Có dữ liệu => cập nhật nội dung và hiển thị CardView kết quả thống kê cùng biểu đồ
+            StringBuilder stats = new StringBuilder();
             for (OrderItem item : bestSellingItems) {
-                stats.append("Món ăn ID: ").append(item.getFood_id())
+                stats.append("Món ăn: ").append(item.getFood_name())
                         .append(", Số lượng: ").append(item.getQuantity())
                         .append(", Tổng giá: ").append(item.getTotalPrice())
                         .append("\n");
             }
             statsTextView.setText(stats.toString());
 
-            //Cập nhật dữ liệu cho biểu đồ
             setBarChartData(bestSellingItems);
             setPieChartData(bestSellingItems);
 
-            //Hiển thị biểu đồ sau khi cập nhật dữ liệu
+            findViewById(R.id.statsCardView).setVisibility(View.VISIBLE);
             barChart.setVisibility(View.VISIBLE);
             pieChart.setVisibility(View.VISIBLE);
         }
     }
 
+
     private void setBarChartData(List<OrderItem> items) {
         List<BarEntry> entries = new ArrayList<>();
+        List<String> foodNames = new ArrayList<>();
 
-        //Sử dụng index của mảng làm x value
         for (int i = 0; i < items.size(); i++) {
             OrderItem item = items.get(i);
             entries.add(new BarEntry(i, item.getQuantity()));
+            foodNames.add(item.getFood_name());
         }
 
         BarDataSet dataSet = new BarDataSet(entries, "Số lượng bán được");
@@ -136,19 +139,28 @@ public class StatisticsActivity extends AppCompatActivity {
         Description description = new Description();
         description.setText("Biểu đồ cột");
         barChart.setDescription(description);
-        barChart.invalidate(); //Cập nhật lại biểu đồ
+
+        barChart.getXAxis().setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                int index = Math.round(value);
+                if (index >= 0 && index < foodNames.size()) {
+                    return foodNames.get(index);
+                }
+                return "";
+            }
+        });
+        barChart.invalidate();
     }
 
     private void setPieChartData(List<OrderItem> items) {
         List<PieEntry> entries = new ArrayList<>();
 
-        //Tạo một entry cho mỗi món ăn theo food_id
         for (OrderItem item : items) {
-            entries.add(new PieEntry(item.getQuantity(), "Food ID: " + item.getFood_id()));
+            entries.add(new PieEntry(item.getQuantity(), item.getFood_name()));
         }
 
         PieDataSet dataSet = new PieDataSet(entries, "Số lượng bán được");
-        //Sử dụng 2 màu mẫu, bạn có thể tùy chỉnh thêm
         dataSet.setColors(new int[]{R.color.colorPrimary, R.color.colorAccent}, this);
         PieData data = new PieData(dataSet);
 
@@ -156,6 +168,6 @@ public class StatisticsActivity extends AppCompatActivity {
         Description description = new Description();
         description.setText("Biểu đồ tròn");
         pieChart.setDescription(description);
-        pieChart.invalidate(); // Cập nhật lại biểu đồ
+        pieChart.invalidate();
     }
 }

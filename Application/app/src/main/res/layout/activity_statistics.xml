@@ -60,6 +60,7 @@
                 android:clickable="true"/>
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- Nút thống kê -->
         <Button
             android:id="@+id/statisticsButton"
             android:layout_width="match_parent"
@@ -78,17 +79,35 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             app:cardCornerRadius="8dp"
-            app:cardElevation="4dp">
+            app:cardElevation="4dp"
+            android:visibility="gone"
+            android:padding="8dp">
 
-            <TextView
-                android:id="@+id/statsTextView"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:textSize="18sp"
-                android:textColor="@color/black"
-                android:text="Kết quả thống kê sẽ hiển thị ở đây."
-                android:gravity="center"/>
+                android:orientation="vertical">
+
+                <!-- Tiêu đề của đơn hàng bán chạy nhất -->
+                <TextView
+                    android:id="@+id/bestSellerTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Đơn hàng bán chạy nhất:"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorPrimary"
+                    android:padding="8dp"/>
+
+                <!-- Nội dung thống kê -->
+                <TextView
+                    android:id="@+id/statsTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"
+                    android:padding="8dp"/>
+            </LinearLayout>
         </androidx.cardview.widget.CardView>
 
         <!-- Biểu đồ cột -->
