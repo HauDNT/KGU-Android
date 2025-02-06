@@ -4,9 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import com.application.application.R;
-import com.application.application.activity.cart.CartActivity;
 import com.application.application.activity.dashboard.DashboardActivity;
 import com.application.application.activity.account.AccountActivity;
+import com.application.application.activity.order.OrderActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class SaleActivity extends AppCompatActivity {
@@ -31,7 +31,7 @@ public class SaleActivity extends AppCompatActivity {
                 // Đang ở SaleActivity, không cần chuyển
                 return true;
             } else if (item.getItemId() == R.id.cart) {
-                startActivity(new Intent(SaleActivity.this, CartActivity.class));
+                startActivity(new Intent(SaleActivity.this, OrderActivity.class));
                 return true;
             } else if (item.getItemId() == R.id.account) {
                 startActivity(new Intent(SaleActivity.this, AccountActivity.class));
@@ -40,6 +40,7 @@ public class SaleActivity extends AppCompatActivity {
             return false;
         });
     }
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="0dp"
+        android:layout_margin="5dp"
+        android:background="@drawable/dialog_create_category_background">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Thêm vào giỏ hàng"
+            android:textSize="30dp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:textAlignment="center"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="10dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Số lượng"
+            android:textSize="16dp"
+            android:textStyle="bold"
+            android:paddingHorizontal="4dp"
+            android:paddingBottom="4dp"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:weightSum="3">
+
+            <Button
+                android:id="@+id/dialog_choose_cart_btn_down_quantity"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:text="-"
+                android:textSize="20dp"/>
+
+            <TextView
+                android:id="@+id/dialog_choose_cart_text_quantity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1"
+                android:textAlignment="center"
+                android:textSize="30dp"
+                android:textStyle="bold"
+                android:paddingHorizontal="4dp"
+                android:paddingBottom="4dp"
+                android:layout_marginHorizontal="36dp"
+                />
+
+            <Button
+                android:id="@+id/dialog_choose_cart_btn_up_quantity"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:text="+"
+                android:textSize="20dp"/>
+        </LinearLayout>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="16dp"/>
+
+        <TextView
+            android:id="@+id/dialog_choose_cart_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Chọn giỏ hàng hoặc tạo mới"
+            android:textSize="16dp"
+            android:textStyle="italic"
+            android:textColor="@color/black"
+            android:textAlignment="textStart"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="10dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Giỏ hàng"
+            android:textSize="16dp"
+            android:textStyle="bold"
+            android:paddingHorizontal="4dp"
+            />
+
+        <EditText
+            android:id="@+id/dialog_choose_order_name"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/rounded_edit_text_dialog"
+            android:hint="Tên giỏ hàng"
+            android:textSize="16dp"
+            android:paddingStart="10dp"
+            android:paddingHorizontal="4dp"
+            android:scrollbarSize="18sp"
+            android:layout_marginTop="10dp"
+            android:layout_marginHorizontal="4dp"/>
+
+        <TextView
+            android:id="@+id/dialog_choose_order_alert"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Alert"
+            android:textSize="16dp"
+            android:textStyle="bold"
+            android:textColor="@color/alertText"
+            android:layout_marginTop="3dp"
+            android:visibility="gone"
+            android:paddingHorizontal="4dp"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Thời gian tạo"
+            android:textSize="16dp"
+            android:textStyle="bold"
+            android:paddingTop="16dp"
+            android:paddingHorizontal="4dp"
+            />
+
+        <EditText
+            android:id="@+id/dialog_choose_order_created_at"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/rounded_edit_text_dialog"
+            android:enabled="false"
+            android:textSize="16dp"
+            android:paddingStart="10dp"
+            android:scrollbarSize="18sp"
+            android:layout_marginTop="10dp"
+            android:layout_marginHorizontal="4dp"/>
+
+        <Button
+            android:id="@+id/dialog_choose_order_btn_create"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tạo"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:backgroundTint="@color/colorPrimary"
+            android:layout_marginTop="5dp"
+            />
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="16dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Danh sách giỏ hàng"
+            android:textAlignment="center"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:paddingTop="12dp"
+            android:paddingBottom="6dp"
+            />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/order_item_list"
+            android:layout_width="match_parent"
+            android:layout_height="185dp"
+            android:layout_marginTop="5dp"/>
+
+        <Button
+            android:id="@+id/dialog_choose_order_btn_add"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Thêm vào giỏ hàng"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:backgroundTint="@color/orange"
+            android:layout_marginTop="5dp"
+            />
+    </LinearLayout>
+</ScrollView>

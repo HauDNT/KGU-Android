@@ -6,7 +6,7 @@ import android.os.Bundle;
 
 import com.application.application.R;
 
-public class OrderListActivity extends AppCompatActivity {
+public class OrderActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

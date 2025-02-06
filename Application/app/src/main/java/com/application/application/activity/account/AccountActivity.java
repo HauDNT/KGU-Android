@@ -4,8 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import com.application.application.R;
-import com.application.application.activity.cart.CartActivity;
 import com.application.application.activity.dashboard.DashboardActivity;
+import com.application.application.activity.order.OrderActivity;
 import com.application.application.activity.sale.SaleActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -33,7 +33,7 @@ public class AccountActivity extends AppCompatActivity {
                 finish(); // Kết thúc AccountActivity
                 return true;
             } else if (item.getItemId() == R.id.cart) {
-                startActivity(new Intent(AccountActivity.this, CartActivity.class));
+                startActivity(new Intent(AccountActivity.this, OrderActivity.class));
                 finish(); // Kết thúc AccountActivity
                 return true;
             } else if (item.getItemId() == R.id.account) {
