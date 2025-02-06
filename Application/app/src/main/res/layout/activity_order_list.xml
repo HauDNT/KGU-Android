@@ -4,6 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.order.OrderListActivity">
+    tools:context=".activity.order.OrderActivity">
 
 </androidx.constraintlayout.widget.ConstraintLayout>

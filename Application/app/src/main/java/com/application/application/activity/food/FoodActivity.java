@@ -77,8 +77,13 @@ public class FoodActivity extends AppCompatActivity {
 
     private void loadFoodList() {
         List<Food> foodList = dbHelper.getAllFoods();
-        foodAdapter = new FoodAdapter(foodList, dbHelper, this);
-        recyclerView.setAdapter(foodAdapter);
+        if (foodList.size() > 0) {
+            foodAdapter = new FoodAdapter(this, foodList, dbHelper, this);
+            recyclerView.setAdapter(foodAdapter);
+        }
+        else {
+            Toast.makeText(this,"Không có dữ liệu món ăn", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void showCreateFoodDialog() {
@@ -323,9 +328,9 @@ public class FoodActivity extends AppCompatActivity {
         editDescription.setText(food.getDescription());
         editPrice.setText(String.valueOf((int) food.getPrice()));
 
-        //Khởi tạo imageUri từ hình ảnh hiện tại
-        imageUri = Uri.parse(food.getImageUrl());
-        imagePreview.setImageURI(imageUri); // Hiển thị ảnh hiện tại
+        //Tải ảnh
+        Uri imageUri = Uri.parse(food.getImageUrl());
+        imagePreview.setImageURI(imageUri);
 
         //Cập nhật danh sách loại sản phẩm đã chọn
         selectedCategories = dbHelper.getCategoriesForFood(food.getId());
@@ -353,13 +358,13 @@ public class FoodActivity extends AppCompatActivity {
             }
 
             int price;
-                try {
-                    price = Integer.parseInt(priceString);
-                } catch (NumberFormatException e) {
-                    alertText.setText("Đơn giá không hợp lệ.");
-                    alertText.setVisibility(View.VISIBLE);
-                    return;
-                }
+            try {
+                price = Integer.parseInt(priceString);
+            } catch (NumberFormatException e) {
+                alertText.setText("Đơn giá không hợp lệ.");
+                alertText.setVisibility(View.VISIBLE);
+                return;
+            }
 
             //Kiểm tra trùng tên
             if (dbHelper.isFoodExists(name) && !name.equals(food.getName())) {
@@ -376,9 +381,12 @@ public class FoodActivity extends AppCompatActivity {
             values.put("price", price);
             values.put("status", status);
 
-            //Nếu người dùng không chọn ảnh mới, giữ nguyên URL ảnh cũ
+            // Nếu người dùng không chọn ảnh mới, giữ nguyên URL ảnh cũ
             if (imageUri != null) {
                 values.put("image_url", imageUri.toString());
+            } else {
+                //Giữ nguyên hình ảnh cũ nếu không có hình ảnh mới
+                values.put("image_url", food.getImageUrl());
             }
 
             //Cập nhật sản phẩm trong cơ sở dữ liệu

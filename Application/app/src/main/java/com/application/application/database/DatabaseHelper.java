@@ -3,22 +3,18 @@ package com.application.application.database;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseErrorHandler;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-
-import androidx.annotation.Nullable;
+import android.widget.Toast;
 
 import com.application.application.BuildConfig;
+import com.application.application.database.enums.OrderStatus;
 import com.application.application.model.Category;
 import com.application.application.model.Food;
+import com.application.application.model.Order;
+import com.application.application.model.OrderItem;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,6 +76,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         String createOrdersTable = "CREATE TABLE IF NOT EXISTS orders ("
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + "name NVARCHAR(255) NOT NULL,"
                 + "status INTEGER NOT NULL,"
                 + "description TEXT,"
                 + "delivery_at DEFAULT CURRENT_TIMESTAMP,"
@@ -100,7 +97,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + "FOREIGN KEY (order_id) REFERENCES orders(id)"
                 + ");";
         db.execSQL(createOrderItemTable);
-
     }
 
     @Override
@@ -115,6 +111,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    // ---------------------------------------------------- Login & Register ----------------------------------------------------
     public boolean isUserExists(String username) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM users WHERE username = ?", new String[]{username});
@@ -153,6 +150,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return valid;
     }
 
+    // ---------------------------------------------------- Foods ----------------------------------------------------
     public boolean isFoodExists(String foodName) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM foods WHERE name = ?", new String[]{foodName});
@@ -223,6 +221,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return foodList;
     }
 
+    // ---------------------------------------------------- Categories ----------------------------------------------------
     public List<Category> getCategoriesList(String[] columns) {
         List<Category> categories = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -268,8 +267,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         categories.add(new Category(id, name, created_at, updated_at));
                     }
                 }
-            }
-            else {
+            } else {
                 categories.add(new Category(0, "Không có dữ liệu"));
             }
         } catch (Exception e) {
@@ -397,5 +395,130 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         return categories;
+    }
+
+    // ---------------------------------------------------- Order & Order Items ----------------------------------------------------
+    // Hàm lấy số lượng giỏ hàng trong Database
+    public int getOrdersAmount() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM orders", null);
+
+        return cursor.getCount();
+    }
+
+    // Hàm lấy danh sách giỏ hàng
+    public List<Order> getOrdersList() {
+        List<Order> orders = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM orders", null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+
+                int status = cursor.getInt(cursor.getColumnIndexOrThrow("status"));
+                OrderStatus orderStatus = OrderStatus.fromValue(status);
+
+                String description = cursor.getString(cursor.getColumnIndexOrThrow("description"));
+                String delivery_at = cursor.getString(cursor.getColumnIndexOrThrow("delivery_at"));
+                String created_at = cursor.getString(cursor.getColumnIndexOrThrow("created_at"));
+                String updated_at = cursor.getString(cursor.getColumnIndexOrThrow("updated_at"));
+                int userId = cursor.getInt(cursor.getColumnIndexOrThrow("user_id"));
+
+                orders.add(new Order(id, name, orderStatus, description, delivery_at, created_at, updated_at, userId));
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+        return orders;
+    }
+
+    // Hàm tạo 1 giỏ hàng
+    public long createOrder(ContentValues values) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        long result = db.insert("orders", null, values);
+        db.close();
+
+        return result;
+    }
+
+    // Hàm kiểm tra xem đã có item (order id và food id trong bảng 'order_item') chưa?
+    public OrderItem getExistOrderItem(int foodId, int orderId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        OrderItem orderItem;
+
+        Cursor cursor = db.rawQuery(
+                "SELECT * FROM order_item WHERE food_id = ? AND order_id = ?",
+                new String[] {String.valueOf(foodId), String.valueOf(orderId)});
+
+        if (cursor.moveToFirst()) {
+            int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+            int order_id = cursor.getInt(cursor.getColumnIndexOrThrow("order_id"));
+            int food_id = cursor.getInt(cursor.getColumnIndexOrThrow("food_id"));
+            int quantity = cursor.getInt(cursor.getColumnIndexOrThrow("quantity"));
+            double totalPrice = cursor.getDouble(cursor.getColumnIndexOrThrow("total_price"));
+
+            orderItem = new OrderItem(id, food_id, order_id, quantity, totalPrice);
+
+            return orderItem;
+        }
+
+        return null;
+    }
+
+    // Hàm tạo hoặc cập nhật thêm (nếu getExistOrderItem != null) item trong bảng 'order_item'
+    public long addOrUpdateFoodToOrders(int foodId, List<Integer> ordersListIdSelected, int quantity) {
+        long result = 0;
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.beginTransaction();
+
+        try {
+            // Lấy giá bán của sản phẩm
+            Cursor cursor = db.rawQuery(
+                    "SELECT price FROM foods WHERE id = ?", new String[]{String.valueOf(foodId)});
+            float foodPrice = cursor.getColumnIndexOrThrow("price");
+
+            // Thêm mới hoặc cập nhật giỏ hàng
+            ContentValues values = new ContentValues();
+
+            for (int i = 0; i < ordersListIdSelected.size(); i++) {
+                OrderItem orderItem = getExistOrderItem(foodId, ordersListIdSelected.get(i));
+
+                if (orderItem != null) {
+                    int newQuantity = orderItem.getQuantity() + quantity;  // Tăng quantity lên 1
+                    double newTotalPrice = orderItem.getTotalPrice() * newQuantity;
+
+                    values.put("food_id", foodId);
+                    values.put("order_id", ordersListIdSelected.get(i));
+                    values.put("quantity", newQuantity);
+                    values.put("total_price", newTotalPrice);
+
+                    result = db.update(
+                            "order_item",
+                            values,
+                            "food_id = ? AND order_id = ?",
+                            new String[]{String.valueOf(foodId), String.valueOf(ordersListIdSelected.get(i))}
+                    );
+                } else {
+                    values.put("food_id", foodId);
+                    values.put("order_id", ordersListIdSelected.get(i));
+                    values.put("quantity", quantity);
+                    values.put("total_price", foodPrice * quantity);
+                    result = db.insert("order_item", null, values);
+                }
+            }
+
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            Log.e("Error when add to orders", e.getMessage());
+        } finally {
+            db.endTransaction();
+            db.close();
+        }
+
+        return result;
     }
 }

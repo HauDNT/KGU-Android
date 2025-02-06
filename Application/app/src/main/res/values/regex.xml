@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="regex_category_name">^(?!\s)([\\p{L}]+(\\s[\\p{L}]+){0,5})?$</string>
+    <string name="regex_cart_name">^(?!\s)([\\p{L}0-9]+(\\s[\\p{L}0-9]+){0,5})?$</string>
 </resources>
