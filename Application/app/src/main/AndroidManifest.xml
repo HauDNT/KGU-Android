@@ -4,7 +4,6 @@
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -18,7 +17,7 @@
         tools:targetApi="31">
 
         <activity
-            android:name=".activity.food.FoodActivity"
+            android:name=".activity.auth.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -37,7 +36,7 @@
         <activity android:name=".activity.detail_food.DetailFoodActivity" />
         <activity android:name=".activity.food.FoodListActivity" />
         <activity
-            android:name=".activity.auth.LoginActivity"
+            android:name=".activity.food.FoodActivity"
             android:exported="false" />
         <activity
             android:name=".activity.category.CategoryActivity"
