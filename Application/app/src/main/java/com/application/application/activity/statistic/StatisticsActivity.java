@@ -2,12 +2,12 @@ package com.application.application.activity.statistic;
 
 import android.os.Bundle;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.application.application.R;
 import com.application.application.database.DatabaseHelper;
@@ -54,7 +54,7 @@ public class StatisticsActivity extends AppCompatActivity {
         barChart = findViewById(R.id.barChart);
         pieChart = findViewById(R.id.pieChart);
 
-        //Ban đầu ẩn biểu đồ và CardView kết quả
+        //Ban đầu ẩn biểu đồ và CardView thống kê
         barChart.setVisibility(View.GONE);
         pieChart.setVisibility(View.GONE);
         findViewById(R.id.statsCardView).setVisibility(View.GONE);
@@ -97,7 +97,7 @@ public class StatisticsActivity extends AppCompatActivity {
 
         //Kiểm tra xem hai ô chọn ngày đã được điền chưa
         if (startDateStr.isEmpty() || endDateStr.isEmpty()) {
-            statsTextView.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+            statsTextView.setTextColor(ContextCompat.getColor(this, android.R.color.holo_red_dark));
             statsTextView.setText("Vui lòng chọn đầy đủ ngày bắt đầu và ngày kết thúc.");
             bestSellerTextView.setVisibility(View.GONE);
             findViewById(R.id.statsCardView).setVisibility(View.VISIBLE);
@@ -108,8 +108,7 @@ public class StatisticsActivity extends AppCompatActivity {
 
         //Chuyển chuỗi sang đối tượng Date để so sánh
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        Date startDate = null;
-        Date endDate = null;
+        Date startDate = null, endDate = null;
         try {
             startDate = sdf.parse(startDateStr);
             endDate = sdf.parse(endDateStr);
@@ -119,7 +118,7 @@ public class StatisticsActivity extends AppCompatActivity {
 
         //Kiểm tra nếu ngày bắt đầu lớn hơn ngày kết thúc
         if (startDate != null && endDate != null && startDate.after(endDate)) {
-            statsTextView.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+            statsTextView.setTextColor(ContextCompat.getColor(this, android.R.color.holo_red_dark));
             statsTextView.setText("Ngày bắt đầu không được lớn hơn ngày kết thúc!");
             bestSellerTextView.setVisibility(View.GONE);
             findViewById(R.id.statsCardView).setVisibility(View.VISIBLE);
@@ -129,7 +128,7 @@ public class StatisticsActivity extends AppCompatActivity {
         }
 
         //Nếu không có lỗi, đặt lại màu chữ mặc định và hiển thị tiêu đề thống kê
-        statsTextView.setTextColor(getResources().getColor(android.R.color.black));
+        statsTextView.setTextColor(ContextCompat.getColor(this, android.R.color.black));
         bestSellerTextView.setVisibility(View.VISIBLE);
 
         //Lấy danh sách đơn hàng bán chạy trong khoảng thời gian đã chọn
@@ -141,23 +140,23 @@ public class StatisticsActivity extends AppCompatActivity {
             barChart.setVisibility(View.GONE);
             pieChart.setVisibility(View.GONE);
         } else {
+            //Hiển thị top 5 (theo thứ hạng)
             StringBuilder stats = new StringBuilder();
-            //Giả sử danh sách đã được sắp xếp giảm dần theo số lượng bán (trong DatabaseHelper đã ORDER BY total_quantity DESC)
-            //Hiển thị top 5 (nếu có)
             int rank = 1;
             for (OrderItem item : bestSellingItems) {
-                //Chỉ hiển thị top 5, bạn có thể thay đổi nếu muốn hiển thị tất cả
                 if (rank > 5) break;
                 stats.append("Top ").append(rank).append(": ");
-                stats.append(" ").append(item.getFood_name())
-                        .append(" | Số lượng: ").append(item.getQuantity())
-                        .append(" | Tổng giá: ").append(item.getTotalPrice())
-                        .append("\n");
+                stats.append("Món ăn: ").append(item.getFood_name());
+                stats.append(" | Số lượng: ").append(item.getQuantity());
+                stats.append(" | Tổng tiền: ").append(item.getTotalPrice());
+                stats.append("\n");
                 rank++;
             }
             statsTextView.setText(stats.toString());
 
+            //BarChart hiển thị số lượng bán được
             setBarChartData(bestSellingItems);
+            //PieChart hiển thị tổng tiền bán được cho mỗi món
             setPieChartData(bestSellingItems);
 
             findViewById(R.id.statsCardView).setVisibility(View.VISIBLE);
@@ -166,7 +165,7 @@ public class StatisticsActivity extends AppCompatActivity {
         }
     }
 
-
+    //BarChart: hiển thị số lượng bán được cho mỗi món
     private void setBarChartData(List<OrderItem> items) {
         List<BarEntry> entries = new ArrayList<>();
         List<String> foodNames = new ArrayList<>();
@@ -178,14 +177,15 @@ public class StatisticsActivity extends AppCompatActivity {
         }
 
         BarDataSet dataSet = new BarDataSet(entries, "Số lượng bán được");
-        dataSet.setColor(getResources().getColor(R.color.colorPrimary));
+        dataSet.setColor(ContextCompat.getColor(this, R.color.colorPrimary));
         BarData data = new BarData(dataSet);
         data.setBarWidth(0.9f);
 
         barChart.setData(data);
         barChart.setFitBars(true);
         Description description = new Description();
-        description.setText("Biểu đồ cột");
+        description.setText("Biểu đồ cột (Số lượng)");
+        description.setYOffset(-10f);
         barChart.setDescription(description);
 
         barChart.getXAxis().setValueFormatter(new ValueFormatter() {
@@ -201,20 +201,21 @@ public class StatisticsActivity extends AppCompatActivity {
         barChart.invalidate();
     }
 
+    //PieChart: hiển thị tổng tiền bán được cho mỗi món (doanh thu)
     private void setPieChartData(List<OrderItem> items) {
         List<PieEntry> entries = new ArrayList<>();
 
         for (OrderItem item : items) {
-            entries.add(new PieEntry(item.getQuantity(), item.getFood_name()));
+            entries.add(new PieEntry((float) item.getTotalPrice(), item.getFood_name()));
         }
 
-        PieDataSet dataSet = new PieDataSet(entries, "Số lượng bán được");
+        PieDataSet dataSet = new PieDataSet(entries, "Tổng tiền bán được");
         dataSet.setColors(new int[]{R.color.colorPrimary, R.color.colorAccent}, this);
         PieData data = new PieData(dataSet);
 
         pieChart.setData(data);
         Description description = new Description();
-        description.setText("Biểu đồ tròn");
+        description.setText("Biểu đồ tròn (Doanh thu)");
         pieChart.setDescription(description);
         pieChart.invalidate();
     }
