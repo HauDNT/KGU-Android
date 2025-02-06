@@ -25,13 +25,17 @@ import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class StatisticsActivity extends AppCompatActivity {
 
     private DatabaseHelper databaseHelper;
-    private TextView statsTextView;
+    private TextView statsTextView, bestSellerTextView;
     private TextInputEditText startDateEditText, endDateEditText;
     private Button statisticsButton;
     private BarChart barChart;
@@ -43,15 +47,17 @@ public class StatisticsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_statistics);
 
         statsTextView = findViewById(R.id.statsTextView);
+        bestSellerTextView = findViewById(R.id.bestSellerTextView);
         startDateEditText = findViewById(R.id.startDateEditText);
         endDateEditText = findViewById(R.id.endDateEditText);
         statisticsButton = findViewById(R.id.statisticsButton);
         barChart = findViewById(R.id.barChart);
         pieChart = findViewById(R.id.pieChart);
 
-        //Ban đầu ẩn biểu đồ
+        //Ban đầu ẩn biểu đồ và CardView kết quả
         barChart.setVisibility(View.GONE);
         pieChart.setVisibility(View.GONE);
+        findViewById(R.id.statsCardView).setVisibility(View.GONE);
 
         databaseHelper = new DatabaseHelper(this);
 
@@ -86,26 +92,68 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     private void displayStatistics() {
-        String startDate = startDateEditText.getText().toString();
-        String endDate = endDateEditText.getText().toString();
+        String startDateStr = startDateEditText.getText().toString();
+        String endDateStr = endDateEditText.getText().toString();
+
+        //Kiểm tra xem hai ô chọn ngày đã được điền chưa
+        if (startDateStr.isEmpty() || endDateStr.isEmpty()) {
+            statsTextView.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+            statsTextView.setText("Vui lòng chọn đầy đủ ngày bắt đầu và ngày kết thúc.");
+            bestSellerTextView.setVisibility(View.GONE);
+            findViewById(R.id.statsCardView).setVisibility(View.VISIBLE);
+            barChart.setVisibility(View.GONE);
+            pieChart.setVisibility(View.GONE);
+            return;
+        }
+
+        //Chuyển chuỗi sang đối tượng Date để so sánh
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        Date startDate = null;
+        Date endDate = null;
+        try {
+            startDate = sdf.parse(startDateStr);
+            endDate = sdf.parse(endDateStr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        //Kiểm tra nếu ngày bắt đầu lớn hơn ngày kết thúc
+        if (startDate != null && endDate != null && startDate.after(endDate)) {
+            statsTextView.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+            statsTextView.setText("Ngày bắt đầu không được lớn hơn ngày kết thúc!");
+            bestSellerTextView.setVisibility(View.GONE);
+            findViewById(R.id.statsCardView).setVisibility(View.VISIBLE);
+            barChart.setVisibility(View.GONE);
+            pieChart.setVisibility(View.GONE);
+            return;
+        }
+
+        //Nếu không có lỗi, đặt lại màu chữ mặc định và hiển thị tiêu đề thống kê
+        statsTextView.setTextColor(getResources().getColor(android.R.color.black));
+        bestSellerTextView.setVisibility(View.VISIBLE);
 
         //Lấy danh sách đơn hàng bán chạy trong khoảng thời gian đã chọn
-        List<OrderItem> bestSellingItems = databaseHelper.getBestSellingItems(startDate, endDate);
+        List<OrderItem> bestSellingItems = databaseHelper.getBestSellingItems(startDateStr, endDateStr);
 
         if (bestSellingItems.isEmpty()) {
-            //Không có dữ liệu => hiển thị thông báo và ẩn CardView kết quả thống kê cùng biểu đồ
             statsTextView.setText("Không có dữ liệu trong khoảng thời gian này.");
-            findViewById(R.id.statsCardView).setVisibility(View.GONE);
+            findViewById(R.id.statsCardView).setVisibility(View.VISIBLE);
             barChart.setVisibility(View.GONE);
             pieChart.setVisibility(View.GONE);
         } else {
-            //Có dữ liệu => cập nhật nội dung và hiển thị CardView kết quả thống kê cùng biểu đồ
             StringBuilder stats = new StringBuilder();
+            //Giả sử danh sách đã được sắp xếp giảm dần theo số lượng bán (trong DatabaseHelper đã ORDER BY total_quantity DESC)
+            //Hiển thị top 5 (nếu có)
+            int rank = 1;
             for (OrderItem item : bestSellingItems) {
-                stats.append("Món ăn: ").append(item.getFood_name())
-                        .append(", Số lượng: ").append(item.getQuantity())
-                        .append(", Tổng giá: ").append(item.getTotalPrice())
+                //Chỉ hiển thị top 5, bạn có thể thay đổi nếu muốn hiển thị tất cả
+                if (rank > 5) break;
+                stats.append("Top ").append(rank).append(": ");
+                stats.append(" ").append(item.getFood_name())
+                        .append(" | Số lượng: ").append(item.getQuantity())
+                        .append(" | Tổng giá: ").append(item.getTotalPrice())
                         .append("\n");
+                rank++;
             }
             statsTextView.setText(stats.toString());
 
