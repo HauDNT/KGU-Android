@@ -1,17 +1,12 @@
 package com.application.application.activity.food;
 
 import android.os.Bundle;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.application.application.R;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class FoodListActivity extends AppCompatActivity {
 

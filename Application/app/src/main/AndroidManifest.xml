@@ -25,10 +25,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.category.CategoryActivity"
+            android:name=".activity.dashboard.DashboardActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.order.OrderListActivity"
+            android:name=".activity.order.OrderActivity"
             android:exported="false" />
         <activity
             android:name=".activity.auth.RegisterActivity"
@@ -39,10 +39,9 @@
             android:name=".activity.food.FoodActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.dashboard.DashboardActivity"
+            android:name=".activity.category.CategoryActivity"
             android:exported="true" />
         <activity android:name=".activity.account.AccountActivity" />
-        <activity android:name=".activity.cart.CartActivity" />
         <activity android:name=".activity.sale.SaleActivity" />
     </application>
 

@@ -7,4 +7,7 @@
     <string name="complete_info_required">Vui lòng điền đầy đủ thông tin và tải lên hình ảnh.</string>
     <string name="invalid_price">Đơn giá không hợp lệ.</string>
     <string name="product_deleted">Sản phẩm đã được xóa</string>
+    <string name="cart_item">Thêm vào giỏ hàng</string>
+    <string name="product_add_to_cart">Đã thêm sản phẩm vào giỏ hàng</string>
+    <string name="cart_item_image_desc">Hình ảnh danh mục giỏ hàng</string>
 </resources>
