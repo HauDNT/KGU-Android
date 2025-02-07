@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.application.application.Utils;
 import com.application.application.activity.dashboard.DashboardActivity;
 import com.application.application.R;
 import com.application.application.database.DatabaseHelper;

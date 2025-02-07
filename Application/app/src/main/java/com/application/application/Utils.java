@@ -1,7 +1,9 @@
-package com.application.application.activity.auth;
+package com.application.application;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,6 +43,15 @@ public class Utils {
             return matcher.matches();
         }
         return false;
+    }
+
+    // Hàm lấy thời gian hiện tại
+    public static String getCurrentTime() {
+        Date now = new Date();
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss - dd/MM/yyyy");
+        String currentTime = format.format(now);
+
+        return currentTime;
     }
 
     //Phương thức kiểm tra tính hợp lệ của mật khẩu

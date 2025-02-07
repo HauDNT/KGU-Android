@@ -17,7 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.application.application.R;
-import com.application.application.activity.auth.Utils;
+import com.application.application.Utils;
 import com.application.application.database.DatabaseHelper;
 import com.application.application.model.Category;
 

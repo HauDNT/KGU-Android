@@ -16,13 +16,13 @@ import com.application.application.model.Order;
 
 import java.util.List;
 
-public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHolder> {
+public class ChooseOrderDialogAdapter extends RecyclerView.Adapter<ChooseOrderDialogAdapter.OrderViewHolder> {
     public Context context;
     public List<Order> orderList;
     public int orderSelectedId;
     private OnOrderSelectedListener orderSelectedListener;
 
-    public OrderAdapter(Context context, List<Order> orderList, OnOrderSelectedListener listener) {
+    public ChooseOrderDialogAdapter(Context context, List<Order> orderList, OnOrderSelectedListener listener) {
         this.context = context;
         this.orderList = orderList;
         this.orderSelectedId = 0;
@@ -32,7 +32,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
     @NonNull
     @Override
     public OrderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.order_item_list, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.choose_order_dialog_item_list, parent, false);
         return new OrderViewHolder(view);
     }
 
@@ -74,11 +74,11 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
 
         OrderViewHolder(View itemView) {
             super(itemView);
-            order_id = itemView.findViewById(R.id.order_item_id);
-            order_title = itemView.findViewById(R.id.order_item_title);
-            order_created_at = itemView.findViewById(R.id.order_item_created_at);
-            order_bound = itemView.findViewById(R.id.order_bound);
-            order_select = itemView.findViewById(R.id.order_item_select);
+            order_id = itemView.findViewById(R.id.choose_order_item_id);
+            order_title = itemView.findViewById(R.id.choose_order_item_title);
+            order_created_at = itemView.findViewById(R.id.choose_order_item_created_at);
+            order_bound = itemView.findViewById(R.id.choose_order_item_bound);
+            order_select = itemView.findViewById(R.id.choose_order_item_select);
         }
     }
 

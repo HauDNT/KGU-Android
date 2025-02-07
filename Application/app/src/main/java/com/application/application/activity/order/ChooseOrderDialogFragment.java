@@ -5,7 +5,6 @@ import static android.widget.Toast.LENGTH_LONG;
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -20,20 +19,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.application.application.R;
-import com.application.application.activity.auth.Utils;
+import com.application.application.Utils;
 import com.application.application.database.DatabaseHelper;
 import com.application.application.database.enums.OrderStatus;
 import com.application.application.model.Order;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-public class ChooseOrderDialogFragment extends DialogFragment implements OrderAdapter.OnOrderSelectedListener {
+public class ChooseOrderDialogFragment extends DialogFragment implements ChooseOrderDialogAdapter.OnOrderSelectedListener {
     private DatabaseHelper dbHelper;
     private RecyclerView orderRecycleView;
-    private OrderAdapter orderAdapter;
+    private ChooseOrderDialogAdapter chooseOrderDialogAdapter;
     private List<Order> orderList;
     private List<Integer> ordersSelected = new ArrayList<>();
     private TextView alertText, orderQuantity;
@@ -72,7 +69,7 @@ public class ChooseOrderDialogFragment extends DialogFragment implements OrderAd
         alertText = dialog.findViewById(R.id.dialog_choose_order_alert);
         orderName = dialog.findViewById(R.id.dialog_choose_order_name);
         orderCreatedAt = dialog.findViewById(R.id.dialog_choose_order_created_at);
-        setTimeCreateOrder();
+        orderCreatedAt.setText(Utils.getCurrentTime());
 
         createOrderBtn = dialog.findViewById(R.id.dialog_choose_order_btn_create);
         addOrderBtn = dialog.findViewById(R.id.dialog_choose_order_btn_add);
@@ -89,17 +86,8 @@ public class ChooseOrderDialogFragment extends DialogFragment implements OrderAd
 
         orderList = dbHelper.getOrdersList();
 
-        orderAdapter = new OrderAdapter(requireActivity(), orderList, (OrderAdapter.OnOrderSelectedListener) this);
-        orderRecycleView.setAdapter(orderAdapter);
-    }
-
-    // Hàm lấy thời gian tạo giỏ hàng
-    public void setTimeCreateOrder() {
-        Date now = new Date();
-        SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss - dd/MM/yyyy");
-        String currentTime = format.format(now);
-
-        orderCreatedAt.setText(currentTime);
+        chooseOrderDialogAdapter = new ChooseOrderDialogAdapter(requireActivity(), orderList, (ChooseOrderDialogAdapter.OnOrderSelectedListener) this);
+        orderRecycleView.setAdapter(chooseOrderDialogAdapter);
     }
 
     // Hàm xử lý sự kiện bấm nút tăng số lượng
@@ -138,6 +126,7 @@ public class ChooseOrderDialogFragment extends DialogFragment implements OrderAd
                 ContentValues values = new ContentValues();
                 values.put("name", name);
                 values.put("created_at", orderCreatedAt.getText().toString());
+                values.put("updated_at", orderCreatedAt.getText().toString());
                 values.put("status", String.valueOf(OrderStatus.PENDING));
 
                 long result = dbHelper.createOrder(values);
@@ -145,7 +134,7 @@ public class ChooseOrderDialogFragment extends DialogFragment implements OrderAd
                 if (result > 0) {
                     orderName.setText("");
                     orderName.clearFocus();
-                    orderAdapter.updateOrderListUI(dbHelper.getOrdersList());
+                    chooseOrderDialogAdapter.updateOrderListUI(dbHelper.getOrdersList());
                     Toast.makeText(requireActivity(), "Tạo giỏ hàng thành công", Toast.LENGTH_SHORT).show();
                 }
             } else {
@@ -155,7 +144,7 @@ public class ChooseOrderDialogFragment extends DialogFragment implements OrderAd
         });
     }
 
-    // Hàm Override lại onOrderSelected của OrderAdapter để lấy id của giỏ hàng được chọn (có thể lấy được nhiều giỏ hàng)
+    // Hàm Override lại onOrderSelected của ChooseOrderDialogAdapter để lấy id của giỏ hàng được chọn (có thể lấy được nhiều giỏ hàng)
     @Override
     public void onOrderSelected(int orderId, boolean isChecked) {
         if (isChecked) {

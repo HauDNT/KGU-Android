@@ -19,7 +19,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.application.application.R;
-import com.application.application.activity.auth.Utils;
+import com.application.application.Utils;
 import com.application.application.database.DatabaseHelper;
 import com.application.application.model.Category;
 
