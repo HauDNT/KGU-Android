@@ -296,6 +296,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         cursor.close();
+        db.close();
         return exists;
     }
 
@@ -321,10 +322,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         if (checkExists) {
             long result = db.delete("categories", "id = ?", new String[]{String.valueOf(id)});
-            db.close();
             return result;
         }
 
+        db.close();
         return 0;
     }
 
@@ -398,6 +399,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     // ---------------------------------------------------- Order & Order Items ----------------------------------------------------
+    // Hàm kiểm tra tồn tại giỏ hàng chưa?
+    public Boolean isExistsOrder(String selection, String value) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        boolean exists = false;
+        Cursor cursor;
+
+        if (selection.equals("id")) {
+            cursor = db.query("orders", null, selection + " = ?", new String[]{value}, null, null, null);
+        } else {
+            cursor = db.query("orders", null, selection + " COLLATE NOCASE = ?", new String[]{value}, null, null, null);
+        }
+
+        if (cursor != null) {
+            exists = cursor.moveToFirst();
+        }
+
+        cursor.close();
+        db.close();
+        return exists;
+    }
+
     // Hàm lấy số lượng giỏ hàng trong Database
     public int getOrdersAmount() {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -452,7 +474,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         Cursor cursor = db.rawQuery(
                 "SELECT * FROM order_item WHERE food_id = ? AND order_id = ?",
-                new String[] {String.valueOf(foodId), String.valueOf(orderId)});
+                new String[]{String.valueOf(foodId), String.valueOf(orderId)});
 
         if (cursor.moveToFirst()) {
             int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
@@ -517,6 +539,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } finally {
             db.endTransaction();
             db.close();
+        }
+
+        return result;
+    }
+
+    public long deleteOrder(int orderId) {
+        long result = 0;
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        try {
+            db.beginTransaction();
+
+            // Xoá đơn hàng từ bảng cha Orders
+            result = db.delete("orders", "id = ?", new String[]{String.valueOf(orderId)});
+
+            // Nếu thành công thì xoá luôn dữ liệu hiện có trong bảng Order_Item
+            if (result > 0) {
+                Cursor cursor = db.rawQuery(
+                        "SELECT order_id FROM order_item WHERE order_id = ?", new String[]{String.valueOf(orderId)});
+
+                if (cursor.moveToFirst()) {
+                    result = db.delete("order_item", "order_id = ?", new String[]{String.valueOf(orderId)});
+                }
+            }
+
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            Log.e("Error when delete order " + orderId, e.getMessage());
+        } finally {
+            if (db != null) {
+                db.endTransaction();
+                db.close();
+            }
         }
 
         return result;
