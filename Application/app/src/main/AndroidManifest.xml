@@ -46,7 +46,6 @@
             android:exported="true" />
         <activity android:name=".activity.account.AccountActivity" />
         <activity android:name=".activity.sale.SaleActivity" />
-        <activity android:name=".activity.food.FoodActivity" />
     </application>
 
 </manifest>
