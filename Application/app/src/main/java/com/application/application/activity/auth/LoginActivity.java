@@ -19,6 +19,7 @@ import com.application.application.Utils;
 import com.application.application.activity.dashboard.DashboardActivity;
 import com.application.application.R;
 import com.application.application.database.DatabaseHelper;
+import com.google.android.material.textfield.TextInputLayout;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -26,68 +27,83 @@ public class LoginActivity extends AppCompatActivity {
     private Button loginButton;
     private TextView registerLink;
     private DatabaseHelper databaseHelper;
+    private TextInputLayout usernameTextInputLayout, passwordTextInputLayout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        //Khởi tạo DatabaseHelper
         databaseHelper = new DatabaseHelper(this);
 
         usernameEditText = findViewById(R.id.username);
         passwordEditText = findViewById(R.id.password);
         loginButton = findViewById(R.id.login_button);
         registerLink = findViewById(R.id.register_link);
+        usernameTextInputLayout = findViewById(R.id.textInputLayoutUsername);
+        passwordTextInputLayout = findViewById(R.id.textInputLayoutPassword);
 
-        //Xử lý khi nhấn nút "Đăng nhập"
+
         loginButton.setOnClickListener(v -> loginUser());
-
-        redirectToRegisterScreen();
+        setupRegisterLink();
     }
 
     private void loginUser() {
         String usernameOrEmail = usernameEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
 
-        //Kiểm tra nếu để trống 1 trong các trường
-        if (TextUtils.isEmpty(usernameOrEmail) || TextUtils.isEmpty(password)) {
-            Toast.makeText(this, "Vui lòng điền đầy đủ thông tin!", Toast.LENGTH_SHORT).show();
-            return;
+        boolean isValid = true;
+
+        //Kiểm tra tài khoản
+        if (TextUtils.isEmpty(usernameOrEmail)) {
+            usernameTextInputLayout.setError("Tài khoản không được để trống.");
+            isValid = false;
+        } else if (isEmail(usernameOrEmail) && !Utils.isValidEmail(usernameOrEmail)) {
+            usernameTextInputLayout.setError("Email không hợp lệ.");
+            isValid = false;
+        } else {
+            usernameTextInputLayout.setError(null);
         }
 
-        //Mã hóa mật khẩu nhập vào bằng hàm từ Utils
+        //Kiểm tra mật khẩu
+        if (TextUtils.isEmpty(password)) {
+            passwordTextInputLayout.setError("Mật khẩu không được để trống.");
+            isValid = false;
+        } else if (!Utils.isValidPassword(password)) {
+            passwordTextInputLayout.setError("Mật khẩu phải gồm chữ hoa, chữ thường và số và có độ dài tối thiểu 8 ký tự!");
+            isValid = false;
+        } else {
+            passwordTextInputLayout.setError(null);
+        }
+
+
+        if (!isValid) return;
+
         String hashedPassword = Utils.hashPassword(password);
 
-        //Kiểm tra xem nhập liệu có phải là email hay username
         boolean isLoginValid;
-
         if (isEmail(usernameOrEmail)) {
-            //Kiểm tra Email có trong db không
             isLoginValid = databaseHelper.isEmailValid(usernameOrEmail, hashedPassword);
         } else {
-            //Kiểm tra username có trong db không
             isLoginValid = databaseHelper.isUserValid(usernameOrEmail, hashedPassword);
         }
 
         if (isLoginValid) {
-            //Thông tin đăng nhập đúng, chuyển sang màn hình Dashboard
             Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
             startActivity(intent);
             finish();
         } else {
-            //Thông tin đăng nhập sai
             Toast.makeText(this, "Thông tin đăng nhập không đúng. Vui lòng nhập lại!", Toast.LENGTH_SHORT).show();
         }
     }
 
-    //Kiểm tra xem đầu vào có phải là email không
     private boolean isEmail(String usernameOrEmail) {
         return usernameOrEmail.contains("@");
     }
 
-    private void redirectToRegisterScreen() {
+    private void setupRegisterLink() {
         String text = registerLink.getText().toString();
         SpannableString spannableString = new SpannableString(text);
 

@@ -126,6 +126,7 @@ public class ChooseOrderDialogFragment extends DialogFragment implements ChooseO
                 ContentValues values = new ContentValues();
                 values.put("name", name);
                 values.put("created_at", orderCreatedAt.getText().toString());
+                values.put("updated_at", orderCreatedAt.getText().toString());
                 values.put("status", String.valueOf(OrderStatus.PENDING));
 
                 long result = dbHelper.createOrder(values);
