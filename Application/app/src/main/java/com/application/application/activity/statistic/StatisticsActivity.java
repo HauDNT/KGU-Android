@@ -146,7 +146,7 @@ public class StatisticsActivity extends AppCompatActivity {
             for (OrderItem item : bestSellingItems) {
                 if (rank > 5) break;
                 stats.append("Top ").append(rank).append(": ");
-                stats.append("Món ăn: ").append(item.getFood_name());
+                stats.append("").append(item.getFood_name());
                 stats.append(" | Số lượng: ").append(item.getQuantity());
                 stats.append(" | Tổng tiền: ").append(item.getTotalPrice());
                 stats.append("\n");
