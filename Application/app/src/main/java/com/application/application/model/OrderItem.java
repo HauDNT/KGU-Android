@@ -6,6 +6,7 @@ public class OrderItem {
     private int order_id;
     private int quantity;
     private double totalPrice;
+    private String food_name;
 
     public OrderItem() {
     }
@@ -56,5 +57,13 @@ public class OrderItem {
 
     public void setTotalPrice(float totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public String getFood_name() {
+        return food_name;
+    }
+
+    public void setFood_name(String food_name) {
+        this.food_name = food_name;
     }
 }

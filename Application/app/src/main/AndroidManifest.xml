@@ -17,7 +17,7 @@
         tools:targetApi="31">
 
         <activity
-            android:name=".activity.auth.LoginActivity"
+            android:name=".activity.statistic.StatisticsActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,13 +36,14 @@
         <activity android:name=".activity.detail_food.DetailFoodActivity" />
         <activity android:name=".activity.food.FoodListActivity" />
         <activity
-            android:name=".activity.food.FoodActivity"
+            android:name=".activity.auth.LoginActivity"
             android:exported="false" />
         <activity
             android:name=".activity.category.CategoryActivity"
             android:exported="true" />
         <activity android:name=".activity.account.AccountActivity" />
         <activity android:name=".activity.sale.SaleActivity" />
+        <activity android:name=".activity.food.FoodActivity" />
     </application>
 
 </manifest>

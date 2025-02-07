@@ -521,4 +521,177 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return result;
     }
+
+    // ---------------------------------------------------- statistic ----------------------------------------------------
+    // Thêm phương thức thống kê đơn hàng bán chạy nhất trong khoảng thời gian
+    public List<OrderItem> getBestSellingItems(String startDate, String endDate) {
+        List<OrderItem> bestSellingItems = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+
+        try {
+            String query = "SELECT oi.food_id, f.name AS food_name, SUM(oi.quantity) AS total_quantity " +
+                    "FROM order_item oi " +
+                    "JOIN orders o ON oi.order_id = o.id " +
+                    "JOIN foods f ON oi.food_id = f.id " +
+                    "WHERE o.created_at BETWEEN ? AND ? " +
+                    "GROUP BY oi.food_id " +
+                    "ORDER BY total_quantity DESC";
+
+            cursor = db.rawQuery(query, new String[]{startDate, endDate});
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    int foodId = cursor.getInt(cursor.getColumnIndexOrThrow("food_id"));
+                    //Lấy tên món ăn từ cột food_name
+                    String foodName = cursor.getString(cursor.getColumnIndexOrThrow("food_name"));
+                    int totalQuantity = cursor.getInt(cursor.getColumnIndexOrThrow("total_quantity"));
+
+                    //Lấy giá bán của sản phẩm theo foodId
+                    double foodPrice = getFoodPrice(foodId);
+
+                    //Tạo đối tượng OrderItem chứa thông tin thống kê của sản phẩm
+                    OrderItem orderItem = new OrderItem();
+                    orderItem.setFood_id(foodId);
+                    orderItem.setFood_name(foodName);
+                    orderItem.setQuantity(totalQuantity);
+                    orderItem.setTotalPrice((float) (totalQuantity * foodPrice));
+
+                    bestSellingItems.add(orderItem);
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e("DatabaseHelper", "Error in getBestSellingItems: " + e.getMessage());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            db.close();
+        }
+
+        return bestSellingItems;
+    }
+
+
+    //Hàm lấy giá món ăn
+    private double getFoodPrice(int foodId) {
+        double price = 0.0;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+
+        try {
+            String query = "SELECT price FROM foods WHERE id = ?";
+            cursor = db.rawQuery(query, new String[]{String.valueOf(foodId)});
+
+            if (cursor != null && cursor.moveToFirst()) {
+                price = cursor.getDouble(cursor.getColumnIndexOrThrow("price"));
+            }
+        } catch (Exception e) {
+            Log.e("DatabaseHelper", "Error in getFoodPrice: " + e.getMessage());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            db.close();
+        }
+        return price;
+    }
+
+    //Hàm tạo dữ liệu mẫu để kiểm tra chức năng thống kê
+    public void createTestData() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            //1. Chèn người dùng mẫu (để đáp ứng khóa ngoại user_id trong orders)
+            ContentValues userValues = new ContentValues();
+            userValues.put("username", "testuser");
+            userValues.put("password", "test");
+            userValues.put("fullname", "Test User");
+            userValues.put("email", "test@example.com");
+            userValues.put("phone_number", "123456789");
+            userValues.put("address", "Test Address");
+            userValues.put("is_admin", 0);
+            long userId = db.insert("users", null, userValues);
+
+            //2. Chèn sản phẩm mẫu vào bảng foods
+            //Sản phẩm 1: Pizza
+            ContentValues foodValues1 = new ContentValues();
+            foodValues1.put("name", "Pizza");
+            foodValues1.put("description", "Delicious pizza");
+            foodValues1.put("price", 10.0);  // giá 10 đơn vị
+            foodValues1.put("status", 1);
+            foodValues1.put("image_url", "http://example.com/pizza.jpg");
+            long foodId1 = db.insert("foods", null, foodValues1);
+
+            //Sản phẩm 2: Burger
+            ContentValues foodValues2 = new ContentValues();
+            foodValues2.put("name", "Burger");
+            foodValues2.put("description", "Tasty burger");
+            foodValues2.put("price", 8.0);  // giá 8 đơn vị
+            foodValues2.put("status", 1);
+            foodValues2.put("image_url", "http://example.com/burger.jpg");
+            long foodId2 = db.insert("foods", null, foodValues2);
+
+            //3. Chèn đơn hàng mẫu vào bảng orders
+            //Lưu ý: Dữ liệu ngày được chèn theo định dạng "yyyy-MM-dd"
+            ContentValues orderValues1 = new ContentValues();
+            orderValues1.put("name", "Order 1");
+            orderValues1.put("status", 1);  // ví dụ status = 1 (có thể thay đổi theo yêu cầu)
+            orderValues1.put("description", "Test order 1");
+            orderValues1.put("delivery_at", "2025-01-06");
+            orderValues1.put("created_at", "2025-01-05");
+            orderValues1.put("updated_at", "2025-01-05");
+            orderValues1.put("user_id", userId);
+            long orderId1 = db.insert("orders", null, orderValues1);
+
+            ContentValues orderValues2 = new ContentValues();
+            orderValues2.put("name", "Order 2");
+            orderValues2.put("status", 1);
+            orderValues2.put("description", "Test order 2");
+            orderValues2.put("delivery_at", "2025-01-07");
+            orderValues2.put("created_at", "2025-01-06");
+            orderValues2.put("updated_at", "2025-01-06");
+            orderValues2.put("user_id", userId);
+            long orderId2 = db.insert("orders", null, orderValues2);
+
+            //4. Chèn dữ liệu vào bảng order_item
+            //Cho Order 1: 2 Pizza và 1 Burger
+            ContentValues orderItem1 = new ContentValues();
+            orderItem1.put("order_id", orderId1);
+            orderItem1.put("food_id", foodId1);
+            orderItem1.put("quantity", 2);
+            orderItem1.put("total_price", 2 * 10.0); // 2 * giá 10
+            db.insert("order_item", null, orderItem1);
+
+            ContentValues orderItem2 = new ContentValues();
+            orderItem2.put("order_id", orderId1);
+            orderItem2.put("food_id", foodId2);
+            orderItem2.put("quantity", 1);
+            orderItem2.put("total_price", 1 * 8.0);  // 1 * giá 8
+            db.insert("order_item", null, orderItem2);
+
+            //Cho Order 2: 1 Pizza và 3 Burger
+            ContentValues orderItem3 = new ContentValues();
+            orderItem3.put("order_id", orderId2);
+            orderItem3.put("food_id", foodId1);
+            orderItem3.put("quantity", 1);
+            orderItem3.put("total_price", 1 * 10.0);
+            db.insert("order_item", null, orderItem3);
+
+            ContentValues orderItem4 = new ContentValues();
+            orderItem4.put("order_id", orderId2);
+            orderItem4.put("food_id", foodId2);
+            orderItem4.put("quantity", 3);
+            orderItem4.put("total_price", 3 * 8.0);
+            db.insert("order_item", null, orderItem4);
+
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            Log.e("DatabaseHelper", "Error creating test data: " + e.getMessage());
+        } finally {
+            db.endTransaction();
+            db.close();
+        }
+    }
+
 }
+
