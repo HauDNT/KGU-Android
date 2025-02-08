@@ -1,6 +1,7 @@
 package com.application.application.activity.order;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.application.application.database.DatabaseHelper;
+import com.application.application.database.enums.OrderStatus;
 import com.application.application.model.Order;
 
 import java.util.List;
@@ -42,11 +44,10 @@ public class OrderActivityAdapter extends RecyclerView.Adapter<OrderActivityAdap
         Order orderItem = orderList.get(position);
         holder.order_title.setText(orderItem.getName());
         holder.order_created_at.setText(orderItem.getCreated_at());
+        setOrderStatus(orderItem.getStatus(), holder.order_status);
 
         // Xoá bỏ 1 đơn hàng
-        holder.btn_delete_order.setOnClickListener(v -> {
-            removeOrderDB(position, orderItem.getId());
-        });
+        holder.btn_delete_order.setOnClickListener(v -> removeOrderDB(position, orderItem.getId()));
 
         // Click vào để xem thông tin đơn hàng
         holder.order_bound.setOnClickListener(v -> {
@@ -66,7 +67,7 @@ public class OrderActivityAdapter extends RecyclerView.Adapter<OrderActivityAdap
 
     class OrderViewHolder extends RecyclerView.ViewHolder {
         public TextView order_title;
-        public TextView order_created_at;
+        public TextView order_created_at, order_status;
         public LinearLayout order_bound;
         public ImageView btn_delete_order;
 
@@ -74,8 +75,30 @@ public class OrderActivityAdapter extends RecyclerView.Adapter<OrderActivityAdap
             super(itemView);
             order_title = itemView.findViewById(R.id.order_item_title);
             order_created_at = itemView.findViewById(R.id.order_item_created_at);
+            order_status = itemView.findViewById(R.id.order_item_status);
             order_bound = itemView.findViewById(R.id.order_item_bound);
             btn_delete_order = itemView.findViewById(R.id.order_item_btn_delete);
+        }
+    }
+
+    // Hàm hiển thị status đơn hàng
+    public void setOrderStatus(OrderStatus orderStatus, TextView statusField) {
+        switch (orderStatus) {
+            case PENDING:
+                statusField.setText("Đang xử lý");
+                statusField.setTextColor(Color.BLUE);
+                break;
+            case DELIVERED:
+                statusField.setText("Đã thanh toán");
+                statusField.setTextColor(Color.GREEN);
+                break;
+            case CANCELLED:
+                statusField.setText("Đã huỷ");
+                statusField.setTextColor(Color.RED);
+                break;
+            default:
+                statusField.setText("Không xác định");
+                break;
         }
     }
 
