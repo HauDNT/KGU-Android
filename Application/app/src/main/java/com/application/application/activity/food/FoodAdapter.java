@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,9 +22,8 @@ import com.application.application.activity.order.ChooseOrderDialogFragment;
 import com.application.application.database.DatabaseHelper;
 import com.application.application.model.Food;
 
-import java.util.List;
-
 import java.text.NumberFormat;
+import java.util.List;
 import java.util.Locale;
 
 public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder> {
@@ -53,6 +53,7 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
             Food food = foodList.get(position);
 
             if (food != null) {
+                // Hiển thị thông tin sản phẩm
                 holder.foodTitle.setText(food.getName() != null ? food.getName() : "Không có tên");
                 NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
                 String formattedPrice = currencyFormat.format(food.getPrice());
@@ -67,7 +68,7 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
                 holder.foodStatus.setText(status);
                 holder.foodStatus.setTextColor(food.getStatus() == 0 ? Color.GREEN : Color.RED);
 
-                //Xử lý hình ảnh
+                // Xử lý hình ảnh
                 try {
                     if (food.getImageUrl() != null && !food.getImageUrl().isEmpty()) {
                         Uri imageUri = Uri.parse(food.getImageUrl());
@@ -80,7 +81,7 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
                     holder.foodImage.setImageResource(R.drawable.dialog_create_category_icon);
                 }
 
-                //Xử lý sự kiện chỉnh sửa sản phẩm
+                // Xử lý sự kiện chỉnh sửa sản phẩm
                 holder.itemView.setOnClickListener(v -> {
                     foodActivity.showEditFoodDialog(food);
                 });
@@ -94,15 +95,20 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
                     Toast.makeText(v.getContext(), R.string.product_deleted, Toast.LENGTH_SHORT).show();
                 });
 
-                // Nút thêm sản phẩm vào giỏ hàng
-                holder.iconCart.setOnClickListener(v -> {
-                    ChooseOrderDialogFragment dialogFragment = new ChooseOrderDialogFragment();
-                    Bundle dialogBundle = new Bundle();
-                    dialogBundle.putString("food_id", String.valueOf(food.getId()));
-
-                    dialogFragment.setArguments(dialogBundle);
-                    dialogFragment.show(((AppCompatActivity) context).getSupportFragmentManager(), "Choose Cart Dialog");
-                });
+                // Kiểm tra trạng thái sản phẩm: nếu hết hàng (food.getStatus() != 0) thì ẩn nút thêm vào giỏ hàng
+                if (food.getStatus() != 0) {
+                    holder.iconCart.setVisibility(View.GONE);
+                } else {
+                    holder.iconCart.setVisibility(View.VISIBLE);
+                    // Nút thêm sản phẩm vào giỏ hàng
+                    holder.iconCart.setOnClickListener(v -> {
+                        ChooseOrderDialogFragment dialogFragment = new ChooseOrderDialogFragment();
+                        Bundle dialogBundle = new Bundle();
+                        dialogBundle.putString("food_id", String.valueOf(food.getId()));
+                        dialogFragment.setArguments(dialogBundle);
+                        dialogFragment.show(((AppCompatActivity) context).getSupportFragmentManager(), "Choose Cart Dialog");
+                    });
+                }
             }
         }
     }

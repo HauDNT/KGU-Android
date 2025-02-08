@@ -15,8 +15,12 @@ import com.application.application.model.Food;
 import com.application.application.model.Order;
 import com.application.application.model.OrderItem;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = BuildConfig.DATABASE_NAME;
@@ -83,6 +87,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + "created_at DEFAULT CURRENT_TIMESTAMP,"
                 + "updated_at DEFAULT CURRENT_TIMESTAMP,"
                 + "user_id INTEGER,"
+                + "total REAL DEFAULT 0,"
                 + "FOREIGN KEY (user_id) REFERENCES users(id)"
                 + ");";
         db.execSQL(createOrdersTable);
@@ -500,36 +505,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try {
             // Lấy giá bán của sản phẩm
             Cursor cursor = db.rawQuery(
-                    "SELECT price FROM foods WHERE id = ?", new String[]{String.valueOf(foodId)});
-            float foodPrice = cursor.getColumnIndexOrThrow("price");
+                    "SELECT * FROM foods WHERE id = ?", new String[]{String.valueOf(foodId)});
 
-            // Thêm mới hoặc cập nhật giỏ hàng
-            ContentValues values = new ContentValues();
+            if (cursor.moveToFirst()) {
+                float foodPrice = cursor.getFloat(cursor.getColumnIndexOrThrow("price"));
 
-            for (int i = 0; i < ordersListIdSelected.size(); i++) {
-                OrderItem orderItem = getExistOrderItem(foodId, ordersListIdSelected.get(i));
+                // Thêm mới hoặc cập nhật giỏ hàng
+                ContentValues values = new ContentValues();
 
-                if (orderItem != null) {
-                    int newQuantity = orderItem.getQuantity() + quantity;  // Tăng quantity lên 1
-                    double newTotalPrice = orderItem.getTotalPrice() * newQuantity;
+                for (int i = 0; i < ordersListIdSelected.size(); i++) {
+                    OrderItem orderItem = getExistOrderItem(foodId, ordersListIdSelected.get(i));
 
-                    values.put("food_id", foodId);
-                    values.put("order_id", ordersListIdSelected.get(i));
-                    values.put("quantity", newQuantity);
-                    values.put("total_price", newTotalPrice);
+                    if (orderItem != null) {
+                        int newQuantity = orderItem.getQuantity() + quantity;  // Tăng quantity lên
+                        double newTotalPrice = newQuantity * foodPrice;     // Tính lại giá bán
 
-                    result = db.update(
-                            "order_item",
-                            values,
-                            "food_id = ? AND order_id = ?",
-                            new String[]{String.valueOf(foodId), String.valueOf(ordersListIdSelected.get(i))}
-                    );
-                } else {
-                    values.put("food_id", foodId);
-                    values.put("order_id", ordersListIdSelected.get(i));
-                    values.put("quantity", quantity);
-                    values.put("total_price", foodPrice * quantity);
-                    result = db.insert("order_item", null, values);
+                        values.put("food_id", foodId);
+                        values.put("order_id", ordersListIdSelected.get(i));
+                        values.put("quantity", newQuantity);
+                        values.put("total_price", newTotalPrice);
+
+                        result = db.update(
+                                "order_item",
+                                values,
+                                "food_id = ? AND order_id = ?",
+                                new String[]{String.valueOf(foodId), String.valueOf(ordersListIdSelected.get(i))}
+                        );
+                    } else {
+                        values.put("food_id", foodId);
+                        values.put("order_id", ordersListIdSelected.get(i));
+                        values.put("quantity", quantity);
+                        values.put("total_price", foodPrice * quantity);
+                        result = db.insert("order_item", null, values);
+                    }
                 }
             }
 
@@ -544,39 +552,116 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result;
     }
 
-
-    public long deleteOrder(int orderId) {
-        long result = 0;
-        SQLiteDatabase db = this.getWritableDatabase();
-
+    public Order getOrderById(int orderId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Order order = null;
+        Cursor cursor = null;
         try {
-            db.beginTransaction();
+            cursor = db.query("orders", null, "id = ?", new String[]{String.valueOf(orderId)}, null, null, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
 
-            // Xoá đơn hàng từ bảng cha Orders
-            result = db.delete("orders", "id = ?", new String[]{String.valueOf(orderId)});
+                int statusValue = cursor.getInt(cursor.getColumnIndexOrThrow("status"));
+                OrderStatus orderStatus = OrderStatus.fromValue(statusValue);
 
-            // Nếu thành công thì xoá luôn dữ liệu hiện có trong bảng Order_Item
-            if (result > 0) {
-                Cursor cursor = db.rawQuery(
-                        "SELECT order_id FROM order_item WHERE order_id = ?", new String[]{String.valueOf(orderId)});
-
-                if (cursor.moveToFirst()) {
-                    result = db.delete("order_item", "order_id = ?", new String[]{String.valueOf(orderId)});
+                String description = cursor.getString(cursor.getColumnIndexOrThrow("description"));
+                String delivery_at = cursor.getString(cursor.getColumnIndexOrThrow("delivery_at"));
+                String created_at = cursor.getString(cursor.getColumnIndexOrThrow("created_at"));
+                String updated_at = cursor.getString(cursor.getColumnIndexOrThrow("updated_at"));
+                int userId = cursor.getInt(cursor.getColumnIndexOrThrow("user_id"));
+                double total = 0;
+                try {
+                    total = cursor.getDouble(cursor.getColumnIndexOrThrow("total"));
+                } catch (Exception e) {
+                    // Nếu không có cột total, mặc định 0.
                 }
-            }
 
-            db.setTransactionSuccessful();
+                order = new Order(id, name, orderStatus, description, delivery_at, created_at, updated_at, userId, total);
+            }
         } catch (Exception e) {
-            Log.e("Error when delete order " + orderId, e.getMessage());
+            Log.e("DatabaseHelper", "Error in getOrderById: " + e.getMessage());
         } finally {
-            if (db != null) {
-                db.endTransaction();
-                db.close();
+            if (cursor != null) {
+                cursor.close();
+            }
+            db.close();
+        }
+        return order;
+    }
+
+
+    // Hàm cập nhật thông tin đơn hàng
+    // Nếu đơn hàng có trạng thái quá khứ (DELIVERED hoặc CANCELLED) hoặc nếu delivery_at đã thuộc quá khứ (theo ngày)
+    // thì không cho cập nhật (trả về 0). Ngược lại, cập nhật và trả về số dòng được cập nhật.
+    public int updateOrder(int orderId, ContentValues values) {
+        // Lấy thông tin đơn hàng hiện có
+        Order order = getOrderById(orderId);
+        if (order != null) {
+            OrderStatus currentStatus = order.getStatus();
+            // Nếu đơn hàng quá khứ theo trạng thái (DELIVERED hoặc CANCELLED) thì không cho cập nhật
+            if (currentStatus == OrderStatus.DELIVERED || currentStatus == OrderStatus.CANCELLED) {
+                return 0;
+            }
+            // Kiểm tra ngày giao hàng hiện có của đơn hàng (theo định dạng yyyy-MM-dd)
+            String currentDeliveryAt = order.getDelivery_at();
+            if (currentDeliveryAt != null && !currentDeliveryAt.trim().isEmpty()) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                try {
+                    Date deliveryDate = sdf.parse(currentDeliveryAt);
+                    // Lấy ngày hiện tại (loại bỏ phần thời gian)
+                    Date today = sdf.parse(sdf.format(new Date()));
+                    if (deliveryDate != null && deliveryDate.before(today)) {
+                        // Nếu ngày giao hàng hiện tại thuộc quá khứ thì không cho cập nhật
+                        return 0;
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
+        SQLiteDatabase db = this.getWritableDatabase();
+        int rowsUpdated = db.update("orders", values, "id = ?", new String[]{String.valueOf(orderId)});
+        db.close();
+        return rowsUpdated;
+    }
+
+
+    // Hàm xoá đơn hàng
+    // Nếu đơn hàng có trạng thái DELIVERED hoặc CANCELLED thì không cho xoá (trả về -1).
+    // Ngược lại, xoá đơn hàng và các dòng tương ứng trong bảng order_item trong một transaction.
+    public long deleteOrder(int orderId) {
+        // Lấy thông tin đơn hàng hiện có
+        Order order = getOrderById(orderId);
+        if (order != null) {
+            OrderStatus currentStatus = order.getStatus();
+            // Nếu đơn hàng quá khứ (DELIVERED hoặc CANCELLED) thì không cho xoá
+            if (currentStatus == OrderStatus.DELIVERED || currentStatus == OrderStatus.CANCELLED) {
+                return -1;
+            }
+        }
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        long result = 0;
+        db.beginTransaction();
+        try {
+            // Xoá đơn hàng từ bảng orders
+            result = db.delete("orders", "id = ?", new String[]{String.valueOf(orderId)});
+            // Nếu xoá thành công, xoá luôn các dòng liên quan trong bảng order_item
+            if (result > 0) {
+                db.delete("order_item", "order_id = ?", new String[]{String.valueOf(orderId)});
+            }
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            Log.e("DatabaseHelper", "Error when delete order " + orderId + ": " + e.getMessage());
+        } finally {
+            db.endTransaction();
+            db.close();
+        }
         return result;
     }
+
 
     // ---------------------------------------------------- statistic ----------------------------------------------------
     // Thêm phương thức thống kê đơn hàng bán chạy nhất trong khoảng thời gian
@@ -649,103 +734,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.close();
         }
         return price;
-    }
-
-    //Hàm tạo dữ liệu mẫu để kiểm tra chức năng thống kê
-    public void createTestData() {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.beginTransaction();
-        try {
-            //1. Chèn người dùng mẫu (để đáp ứng khóa ngoại user_id trong orders)
-            ContentValues userValues = new ContentValues();
-            userValues.put("username", "testuser");
-            userValues.put("password", "test");
-            userValues.put("fullname", "Test User");
-            userValues.put("email", "test@example.com");
-            userValues.put("phone_number", "123456789");
-            userValues.put("address", "Test Address");
-            userValues.put("is_admin", 0);
-            long userId = db.insert("users", null, userValues);
-
-            //2. Chèn sản phẩm mẫu vào bảng foods
-            //Sản phẩm 1: Pizza
-            ContentValues foodValues1 = new ContentValues();
-            foodValues1.put("name", "Pizza");
-            foodValues1.put("description", "Delicious pizza");
-            foodValues1.put("price", 10.0);  // giá 10 đơn vị
-            foodValues1.put("status", 1);
-            foodValues1.put("image_url", "http://example.com/pizza.jpg");
-            long foodId1 = db.insert("foods", null, foodValues1);
-
-            //Sản phẩm 2: Burger
-            ContentValues foodValues2 = new ContentValues();
-            foodValues2.put("name", "Burger");
-            foodValues2.put("description", "Tasty burger");
-            foodValues2.put("price", 8.0);  // giá 8 đơn vị
-            foodValues2.put("status", 1);
-            foodValues2.put("image_url", "http://example.com/burger.jpg");
-            long foodId2 = db.insert("foods", null, foodValues2);
-
-            //3. Chèn đơn hàng mẫu vào bảng orders
-            //Lưu ý: Dữ liệu ngày được chèn theo định dạng "yyyy-MM-dd"
-            ContentValues orderValues1 = new ContentValues();
-            orderValues1.put("name", "Order 1");
-            orderValues1.put("status", 1);  // ví dụ status = 1 (có thể thay đổi theo yêu cầu)
-            orderValues1.put("description", "Test order 1");
-            orderValues1.put("delivery_at", "2025-01-06");
-            orderValues1.put("created_at", "2025-01-05");
-            orderValues1.put("updated_at", "2025-01-05");
-            orderValues1.put("user_id", userId);
-            long orderId1 = db.insert("orders", null, orderValues1);
-
-            ContentValues orderValues2 = new ContentValues();
-            orderValues2.put("name", "Order 2");
-            orderValues2.put("status", 1);
-            orderValues2.put("description", "Test order 2");
-            orderValues2.put("delivery_at", "2025-01-07");
-            orderValues2.put("created_at", "2025-01-06");
-            orderValues2.put("updated_at", "2025-01-06");
-            orderValues2.put("user_id", userId);
-            long orderId2 = db.insert("orders", null, orderValues2);
-
-            //4. Chèn dữ liệu vào bảng order_item
-            //Cho Order 1: 2 Pizza và 1 Burger
-            ContentValues orderItem1 = new ContentValues();
-            orderItem1.put("order_id", orderId1);
-            orderItem1.put("food_id", foodId1);
-            orderItem1.put("quantity", 2);
-            orderItem1.put("total_price", 2 * 10.0); // 2 * giá 10
-            db.insert("order_item", null, orderItem1);
-
-            ContentValues orderItem2 = new ContentValues();
-            orderItem2.put("order_id", orderId1);
-            orderItem2.put("food_id", foodId2);
-            orderItem2.put("quantity", 1);
-            orderItem2.put("total_price", 1 * 8.0);  // 1 * giá 8
-            db.insert("order_item", null, orderItem2);
-
-            //Cho Order 2: 1 Pizza và 3 Burger
-            ContentValues orderItem3 = new ContentValues();
-            orderItem3.put("order_id", orderId2);
-            orderItem3.put("food_id", foodId1);
-            orderItem3.put("quantity", 1);
-            orderItem3.put("total_price", 1 * 10.0);
-            db.insert("order_item", null, orderItem3);
-
-            ContentValues orderItem4 = new ContentValues();
-            orderItem4.put("order_id", orderId2);
-            orderItem4.put("food_id", foodId2);
-            orderItem4.put("quantity", 3);
-            orderItem4.put("total_price", 3 * 8.0);
-            db.insert("order_item", null, orderItem4);
-
-            db.setTransactionSuccessful();
-        } catch (Exception e) {
-            Log.e("DatabaseHelper", "Error creating test data: " + e.getMessage());
-        } finally {
-            db.endTransaction();
-            db.close();
-        }
     }
 }
 

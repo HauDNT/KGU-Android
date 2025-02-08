@@ -11,8 +11,9 @@ public class Order {
     String created_at;
     String updated_at;
     int userId;
+    double total;
 
-    public Order() {
+    public Order(int id, String name, OrderStatus orderStatus, String description, String delivery_at, String created_at, String updated_at, int userId, double total) {
     }
 
     public Order(int id, String name, OrderStatus status, String description, String delivery_at, String created_at, String updated_at, int userId) {
@@ -89,4 +90,8 @@ public class Order {
     public void setUserId(int userId) {
         this.userId = userId;
     }
+
+    public double getTotal() { return total; }
+
+    public void setTotal(double total) { this.total = total; }
 }
