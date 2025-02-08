@@ -97,7 +97,6 @@ public class OrderActivityAdapter extends RecyclerView.Adapter<OrderActivityAdap
                 break;
             case DELIVERED:
                 statusField.setText("Đã giao");
-                statusField.setText("Đã thanh toán");
                 statusField.setTextColor(Color.GREEN);
                 break;
             case CANCELLED:
