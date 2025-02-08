@@ -12,7 +12,7 @@
     <LinearLayout
         android:id="@+id/order_item_bound"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:paddingHorizontal="10dp"
         android:paddingVertical="10dp"
         android:weightSum="3"
@@ -21,7 +21,7 @@
         <ImageView
             android:id="@+id/order_item_image"
             android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_height="75dp"
             android:layout_marginEnd="16dp"
             android:contentDescription="@string/cart_item_image_desc"
             app:srcCompat="@drawable/ic_cart_item" />
@@ -52,6 +52,18 @@
                 android:textSize="15sp"
                 android:textStyle="italic"
                 android:text="01/01/2025"
+                android:layout_gravity="center"
+                />
+
+            <TextView
+                android:id="@+id/order_item_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:text="Đang xử lý"
                 android:layout_gravity="center"
                 />
         </LinearLayout>
