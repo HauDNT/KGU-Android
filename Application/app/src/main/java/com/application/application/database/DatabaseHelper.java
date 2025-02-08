@@ -500,36 +500,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try {
             // Lấy giá bán của sản phẩm
             Cursor cursor = db.rawQuery(
-                    "SELECT price FROM foods WHERE id = ?", new String[]{String.valueOf(foodId)});
-            float foodPrice = cursor.getColumnIndexOrThrow("price");
+                    "SELECT * FROM foods WHERE id = ?", new String[]{String.valueOf(foodId)});
 
-            // Thêm mới hoặc cập nhật giỏ hàng
-            ContentValues values = new ContentValues();
+            if (cursor.moveToFirst()) {
+                float foodPrice = cursor.getFloat(cursor.getColumnIndexOrThrow("price"));
 
-            for (int i = 0; i < ordersListIdSelected.size(); i++) {
-                OrderItem orderItem = getExistOrderItem(foodId, ordersListIdSelected.get(i));
+                // Thêm mới hoặc cập nhật giỏ hàng
+                ContentValues values = new ContentValues();
 
-                if (orderItem != null) {
-                    int newQuantity = orderItem.getQuantity() + quantity;  // Tăng quantity lên 1
-                    double newTotalPrice = orderItem.getTotalPrice() * newQuantity;
+                for (int i = 0; i < ordersListIdSelected.size(); i++) {
+                    OrderItem orderItem = getExistOrderItem(foodId, ordersListIdSelected.get(i));
 
-                    values.put("food_id", foodId);
-                    values.put("order_id", ordersListIdSelected.get(i));
-                    values.put("quantity", newQuantity);
-                    values.put("total_price", newTotalPrice);
+                    if (orderItem != null) {
+                        int newQuantity = orderItem.getQuantity() + quantity;  // Tăng quantity lên
+                        double newTotalPrice = newQuantity * foodPrice;     // Tính lại giá bán
 
-                    result = db.update(
-                            "order_item",
-                            values,
-                            "food_id = ? AND order_id = ?",
-                            new String[]{String.valueOf(foodId), String.valueOf(ordersListIdSelected.get(i))}
-                    );
-                } else {
-                    values.put("food_id", foodId);
-                    values.put("order_id", ordersListIdSelected.get(i));
-                    values.put("quantity", quantity);
-                    values.put("total_price", foodPrice * quantity);
-                    result = db.insert("order_item", null, values);
+                        values.put("food_id", foodId);
+                        values.put("order_id", ordersListIdSelected.get(i));
+                        values.put("quantity", newQuantity);
+                        values.put("total_price", newTotalPrice);
+
+                        result = db.update(
+                                "order_item",
+                                values,
+                                "food_id = ? AND order_id = ?",
+                                new String[]{String.valueOf(foodId), String.valueOf(ordersListIdSelected.get(i))}
+                        );
+                    } else {
+                        values.put("food_id", foodId);
+                        values.put("order_id", ordersListIdSelected.get(i));
+                        values.put("quantity", quantity);
+                        values.put("total_price", foodPrice * quantity);
+                        result = db.insert("order_item", null, values);
+                    }
                 }
             }
 
