@@ -94,7 +94,8 @@ public class OrderActivityAdapter extends RecyclerView.Adapter<OrderActivityAdap
     public void removeOrderUI(int position) {
         if (position >= 0 && position < orderList.size()) {
             orderList.remove(position);
-            notifyItemChanged(position);
+            notifyItemRemoved(position);
+            notifyItemRangeChanged(position, orderList.size());
         }
     }
 }

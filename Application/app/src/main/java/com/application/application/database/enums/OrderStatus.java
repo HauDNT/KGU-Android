@@ -1,9 +1,9 @@
 package com.application.application.database.enums;
 
 public enum OrderStatus {
-    PENDING(0),
-    DELIVERED(1),
-    CANCELLED(2),
+    PENDING(0),     // Đang xử lý
+    DELIVERED(1),   // Đã giao
+    CANCELLED(2),   // Đã huỷ
     ;
 
     private final int statusValue;

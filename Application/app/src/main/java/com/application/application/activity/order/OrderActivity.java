@@ -99,7 +99,7 @@ public class OrderActivity extends AppCompatActivity {
                 values.put("description", orderDescription);
                 values.put("created_at", orderCreatedAt);
                 values.put("updated_at", orderCreatedAt);
-                values.put("status", String.valueOf(OrderStatus.PENDING));
+                values.put("status", String.valueOf(OrderStatus.PENDING.getStatusValue()));
 
                 long result = dbHelper.createOrder(values);
 
