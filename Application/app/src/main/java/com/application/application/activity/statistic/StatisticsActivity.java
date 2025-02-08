@@ -61,9 +61,6 @@ public class StatisticsActivity extends AppCompatActivity {
 
         databaseHelper = new DatabaseHelper(this);
 
-        //Tạo dữ liệu mẫu để kiểm thử
-        databaseHelper.createTestData();
-
         //Thiết lập DatePicker cho trường ngày bắt đầu
         startDateEditText.setOnClickListener(v -> {
             MaterialDatePicker.Builder<Long> builder = MaterialDatePicker.Builder.datePicker();

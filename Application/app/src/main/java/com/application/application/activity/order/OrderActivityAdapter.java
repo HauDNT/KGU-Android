@@ -11,10 +11,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.application.application.R;
-
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.application.application.database.DatabaseHelper;
 import com.application.application.database.enums.OrderStatus;
 import com.application.application.model.Order;
@@ -46,12 +45,20 @@ public class OrderActivityAdapter extends RecyclerView.Adapter<OrderActivityAdap
         holder.order_created_at.setText(orderItem.getCreated_at());
         setOrderStatus(orderItem.getStatus(), holder.order_status);
 
+        //Nếu đơn hàng quá khứ (DELIVERED hoặc CANCELLED) thì ẩn nút xoá.
+        if (orderItem.getStatus() == OrderStatus.DELIVERED || orderItem.getStatus() == OrderStatus.CANCELLED) {
+            holder.btn_delete_order.setVisibility(View.GONE);
+        } else {
+            holder.btn_delete_order.setVisibility(View.VISIBLE);
+            holder.btn_delete_order.setOnClickListener(v -> removeOrderDB(position, orderItem.getId()));
+        }
         // Xoá bỏ 1 đơn hàng
         holder.btn_delete_order.setOnClickListener(v -> removeOrderDB(position, orderItem.getId()));
 
-        // Click vào để xem thông tin đơn hàng
+        //Khi click vào item, mở dialog sửa đơn hàng
         holder.order_bound.setOnClickListener(v -> {
-
+            EditOrderDialogFragment fragment = EditOrderDialogFragment.newInstance(orderItem);
+            fragment.show(((AppCompatActivity) context).getSupportFragmentManager(), "EditOrderDialog");
         });
     }
 
@@ -81,7 +88,7 @@ public class OrderActivityAdapter extends RecyclerView.Adapter<OrderActivityAdap
         }
     }
 
-    // Hàm hiển thị status đơn hàng
+
     public void setOrderStatus(OrderStatus orderStatus, TextView statusField) {
         switch (orderStatus) {
             case PENDING:
@@ -89,7 +96,7 @@ public class OrderActivityAdapter extends RecyclerView.Adapter<OrderActivityAdap
                 statusField.setTextColor(Color.BLUE);
                 break;
             case DELIVERED:
-                statusField.setText("Đã thanh toán");
+                statusField.setText("Đã giao");
                 statusField.setTextColor(Color.GREEN);
                 break;
             case CANCELLED:
@@ -102,6 +109,7 @@ public class OrderActivityAdapter extends RecyclerView.Adapter<OrderActivityAdap
         }
     }
 
+    // Xoá đơn hàng khỏi CSDL và cập nhật UI
     // Hàm xoá 1 đơn hàng khỏi Database và cập nhật lại giao diện
     public void removeOrderDB(int position, int id) {
         long result = dbHelper.deleteOrder(id);
@@ -113,7 +121,6 @@ public class OrderActivityAdapter extends RecyclerView.Adapter<OrderActivityAdap
         }
     }
 
-    // Hàm xoá giỏ hàng khỏi giao diện danh sách
     public void removeOrderUI(int position) {
         if (position >= 0 && position < orderList.size()) {
             orderList.remove(position);
