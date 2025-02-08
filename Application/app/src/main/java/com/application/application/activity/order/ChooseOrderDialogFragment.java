@@ -127,7 +127,7 @@ public class ChooseOrderDialogFragment extends DialogFragment implements ChooseO
                 values.put("name", name);
                 values.put("created_at", orderCreatedAt.getText().toString());
                 values.put("updated_at", orderCreatedAt.getText().toString());
-                values.put("status", String.valueOf(OrderStatus.PENDING));
+                values.put("status", String.valueOf(OrderStatus.PENDING.getStatusValue()));
 
                 long result = dbHelper.createOrder(values);
 

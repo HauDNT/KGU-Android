@@ -517,8 +517,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     OrderItem orderItem = getExistOrderItem(foodId, ordersListIdSelected.get(i));
 
                     if (orderItem != null) {
-                        int newQuantity = orderItem.getQuantity() + quantity;  // Tăng quantity lên
-                        double newTotalPrice = newQuantity * foodPrice;     // Tính lại giá bán
+                        int newQuantity = orderItem.getQuantity() + quantity;  //Tăng quantity lên
+                        double newTotalPrice = newQuantity * foodPrice;     //Tính lại giá bán
 
                         values.put("food_id", foodId);
                         values.put("order_id", ordersListIdSelected.get(i));
@@ -574,7 +574,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 try {
                     total = cursor.getDouble(cursor.getColumnIndexOrThrow("total"));
                 } catch (Exception e) {
-                    // Nếu không có cột total, mặc định 0.
+                    //Nếu không có cột total, mặc định 0.
                 }
 
                 order = new Order(id, name, orderStatus, description, delivery_at, created_at, updated_at, userId, total);
@@ -591,28 +591,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    // Hàm cập nhật thông tin đơn hàng
-    // Nếu đơn hàng có trạng thái quá khứ (DELIVERED hoặc CANCELLED) hoặc nếu delivery_at đã thuộc quá khứ (theo ngày)
-    // thì không cho cập nhật (trả về 0). Ngược lại, cập nhật và trả về số dòng được cập nhật.
+    //Hàm cập nhật thông tin đơn hàng
+    //Nếu đơn hàng có trạng thái quá khứ (DELIVERED hoặc CANCELLED) hoặc nếu delivery_at đã thuộc quá khứ (theo ngày) thì không cho cập nhật (trả về 0). Ngược lại, cập nhật và trả về số dòng được cập nhật.
     public int updateOrder(int orderId, ContentValues values) {
-        // Lấy thông tin đơn hàng hiện có
+        //Lấy thông tin đơn hàng hiện có
         Order order = getOrderById(orderId);
         if (order != null) {
             OrderStatus currentStatus = order.getStatus();
-            // Nếu đơn hàng quá khứ theo trạng thái (DELIVERED hoặc CANCELLED) thì không cho cập nhật
+            //Nếu đơn hàng quá khứ theo trạng thái (DELIVERED hoặc CANCELLED) thì không cho cập nhật
             if (currentStatus == OrderStatus.DELIVERED || currentStatus == OrderStatus.CANCELLED) {
                 return 0;
             }
-            // Kiểm tra ngày giao hàng hiện có của đơn hàng (theo định dạng yyyy-MM-dd)
+            //Kiểm tra ngày giao hàng hiện có của đơn hàng (theo định dạng yyyy-MM-dd)
             String currentDeliveryAt = order.getDelivery_at();
             if (currentDeliveryAt != null && !currentDeliveryAt.trim().isEmpty()) {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
                 try {
                     Date deliveryDate = sdf.parse(currentDeliveryAt);
-                    // Lấy ngày hiện tại (loại bỏ phần thời gian)
+                    //Lấy ngày hiện tại (loại bỏ phần thời gian)
                     Date today = sdf.parse(sdf.format(new Date()));
                     if (deliveryDate != null && deliveryDate.before(today)) {
-                        // Nếu ngày giao hàng hiện tại thuộc quá khứ thì không cho cập nhật
+                        //Nếu ngày giao hàng hiện tại thuộc quá khứ thì không cho cập nhật
                         return 0;
                     }
                 } catch (ParseException e) {
@@ -628,15 +627,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    // Hàm xoá đơn hàng
-    // Nếu đơn hàng có trạng thái DELIVERED hoặc CANCELLED thì không cho xoá (trả về -1).
-    // Ngược lại, xoá đơn hàng và các dòng tương ứng trong bảng order_item trong một transaction.
+    //Hàm xoá đơn hàng
+    //Nếu đơn hàng có trạng thái DELIVERED hoặc CANCELLED thì không cho xoá (trả về -1).
+    //Ngược lại, xoá đơn hàng và các dòng tương ứng trong bảng order_item trong một transaction.
     public long deleteOrder(int orderId) {
-        // Lấy thông tin đơn hàng hiện có
+        //Lấy thông tin đơn hàng hiện có
         Order order = getOrderById(orderId);
         if (order != null) {
             OrderStatus currentStatus = order.getStatus();
-            // Nếu đơn hàng quá khứ (DELIVERED hoặc CANCELLED) thì không cho xoá
+            //Nếu đơn hàng quá khứ (DELIVERED hoặc CANCELLED) thì không cho xoá
             if (currentStatus == OrderStatus.DELIVERED || currentStatus == OrderStatus.CANCELLED) {
                 return -1;
             }
@@ -646,9 +645,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long result = 0;
         db.beginTransaction();
         try {
-            // Xoá đơn hàng từ bảng orders
+            //Xoá đơn hàng từ bảng orders
             result = db.delete("orders", "id = ?", new String[]{String.valueOf(orderId)});
-            // Nếu xoá thành công, xoá luôn các dòng liên quan trong bảng order_item
+            //Nếu xoá thành công, xoá luôn các dòng liên quan trong bảng order_item
             if (result > 0) {
                 db.delete("order_item", "order_id = ?", new String[]{String.valueOf(orderId)});
             }

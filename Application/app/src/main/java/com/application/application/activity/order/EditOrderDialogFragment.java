@@ -37,9 +37,6 @@ public class EditOrderDialogFragment extends DialogFragment {
     private DatabaseHelper dbHelper;
     private Order order; // Đơn hàng cần chỉnh sửa
 
-    /**
-     * Factory method để tạo instance và truyền Order cần chỉnh sửa
-     */
     public static EditOrderDialogFragment newInstance(Order order) {
         EditOrderDialogFragment fragment = new EditOrderDialogFragment();
         Bundle args = new Bundle();
@@ -49,13 +46,6 @@ public class EditOrderDialogFragment extends DialogFragment {
         return fragment;
     }
 
-    /**
-     * Hàm chuyển đổi chuỗi trạng thái (tiếng Việt) sang giá trị int tương ứng
-     * Dựa trên enum OrderStatus:
-     * - "Đang xử lý"   -> 0 (PENDING)
-     * - "Đã giao"      -> 1 (DELIVERED)
-     * - "Đã huỷ"       -> 2 (CANCELLED)
-     */
     private int mapStatus(String statusString) {
         if ("Đang xử lý".equals(statusString)) {
             return OrderStatus.PENDING.getStatusValue();
@@ -71,10 +61,8 @@ public class EditOrderDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        // Inflate layout cho dialog
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_edit_order_layout, null);
 
-        // Ánh xạ các view trong dialog
         MaterialAutoCompleteTextView statusDropdown = view.findViewById(R.id.dialog_edit_order_status);
         String[] statusOptions = {"Đang xử lý", "Đã giao", "Đã huỷ"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, statusOptions);
@@ -88,19 +76,17 @@ public class EditOrderDialogFragment extends DialogFragment {
 
         dbHelper = new DatabaseHelper(getContext());
 
-        // Điền thông tin hiện có của đơn hàng vào các trường
+        //Điền thông tin hiện có của đơn hàng vào các trường
         orderNameEditText.setText(order.getName());
         orderDescriptionEditText.setText(order.getDescription());
         deliveryAtEditText.setText(order.getDelivery_at());
 
-        // Cho phép click vào trường "Ngày giao hàng" để mở DateTimePicker.
-        // Lưu ý: Nếu XML đã thiết lập android:enabled="false", hãy thay thế bằng:
-        // android:focusable="false", android:clickable="true", android:inputType="none"
+        //Cho phép click vào trường "Ngày giao hàng" để mở DateTimePicker.
         deliveryAtEditText.setFocusable(false);
         deliveryAtEditText.setClickable(true);
         deliveryAtEditText.setOnClickListener(v -> showDateTimePicker(deliveryAtEditText));
 
-        // Xác định chuỗi trạng thái dựa trên enum OrderStatus
+        //Xác định chuỗi trạng thái dựa trên enum OrderStatus
         String currentStatusStr;
         OrderStatus currentStatus = order.getStatus();
         if (currentStatus == OrderStatus.PENDING) {
@@ -114,7 +100,7 @@ public class EditOrderDialogFragment extends DialogFragment {
         }
         statusDropdown.setText(currentStatusStr, false);
 
-        // Nếu đơn hàng quá khứ (status DELIVERED hoặc CANCELLED) thì không cho phép sửa.
+        //Nếu đơn hàng quá khứ (status DELIVERED hoặc CANCELLED) thì không cho phép sửa.
         if (currentStatus == OrderStatus.DELIVERED || currentStatus == OrderStatus.CANCELLED) {
             Toast.makeText(getContext(), "Đơn hàng quá khứ không được sửa", Toast.LENGTH_SHORT).show();
             btnSave.setEnabled(false);
@@ -125,7 +111,7 @@ public class EditOrderDialogFragment extends DialogFragment {
         AlertDialog dialog = builder.create();
         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
-        // Xử lý nút Lưu cập nhật đơn hàng
+        //Xử lý nút Lưu cập nhật đơn hàng
         btnSave.setOnClickListener(v -> {
             String newName = orderNameEditText.getText().toString().trim();
             String newDescription = orderDescriptionEditText.getText().toString().trim();
@@ -138,7 +124,7 @@ public class EditOrderDialogFragment extends DialogFragment {
                 return;
             }
 
-            // Kiểm tra trùng tên: Nếu tên mới khác tên cũ, kiểm tra xem đã tồn tại đơn hàng nào có tên đó chưa
+            //Kiểm tra trùng tên: Nếu tên mới khác tên cũ, kiểm tra xem đã tồn tại đơn hàng nào có tên đó chưa
             if (!newName.equalsIgnoreCase(order.getName())) {
                 boolean checkExistOrder = dbHelper.isExistsOrder("name", newName);
                 if (checkExistOrder) {
@@ -147,7 +133,7 @@ public class EditOrderDialogFragment extends DialogFragment {
                 }
             }
 
-            // Kiểm tra ngày giao hàng mới (định dạng yyyy-MM-dd HH:mm:ss)
+            //Kiểm tra ngày giao hàng mới (định dạng yyyy-MM-dd HH:mm:ss)
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
             try {
                 Date newDeliveryDate = sdf.parse(newDeliveryAt);
@@ -162,7 +148,7 @@ public class EditOrderDialogFragment extends DialogFragment {
                 return;
             }
 
-            // Tạo ContentValues chứa thông tin cập nhật
+            //Tạo ContentValues chứa thông tin cập nhật
             ContentValues values = new ContentValues();
             values.put("name", newName);
             values.put("description", newDescription);
@@ -186,24 +172,20 @@ public class EditOrderDialogFragment extends DialogFragment {
         return dialog;
     }
 
-    /**
-     * Hiển thị DatePicker và TimePicker để người dùng chọn ngày, giờ, phút và giây.
-     * Kết quả định dạng theo "yyyy-MM-dd HH:mm:ss" (giây sẽ được đặt mặc định là 00 nếu không chọn).
-     */
     private void showDateTimePicker(final EditText editText) {
         final Calendar calendar = Calendar.getInstance();
-        // Mở DatePickerDialog
+        //Mở DatePickerDialog
         DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
                 (DatePicker view, int year, int month, int dayOfMonth) -> {
                     calendar.set(Calendar.YEAR, year);
                     calendar.set(Calendar.MONTH, month);
                     calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                    // Sau khi chọn ngày, mở TimePickerDialog
+                    //Sau khi chọn ngày, mở TimePickerDialog
                     TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(),
                             (TimePicker view1, int hourOfDay, int minute) -> {
                                 calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
                                 calendar.set(Calendar.MINUTE, minute);
-                                // Đặt giây mặc định là 00
+                                //Đặt giây mặc định là 00
                                 calendar.set(Calendar.SECOND, 0);
                                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
                                 editText.setText(sdf.format(calendar.getTime()));

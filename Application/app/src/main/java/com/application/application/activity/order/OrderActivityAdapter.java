@@ -52,6 +52,8 @@ public class OrderActivityAdapter extends RecyclerView.Adapter<OrderActivityAdap
             holder.btn_delete_order.setVisibility(View.VISIBLE);
             holder.btn_delete_order.setOnClickListener(v -> removeOrderDB(position, orderItem.getId()));
         }
+        // Xoá bỏ 1 đơn hàng
+        holder.btn_delete_order.setOnClickListener(v -> removeOrderDB(position, orderItem.getId()));
 
         //Khi click vào item, mở dialog sửa đơn hàng
         holder.order_bound.setOnClickListener(v -> {
@@ -86,7 +88,7 @@ public class OrderActivityAdapter extends RecyclerView.Adapter<OrderActivityAdap
         }
     }
 
-    //Hiển thị trạng thái đơn hàng (với text và màu sắc)
+
     public void setOrderStatus(OrderStatus orderStatus, TextView statusField) {
         switch (orderStatus) {
             case PENDING:
@@ -95,6 +97,7 @@ public class OrderActivityAdapter extends RecyclerView.Adapter<OrderActivityAdap
                 break;
             case DELIVERED:
                 statusField.setText("Đã giao");
+                statusField.setText("Đã thanh toán");
                 statusField.setTextColor(Color.GREEN);
                 break;
             case CANCELLED:
@@ -108,6 +111,7 @@ public class OrderActivityAdapter extends RecyclerView.Adapter<OrderActivityAdap
     }
 
     // Xoá đơn hàng khỏi CSDL và cập nhật UI
+    // Hàm xoá 1 đơn hàng khỏi Database và cập nhật lại giao diện
     public void removeOrderDB(int position, int id) {
         long result = dbHelper.deleteOrder(id);
         if (result != 0) {
@@ -118,7 +122,6 @@ public class OrderActivityAdapter extends RecyclerView.Adapter<OrderActivityAdap
         }
     }
 
-    // Xoá đơn hàng khỏi danh sách hiển thị
     public void removeOrderUI(int position) {
         if (position >= 0 && position < orderList.size()) {
             orderList.remove(position);
