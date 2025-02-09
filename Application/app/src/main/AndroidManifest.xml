@@ -17,7 +17,8 @@
         tools:targetApi="31">
 
         <activity
-            android:name=".activity.order.activity.OrderActivity"
+            android:name=".activity.dashboard.DashboardActivity"
+
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,8 +29,8 @@
             android:name=".activity.statistic.StatisticsActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.dashboard.DashboardActivity"
-            android:exported="false" />
+            android:name=".activity.order.activity.OrderActivity"
+            android:exported="true" />
         <activity
             android:name=".activity.food.FoodActivity"
             android:exported="false" />

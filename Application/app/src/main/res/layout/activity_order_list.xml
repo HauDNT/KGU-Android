@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="3"
             android:textStyle="bold"
-            android:textSize="25dp"
+            android:textSize="25sp"
             android:text="Đơn hàng"/>
 
         <com.google.android.material.button.MaterialButton
@@ -47,6 +47,14 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/order_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:layout_marginTop="8dp" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:menu="@menu/bottom_navigation_menu" />
+
 </LinearLayout>
