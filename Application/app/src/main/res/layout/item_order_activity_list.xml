@@ -21,7 +21,7 @@
         <ImageView
             android:id="@+id/order_item_image"
             android:layout_width="50dp"
-            android:layout_height="75dp"
+            android:layout_height="80dp"
             android:layout_marginEnd="16dp"
             android:contentDescription="@string/cart_item_image_desc"
             app:srcCompat="@drawable/ic_cart_item" />
@@ -60,19 +60,36 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="10dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="12dp"
                 android:textSize="15sp"
                 android:textStyle="bold"
                 android:text="Đang xử lý"
                 android:layout_gravity="center"
                 />
         </LinearLayout>
-        <ImageView
-            android:id="@+id/order_item_btn_delete"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginEnd="16dp"
-            android:layout_gravity="center_vertical"
-            app:srcCompat="@drawable/ic_remove" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/order_item_btn_update"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginEnd="16dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginBottom="10dp"
+                app:srcCompat="@drawable/ic_edit" />
+
+            <ImageView
+                android:id="@+id/order_item_btn_delete"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginEnd="16dp"
+                android:layout_gravity="center_vertical"
+                app:srcCompat="@drawable/ic_remove" />
+        </LinearLayout>
+
     </LinearLayout>
 </androidx.cardview.widget.CardView>

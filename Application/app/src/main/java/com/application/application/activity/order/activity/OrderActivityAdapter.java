@@ -1,7 +1,8 @@
-package com.application.application.activity.order;
+package com.application.application.activity.order.activity;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,10 @@ import com.application.application.R;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.application.application.Utils;
+import com.application.application.activity.order.activity.detail_order.DetailOrderDialogFragment;
+import com.application.application.activity.order.activity.edit_order.EditOrderDialogFragment;
 import com.application.application.database.DatabaseHelper;
 import com.application.application.database.enums.OrderStatus;
 import com.application.application.model.Order;
@@ -34,7 +39,7 @@ public class OrderActivityAdapter extends RecyclerView.Adapter<OrderActivityAdap
     @NonNull
     @Override
     public OrderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.order_item_activity_list, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_order_activity_list, parent, false);
         return new OrderViewHolder(view);
     }
 
@@ -43,7 +48,7 @@ public class OrderActivityAdapter extends RecyclerView.Adapter<OrderActivityAdap
         Order orderItem = orderList.get(position);
         holder.order_title.setText(orderItem.getName());
         holder.order_created_at.setText(orderItem.getCreated_at());
-        setOrderStatus(orderItem.getStatus(), holder.order_status);
+        Utils.setOrderStatus(orderItem.getStatus(), holder.order_status);
 
         //Nếu đơn hàng quá khứ (DELIVERED hoặc CANCELLED) thì ẩn nút xoá.
         if (orderItem.getStatus() == OrderStatus.DELIVERED || orderItem.getStatus() == OrderStatus.CANCELLED) {
@@ -55,10 +60,19 @@ public class OrderActivityAdapter extends RecyclerView.Adapter<OrderActivityAdap
         // Xoá bỏ 1 đơn hàng
         holder.btn_delete_order.setOnClickListener(v -> removeOrderDB(position, orderItem.getId()));
 
-        //Khi click vào item, mở dialog sửa đơn hàng
-        holder.order_bound.setOnClickListener(v -> {
+        // Xem/chỉnh sửa thông tin đơn hàng
+        holder.btn_edit_order.setOnClickListener(v -> {
             EditOrderDialogFragment fragment = EditOrderDialogFragment.newInstance(orderItem);
             fragment.show(((AppCompatActivity) context).getSupportFragmentManager(), "EditOrderDialog");
+        });
+
+        //Khi click vào item, mở dialog chi tiết đơn hàng
+        holder.order_bound.setOnClickListener(v -> {
+            DetailOrderDialogFragment dialogFragment = new DetailOrderDialogFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("order_id", String.valueOf(orderItem.getId()));
+            dialogFragment.setArguments(bundle);
+            dialogFragment.show(((AppCompatActivity) context).getSupportFragmentManager(), "Detail Order Dialog");
         });
     }
 
@@ -76,7 +90,7 @@ public class OrderActivityAdapter extends RecyclerView.Adapter<OrderActivityAdap
         public TextView order_title;
         public TextView order_created_at, order_status;
         public LinearLayout order_bound;
-        public ImageView btn_delete_order;
+        public ImageView btn_delete_order, btn_edit_order;
 
         OrderViewHolder(View itemView) {
             super(itemView);
@@ -85,27 +99,7 @@ public class OrderActivityAdapter extends RecyclerView.Adapter<OrderActivityAdap
             order_status = itemView.findViewById(R.id.order_item_status);
             order_bound = itemView.findViewById(R.id.order_item_bound);
             btn_delete_order = itemView.findViewById(R.id.order_item_btn_delete);
-        }
-    }
-
-
-    public void setOrderStatus(OrderStatus orderStatus, TextView statusField) {
-        switch (orderStatus) {
-            case PENDING:
-                statusField.setText("Đang xử lý");
-                statusField.setTextColor(Color.BLUE);
-                break;
-            case DELIVERED:
-                statusField.setText("Đã giao");
-                statusField.setTextColor(Color.GREEN);
-                break;
-            case CANCELLED:
-                statusField.setText("Đã huỷ");
-                statusField.setTextColor(Color.RED);
-                break;
-            default:
-                statusField.setText("Không xác định");
-                break;
+            btn_edit_order = itemView.findViewById(R.id.order_item_btn_update);
         }
     }
 

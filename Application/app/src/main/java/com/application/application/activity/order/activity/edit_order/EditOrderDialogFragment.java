@@ -1,4 +1,4 @@
-package com.application.application.activity.order;
+package com.application.application.activity.order.activity.edit_order;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;

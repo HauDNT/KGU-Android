@@ -13,9 +13,6 @@ public class Order {
     int userId;
     double total;
 
-    public Order(int id, String name, OrderStatus orderStatus, String description, String delivery_at, String created_at, String updated_at, int userId, double total) {
-    }
-
     public Order(int id, String name, OrderStatus status, String description, String delivery_at, String created_at, String updated_at, int userId) {
         this.id = id;
         this.name = name;

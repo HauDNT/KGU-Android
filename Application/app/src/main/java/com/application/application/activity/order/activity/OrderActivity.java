@@ -1,4 +1,4 @@
-package com.application.application.activity.order;
+package com.application.application.activity.order.activity;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,13 +17,14 @@ import android.widget.Toast;
 
 import com.application.application.R;
 import com.application.application.Utils;
+import com.application.application.activity.order.activity.detail_order.DetailOrderDialogFragment;
 import com.application.application.database.DatabaseHelper;
 import com.application.application.database.enums.OrderStatus;
 import com.application.application.model.Order;
 
 import java.util.List;
 
-public class OrderActivity extends AppCompatActivity {
+public class OrderActivity extends AppCompatActivity implements DetailOrderDialogFragment.OnOrderUpdatedListener {
     private RecyclerView orderRecyclerView;
     private OrderActivityAdapter orderActivityAdapter;
     private List<Order> orderList;
@@ -119,5 +120,11 @@ public class OrderActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Tên giỏ hàng không hợp lệ", Toast.LENGTH_LONG).show();
         }
+    }
+
+    // Khi OrderDetailFragment cập nhật status thì OrderActivity cập nhật lại danh sách
+    @Override
+    public void onOrderUpdated() {
+        orderActivityAdapter.refreshOrdersList();
     }
 }

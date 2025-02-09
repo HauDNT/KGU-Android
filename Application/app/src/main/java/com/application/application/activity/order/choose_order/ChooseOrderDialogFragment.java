@@ -1,4 +1,4 @@
-package com.application.application.activity.order;
+package com.application.application.activity.order.choose_order;
 
 import static android.widget.Toast.LENGTH_LONG;
 

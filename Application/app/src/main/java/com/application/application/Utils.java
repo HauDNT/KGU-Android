@@ -1,5 +1,10 @@
 package com.application.application;
 
+import android.graphics.Color;
+import android.widget.TextView;
+
+import com.application.application.database.enums.OrderStatus;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
@@ -69,5 +74,26 @@ public class Utils {
     public static boolean isValidEmail(String email) {
         String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
         return regexVerify(email, emailPattern);
+    }
+
+    // Hàm set status của đơn hàng vào text view
+    public static void setOrderStatus(OrderStatus orderStatus, TextView statusField) {
+        switch (orderStatus) {
+            case PENDING:
+                statusField.setText("Đang xử lý");
+                statusField.setTextColor(Color.BLUE);
+                break;
+            case DELIVERED:
+                statusField.setText("Đã giao");
+                statusField.setTextColor(Color.GREEN);
+                break;
+            case CANCELLED:
+                statusField.setText("Đã huỷ");
+                statusField.setTextColor(Color.RED);
+                break;
+            default:
+                statusField.setText("Không xác định");
+                break;
+        }
     }
 }

@@ -5,15 +5,17 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.format.DateFormat;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.application.application.BuildConfig;
+import com.application.application.Utils;
 import com.application.application.database.enums.OrderStatus;
 import com.application.application.model.Category;
 import com.application.application.model.Food;
 import com.application.application.model.Order;
 import com.application.application.model.OrderItem;
+import com.application.application.model.OrderWithItems;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -87,7 +89,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + "created_at DEFAULT CURRENT_TIMESTAMP,"
                 + "updated_at DEFAULT CURRENT_TIMESTAMP,"
                 + "user_id INTEGER,"
-                + "total REAL DEFAULT 0,"
                 + "FOREIGN KEY (user_id) REFERENCES users(id)"
                 + ");";
         db.execSQL(createOrdersTable);
@@ -225,6 +226,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return foodList;
     }
+
+    // Hàm lấy tên món ăn
+    public String getFoodNameById(int foodId) {
+        String foodName = "";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+
+        try {
+            cursor = db.query("foods", null, "id = ?", new String[]{String.valueOf(foodId)}, null, null, null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                foodName = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+            }
+        } catch (Exception e) {
+            Log.e("DatabaseHelper", "Error getting food name: " + e.getMessage());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return foodName;
+    }
+
 
     // ---------------------------------------------------- Categories ----------------------------------------------------
     public List<Category> getCategoriesList(String[] columns) {
@@ -463,6 +488,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return orders;
     }
 
+    // Hàm lấy danh sách item theo id giỏ hàng
+    public List<OrderItem> getOrdersListByOrderId(int orderId) {
+        List<OrderItem> orderItems = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM order_item where order_id = ?", new String[]{String.valueOf(orderId)});
+
+        if (cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                int food_id = cursor.getInt(cursor.getColumnIndexOrThrow("food_id"));
+                int quantity = cursor.getInt(cursor.getColumnIndexOrThrow("quantity"));
+                double total_price = cursor.getDouble(cursor.getColumnIndexOrThrow("total_price"));
+
+                orderItems.add(new OrderItem(id, food_id, orderId, quantity, total_price));
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+        return orderItems;
+    }
+
     // Hàm tạo 1 giỏ hàng
     public long createOrder(ContentValues values) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -570,14 +618,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 String created_at = cursor.getString(cursor.getColumnIndexOrThrow("created_at"));
                 String updated_at = cursor.getString(cursor.getColumnIndexOrThrow("updated_at"));
                 int userId = cursor.getInt(cursor.getColumnIndexOrThrow("user_id"));
-                double total = 0;
-                try {
-                    total = cursor.getDouble(cursor.getColumnIndexOrThrow("total"));
-                } catch (Exception e) {
-                    //Nếu không có cột total, mặc định 0.
-                }
 
-                order = new Order(id, name, orderStatus, description, delivery_at, created_at, updated_at, userId, total);
+                order = new Order(id, name, orderStatus, description, delivery_at, created_at, updated_at, userId);
             }
         } catch (Exception e) {
             Log.e("DatabaseHelper", "Error in getOrderById: " + e.getMessage());
@@ -590,6 +632,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return order;
     }
 
+    // Hàm lấy ra order và order_item theo id của order
+    public OrderWithItems getOrder_OrderItems_Food(int orderId) {
+        OrderWithItems orderWithItems = null;
+        Order order = getOrderById(orderId);
+
+        if (order != null) {
+            List<OrderItem> orderItems = getOrdersListByOrderId(orderId);
+
+            if (orderItems.size() > 0) {
+                orderWithItems = new OrderWithItems(order, orderItems);
+            } else {
+                Log.e("Order item not found", "Đơn hàng không có sản phẩm nào");
+            }
+        } else {
+            Log.e("Order not found", "Không tìm thấy đơn hàng");
+        }
+
+        return orderWithItems;
+    }
 
     //Hàm cập nhật thông tin đơn hàng
     //Nếu đơn hàng có trạng thái quá khứ (DELIVERED hoặc CANCELLED) hoặc nếu delivery_at đã thuộc quá khứ (theo ngày) thì không cho cập nhật (trả về 0). Ngược lại, cập nhật và trả về số dòng được cập nhật.
@@ -661,6 +722,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result;
     }
 
+    // Hàm cập nhật lại trạng thái của đơn hàng: (đang xử lý, đã giao, đã huỷ) - cho chức năng thanh toán / huỷ đơn hàng
+    public long updateOrderStatus(int orderId, OrderStatus status) {
+        int statusValue = status.getStatusValue();
+        Order order = getOrderById(orderId);
+
+        if (order != null) {
+            OrderStatus currentStatus = order.getStatus();
+            //Nếu đơn hàng quá khứ theo trạng thái (DELIVERED hoặc CANCELLED) thì không cho cập nhật
+            if (currentStatus == OrderStatus.DELIVERED || currentStatus == OrderStatus.CANCELLED) {
+                return 0;
+            }
+
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put("status", statusValue);
+            values.put("updated_at", DateFormat.format("yyyy-MM-dd HH:mm:ss", new Date()).toString());
+            values.put("delivery_at", DateFormat.format("yyyy-MM-dd HH:mm:ss", new Date()).toString());
+
+            long rowsUpdated = db.update("orders", values, "id = ?", new String[]{String.valueOf(orderId)});
+            db.close();
+
+            return rowsUpdated;
+        }
+
+        return 0;
+    }
 
     // ---------------------------------------------------- statistic ----------------------------------------------------
     // Thêm phương thức thống kê đơn hàng bán chạy nhất trong khoảng thời gian
