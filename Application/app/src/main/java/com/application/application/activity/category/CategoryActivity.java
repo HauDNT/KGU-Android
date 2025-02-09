@@ -5,14 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
 import android.content.ContentValues;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -21,7 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.application.application.R;
-import com.application.application.activity.auth.Utils;
+import com.application.application.Utils;
 import com.application.application.database.DatabaseHelper;
 import com.application.application.model.Category;
 

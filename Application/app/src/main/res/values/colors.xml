@@ -7,13 +7,27 @@
     <color name="colorPrimaryDark">#FF3700B3</color>
     <color name="colorAccent">#FF03DAC5</color>
     <color name="alertText">#F93827</color>
+    <color name="red">#F93827</color>
     <color name="successText">#5CB338</color>
     <color name="grayCorner">#B0BEC5</color>
     <color name="orange">#FFA500</color>
+    <color name="lightGray">#F0F0F0</color>
     <color name="silver">#C0C0C0</color>
     <color name="chip_background">#E0E0E0</color>
     <color name="chip_text_color">#000000</color>
     <color name="chip_stroke_color">#00000000</color>
     <color name="chip_stroke_selected_color">#3F51B5</color>
     <color name="chip_selected_background">#E1BEE7</color>
+
+    <color name="barColor1">#FF5722</color>
+    <color name="barColor2">#4CAF50</color>
+    <color name="barColor3">#2196F3</color>
+    <color name="barColor4">#9C27B0</color>
+    <color name="barColor5">#FFC107</color>
+
+    <color name="pieColor1">#FF5722</color>
+    <color name="pieColor2">#4CAF50</color>
+    <color name="pieColor3">#2196F3</color>
+    <color name="pieColor4">#9C27B0</color>
+    <color name="pieColor5">#FFC107</color>
 </resources>

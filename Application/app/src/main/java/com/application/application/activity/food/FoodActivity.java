@@ -77,8 +77,13 @@ public class FoodActivity extends AppCompatActivity {
 
     private void loadFoodList() {
         List<Food> foodList = dbHelper.getAllFoods();
-        foodAdapter = new FoodAdapter(foodList, dbHelper, this);
-        recyclerView.setAdapter(foodAdapter);
+        if (foodList.size() > 0) {
+            foodAdapter = new FoodAdapter(this, foodList, dbHelper, this);
+            recyclerView.setAdapter(foodAdapter);
+        }
+        else {
+            Toast.makeText(this,"Không có dữ liệu món ăn", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void showCreateFoodDialog() {
@@ -323,13 +328,9 @@ public class FoodActivity extends AppCompatActivity {
         editDescription.setText(food.getDescription());
         editPrice.setText(String.valueOf((int) food.getPrice()));
 
-        //Tải ảnh cũ nếu có
-        if (food.getImageUrl() != null && !food.getImageUrl().isEmpty()) {
-            Uri imageUri = Uri.parse(food.getImageUrl());
-            imagePreview.setImageURI(imageUri);
-        } else {
-            imagePreview.setImageResource(R.drawable.dialog_create_category_icon); //Ảnh mặc định nếu không có
-        }
+        //Tải ảnh
+        Uri imageUri = Uri.parse(food.getImageUrl());
+        imagePreview.setImageURI(imageUri);
 
         //Cập nhật danh sách loại sản phẩm đã chọn
         selectedCategories = dbHelper.getCategoriesForFood(food.getId());
@@ -380,19 +381,9 @@ public class FoodActivity extends AppCompatActivity {
             values.put("price", price);
             values.put("status", status);
 
-            //Cập nhật hình ảnh nếu có
+            // Nếu người dùng không chọn ảnh mới, giữ nguyên URL ảnh cũ
             if (imageUri != null) {
-                Bitmap bitmap;
-                try {
-                    bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
-                    saveImageToInternalStorage(bitmap, name); //Lưu hình ảnh
-                    values.put("image_url", imageUri.toString()); //Cập nhật đường dẫn hình ảnh
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    alertText.setText("Lỗi khi lưu hình ảnh.");
-                    alertText.setVisibility(View.VISIBLE);
-                    return;
-                }
+                values.put("image_url", imageUri.toString());
             } else {
                 //Giữ nguyên hình ảnh cũ nếu không có hình ảnh mới
                 values.put("image_url", food.getImageUrl());

@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:padding="12dp"
     android:layout_margin="5dp"
-    android:background="@drawable/dialog_create_category_background">
+    android:background="@drawable/dialog_background">
 
     <ImageView
         android:src="@drawable/dialog_create_category_icon"

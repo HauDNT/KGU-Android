@@ -16,13 +16,16 @@ import com.application.application.activity.bottomNav.BottomNavigationHelper;
 import com.application.application.activity.bottomNav.OnBottomNavItemSelectedListener;
 import com.application.application.R;
 import com.application.application.activity.account.AccountActivity;
-import com.application.application.activity.cart.CartActivity;
 import com.application.application.activity.detail_food.DetailFoodActivity;
+
 import com.application.application.activity.food.FoodListActivity;
 import com.application.application.activity.foodlist.BurgerListActivity;
 import com.application.application.activity.foodlist.DrinkListActivity;
 import com.application.application.activity.foodlist.PizzaListActivity;
 import com.application.application.activity.foodlist.PopcornListActivity;
+
+import com.application.application.activity.order.activity.OrderActivity;
+
 import com.application.application.activity.sale.SaleActivity;
 import com.application.application.common.PosterAdapter;
 import com.application.application.model.Product;
@@ -177,7 +180,7 @@ public class DashboardActivity extends AppCompatActivity implements OnBottomNavI
         } else if (itemId == R.id.sale) {
             startActivity(new Intent(DashboardActivity.this, SaleActivity.class));
         } else if (itemId == R.id.cart) {
-            startActivity(new Intent(DashboardActivity.this, CartActivity.class));
+            startActivity(new Intent(DashboardActivity.this, OrderActivity.class));
         } else if (itemId == R.id.account) {
             startActivity(new Intent(DashboardActivity.this, AccountActivity.class));
         }
