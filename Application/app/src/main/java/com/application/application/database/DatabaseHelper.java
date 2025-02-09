@@ -749,34 +749,49 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return 0;
     }
 
+    // Phương thức xoá order item theo id
+    public long deleteOrderItem(int orderItemId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        long result = db.delete("order_item", "id = ?", new String[]{String.valueOf(orderItemId)});
+        db.close();
+        return result;
+    }
+
     // ---------------------------------------------------- statistic ----------------------------------------------------
     // Thêm phương thức thống kê đơn hàng bán chạy nhất trong khoảng thời gian
     public List<OrderItem> getBestSellingItems(String startDate, String endDate) {
         List<OrderItem> bestSellingItems = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = null;
-
         try {
+            // Sử dụng biểu thức CASE để trích xuất phần ngày từ created_at, giả sử dữ liệu có thể là:
+            // "HH:mm:ss - dd/MM/yyyy" hoặc "dd/MM/yyyy HH:mm:ss". Ở đây ta giả định rằng nếu chứa dấu "-", thì phần sau dấu "-" là ngày.
             String query = "SELECT oi.food_id, f.name AS food_name, SUM(oi.quantity) AS total_quantity " +
                     "FROM order_item oi " +
                     "JOIN orders o ON oi.order_id = o.id " +
                     "JOIN foods f ON oi.food_id = f.id " +
-                    "WHERE o.created_at BETWEEN ? AND ? " +
+                    "WHERE (CASE " +
+                    "         WHEN o.created_at LIKE '% - %' THEN trim(substr(o.created_at, instr(o.created_at, '-') + 1)) " +
+                    "         ELSE substr(o.created_at, 1, 10) " +
+                    "       END) BETWEEN ? AND ? " +
+                    "AND o.status = ? " +
                     "GROUP BY oi.food_id " +
                     "ORDER BY total_quantity DESC";
-
-            cursor = db.rawQuery(query, new String[]{startDate, endDate});
+            // Ở đây, chúng ta mong các tham số startDate và endDate ở định dạng dd/MM/yyyy, và chỉ tính đơn hàng DELIVERED.
+            cursor = db.rawQuery(query, new String[]{
+                    startDate,
+                    endDate,
+                    String.valueOf(OrderStatus.DELIVERED.getStatusValue())
+            });
             if (cursor != null && cursor.moveToFirst()) {
                 do {
                     int foodId = cursor.getInt(cursor.getColumnIndexOrThrow("food_id"));
-                    //Lấy tên món ăn từ cột food_name
                     String foodName = cursor.getString(cursor.getColumnIndexOrThrow("food_name"));
                     int totalQuantity = cursor.getInt(cursor.getColumnIndexOrThrow("total_quantity"));
 
-                    //Lấy giá bán của sản phẩm theo foodId
+                    // Lấy đơn giá của sản phẩm từ foods (bạn phải cài đặt getFoodPrice)
                     double foodPrice = getFoodPrice(foodId);
 
-                    //Tạo đối tượng OrderItem chứa thông tin thống kê của sản phẩm
                     OrderItem orderItem = new OrderItem();
                     orderItem.setFood_id(foodId);
                     orderItem.setFood_name(foodName);
@@ -794,7 +809,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
             db.close();
         }
-
         return bestSellingItems;
     }
 

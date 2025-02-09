@@ -134,7 +134,7 @@ public class EditOrderDialogFragment extends DialogFragment {
             }
 
             //Kiểm tra ngày giao hàng mới (định dạng yyyy-MM-dd HH:mm:ss)
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss - dd/MM/yyyy", Locale.getDefault());
             try {
                 Date newDeliveryDate = sdf.parse(newDeliveryAt);
                 Date now = new Date();
@@ -154,7 +154,7 @@ public class EditOrderDialogFragment extends DialogFragment {
             values.put("description", newDescription);
             values.put("delivery_at", newDeliveryAt);
             values.put("status", newStatusValue);
-            values.put("updated_at", DateFormat.format("yyyy-MM-dd HH:mm:ss", new Date()).toString());
+            values.put("updated_at", sdf.format(new Date()));
 
             int rowsUpdated = dbHelper.updateOrder(order.getId(), values);
             if (rowsUpdated > 0) {
@@ -187,7 +187,7 @@ public class EditOrderDialogFragment extends DialogFragment {
                                 calendar.set(Calendar.MINUTE, minute);
                                 //Đặt giây mặc định là 00
                                 calendar.set(Calendar.SECOND, 0);
-                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss - dd/MM/yyyy", Locale.getDefault());
                                 editText.setText(sdf.format(calendar.getTime()));
                             },
                             calendar.get(Calendar.HOUR_OF_DAY),
