@@ -5,7 +5,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import com.application.application.R;
 import com.application.application.activity.dashboard.DashboardActivity;
-import com.application.application.activity.order.OrderActivity;
+import com.application.application.activity.order.activity.OrderActivity;
 import com.application.application.activity.sale.SaleActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 

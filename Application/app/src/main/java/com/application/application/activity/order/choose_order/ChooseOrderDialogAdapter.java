@@ -1,4 +1,4 @@
-package com.application.application.activity.order;
+package com.application.application.activity.order.choose_order;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -32,7 +32,7 @@ public class ChooseOrderDialogAdapter extends RecyclerView.Adapter<ChooseOrderDi
     @NonNull
     @Override
     public OrderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.choose_order_dialog_item_list, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.dialog_choose_order_item_list, parent, false);
         return new OrderViewHolder(view);
     }
 

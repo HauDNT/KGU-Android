@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.application.application.R;
 import com.application.application.activity.dashboard.DashboardActivity;
 import com.application.application.activity.account.AccountActivity;
-import com.application.application.activity.order.OrderActivity;
+import com.application.application.activity.order.activity.OrderActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class SaleActivity extends AppCompatActivity {

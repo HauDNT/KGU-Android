@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,7 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.application.application.R;
-import com.application.application.activity.order.ChooseOrderDialogFragment;
+import com.application.application.activity.order.choose_order.ChooseOrderDialogFragment;
 import com.application.application.database.DatabaseHelper;
 import com.application.application.model.Food;
 
@@ -43,7 +42,7 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
     @Override
     public FoodViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.food_item_list, parent, false);
+                .inflate(R.layout.item_food_list, parent, false);
         return new FoodViewHolder(view);
     }
 

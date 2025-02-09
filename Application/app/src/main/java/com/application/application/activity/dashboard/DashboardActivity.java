@@ -17,7 +17,7 @@ import com.application.application.activity.bottomNav.OnBottomNavItemSelectedLis
 import com.application.application.R;
 import com.application.application.activity.account.AccountActivity;
 import com.application.application.activity.detail_food.DetailFoodActivity;
-import com.application.application.activity.order.OrderActivity;
+import com.application.application.activity.order.activity.OrderActivity;
 import com.application.application.activity.sale.SaleActivity;
 import com.application.application.common.PosterAdapter;
 import com.application.application.model.Product;
