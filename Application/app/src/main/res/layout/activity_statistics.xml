@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <!-- Tiêu đề -->
         <TextView
             android:id="@+id/headerTextView"
             android:layout_width="match_parent"
@@ -21,9 +22,9 @@
             android:textStyle="bold"
             android:textColor="@color/colorPrimary"
             android:gravity="center"
-            android:padding="16dp"/>
+            android:padding="16dp" />
 
-        <!-- Phần chọn ngày bắt đầu -->
+        <!-- Chọn ngày bắt đầu -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/startDateInputLayout"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -38,10 +39,10 @@
                 android:hint="Chọn ngày bắt đầu"
                 android:inputType="none"
                 android:focusable="false"
-                android:clickable="true"/>
+                android:clickable="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Phần chọn ngày kết thúc -->
+        <!-- Chọn ngày kết thúc -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/endDateInputLayout"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -57,7 +58,7 @@
                 android:hint="Chọn ngày kết thúc"
                 android:inputType="none"
                 android:focusable="false"
-                android:clickable="true"/>
+                android:clickable="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Nút thống kê -->
@@ -70,9 +71,9 @@
             android:textColor="@color/white"
             android:backgroundTint="@color/colorPrimary"
             android:layout_marginTop="24dp"
-            app:cornerRadius="8dp"/>
+            app:cornerRadius="8dp" />
 
-        <!-- Khu vực hiển thị kết quả thống kê dạng text -->
+        <!-- Khu vực hiển thị kết quả thống kê dạng bảng -->
         <androidx.cardview.widget.CardView
             android:id="@+id/statsCardView"
             android:layout_width="match_parent"
@@ -80,34 +81,48 @@
             android:layout_marginTop="24dp"
             app:cardCornerRadius="8dp"
             app:cardElevation="4dp"
-            android:visibility="gone"
-            android:padding="8dp">
+            android:padding="8dp"
+            android:visibility="gone">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <!-- Tiêu đề của đơn hàng bán chạy nhất -->
+                <!-- TextView hiển thị tiêu đề phần thống kê (ví dụ: sản phẩm bán chạy nhất) -->
                 <TextView
                     android:id="@+id/bestSellerTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Đơn hàng bán chạy nhất:"
+                    android:text="Sản phẩm bán chạy nhất:"
                     android:textSize="20sp"
                     android:textStyle="bold"
                     android:textColor="@color/colorPrimary"
-                    android:padding="8dp"/>
+                    android:padding="8dp" />
 
-                <!-- Nội dung thống kê -->
+                <!-- TextView hiển thị thông tin thống kê (các thông báo lỗi hay tổng hợp dữ liệu) -->
                 <TextView
                     android:id="@+id/statsTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
                     android:textColor="@color/black"
-                    android:padding="8dp"/>
+                    android:padding="8dp" />
+
+                <!-- TableLayout hiển thị kết quả thống kê dạng bảng (tạo động từ code) -->
+                <TableLayout
+                    android:id="@+id/statsTableLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="-40dp"
+                    android:stretchColumns="*"
+                    android:shrinkColumns="*"
+                    android:padding="8dp">
+                </TableLayout>
+
+
             </LinearLayout>
+
         </androidx.cardview.widget.CardView>
 
         <!-- Biểu đồ cột -->

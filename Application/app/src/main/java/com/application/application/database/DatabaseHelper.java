@@ -763,21 +763,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<OrderItem> bestSellingItems = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = null;
+
         try {
-            // Sử dụng biểu thức CASE để trích xuất phần ngày từ created_at, giả sử dữ liệu có thể là:
-            // "HH:mm:ss - dd/MM/yyyy" hoặc "dd/MM/yyyy HH:mm:ss". Ở đây ta giả định rằng nếu chứa dấu "-", thì phần sau dấu "-" là ngày.
-            String query = "SELECT oi.food_id, f.name AS food_name, SUM(oi.quantity) AS total_quantity " +
+            // Truy vấn sử dụng CASE để tách phần ngày từ created_at (với định dạng có thể khác nhau)
+            // Và dùng hàm replace để chuyển ':' thành '/' cho thống nhất định dạng
+            String query = "SELECT oi.food_id, f.name AS food_name, " +
+                    "SUM(oi.quantity) AS total_quantity, SUM(oi.total_price) AS total_money " +
                     "FROM order_item oi " +
                     "JOIN orders o ON oi.order_id = o.id " +
                     "JOIN foods f ON oi.food_id = f.id " +
-                    "WHERE (CASE " +
+                    "WHERE replace((CASE " +
                     "         WHEN o.created_at LIKE '% - %' THEN trim(substr(o.created_at, instr(o.created_at, '-') + 1)) " +
                     "         ELSE substr(o.created_at, 1, 10) " +
-                    "       END) BETWEEN ? AND ? " +
+                    "       END), ':', '/') BETWEEN ? AND ? " +
                     "AND o.status = ? " +
                     "GROUP BY oi.food_id " +
-                    "ORDER BY total_quantity DESC";
-            // Ở đây, chúng ta mong các tham số startDate và endDate ở định dạng dd/MM/yyyy, và chỉ tính đơn hàng DELIVERED.
+                    "ORDER BY total_quantity DESC, total_money DESC";
+
+            // Giả sử startDate và endDate được truyền vào với định dạng "dd/MM/yyyy"
+            // Và chỉ tính các đơn hàng có trạng thái DELIVERED.
             cursor = db.rawQuery(query, new String[]{
                     startDate,
                     endDate,
@@ -788,15 +792,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     int foodId = cursor.getInt(cursor.getColumnIndexOrThrow("food_id"));
                     String foodName = cursor.getString(cursor.getColumnIndexOrThrow("food_name"));
                     int totalQuantity = cursor.getInt(cursor.getColumnIndexOrThrow("total_quantity"));
-
-                    // Lấy đơn giá của sản phẩm từ foods (bạn phải cài đặt getFoodPrice)
-                    double foodPrice = getFoodPrice(foodId);
+                    float totalMoney = cursor.getFloat(cursor.getColumnIndexOrThrow("total_money"));
 
                     OrderItem orderItem = new OrderItem();
                     orderItem.setFood_id(foodId);
                     orderItem.setFood_name(foodName);
                     orderItem.setQuantity(totalQuantity);
-                    orderItem.setTotalPrice((float) (totalQuantity * foodPrice));
+                    orderItem.setTotalPrice(totalMoney);
 
                     bestSellingItems.add(orderItem);
                 } while (cursor.moveToNext());
@@ -810,30 +812,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.close();
         }
         return bestSellingItems;
-    }
-
-    //Hàm lấy giá món ăn
-    private double getFoodPrice(int foodId) {
-        double price = 0.0;
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = null;
-
-        try {
-            String query = "SELECT price FROM foods WHERE id = ?";
-            cursor = db.rawQuery(query, new String[]{String.valueOf(foodId)});
-
-            if (cursor != null && cursor.moveToFirst()) {
-                price = cursor.getDouble(cursor.getColumnIndexOrThrow("price"));
-            }
-        } catch (Exception e) {
-            Log.e("DatabaseHelper", "Error in getFoodPrice: " + e.getMessage());
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-            db.close();
-        }
-        return price;
     }
 }
 

@@ -1,9 +1,12 @@
 package com.application.application.activity.statistic;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,6 +25,7 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputEditText;
@@ -47,6 +51,7 @@ public class StatisticsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistics);
 
+        // Ánh xạ view từ layout
         statsTextView = findViewById(R.id.statsTextView);
         bestSellerTextView = findViewById(R.id.bestSellerTextView);
         startDateEditText = findViewById(R.id.startDateEditText);
@@ -55,27 +60,27 @@ public class StatisticsActivity extends AppCompatActivity {
         barChart = findViewById(R.id.barChart);
         pieChart = findViewById(R.id.pieChart);
 
-        // Ban đầu ẩn biểu đồ và CardView thống kê (nếu có)
+        // Ban đầu ẩn biểu đồ và CardView thống kê
         barChart.setVisibility(View.GONE);
         pieChart.setVisibility(View.GONE);
         findViewById(R.id.statsCardView).setVisibility(View.GONE);
 
         databaseHelper = new DatabaseHelper(this);
 
-        // Thiết lập DatePicker cho trường ngày bắt đầu với định dạng dd/MM/yyyy
+        // Thiết lập DatePicker cho trường ngày bắt đầu (định dạng dd/MM/yyyy)
         startDateEditText.setOnClickListener(v -> {
             MaterialDatePicker.Builder<Long> builder = MaterialDatePicker.Builder.datePicker();
             builder.setTitleText("Chọn ngày bắt đầu");
             MaterialDatePicker<Long> datePicker = builder.build();
             datePicker.show(getSupportFragmentManager(), "START_DATE_PICKER");
             datePicker.addOnPositiveButtonClickListener(selection -> {
-                // Định dạng thành dd/MM/yyyy
+                // Định dạng ngày theo dd/MM/yyyy
                 String formattedDate = DateFormat.format("dd/MM/yyyy", selection).toString();
                 startDateEditText.setText(formattedDate);
             });
         });
 
-        // Thiết lập DatePicker cho trường ngày kết thúc với định dạng dd/MM/yyyy
+        // Thiết lập DatePicker cho trường ngày kết thúc (định dạng dd/MM/yyyy)
         endDateEditText.setOnClickListener(v -> {
             MaterialDatePicker.Builder<Long> builder = MaterialDatePicker.Builder.datePicker();
             builder.setTitleText("Chọn ngày kết thúc");
@@ -87,50 +92,147 @@ public class StatisticsActivity extends AppCompatActivity {
             });
         });
 
+        // Sự kiện khi nhấn nút "Thống kê"
         statisticsButton.setOnClickListener(v -> displayStatistics());
     }
 
     private void displayStatistics() {
+        // Reset nội dung thông báo và ẩn các view dữ liệu cũ
+        statsTextView.setText("");
+        bestSellerTextView.setText("");
+        bestSellerTextView.setVisibility(View.GONE);
+
+        // Xóa dữ liệu cũ trong bảng thống kê
+        TableLayout tableLayout = findViewById(R.id.statsTableLayout);
+        tableLayout.removeAllViews();
+
+        // Ẩn biểu đồ
+        barChart.setVisibility(View.GONE);
+        pieChart.setVisibility(View.GONE);
+
         String startDateStr = startDateEditText.getText().toString();
         String endDateStr = endDateEditText.getText().toString();
 
+        // Kiểm tra xem người dùng đã chọn đầy đủ ngày chưa
         if (startDateStr.isEmpty() || endDateStr.isEmpty()) {
             statsTextView.setTextColor(ContextCompat.getColor(this, android.R.color.holo_red_dark));
             statsTextView.setText("Vui lòng chọn đầy đủ ngày bắt đầu và ngày kết thúc.");
+            // Hiển thị CardView để thông báo lỗi được thấy
             findViewById(R.id.statsCardView).setVisibility(View.VISIBLE);
-            barChart.setVisibility(View.GONE);
-            pieChart.setVisibility(View.GONE);
             return;
         }
 
-        // Vì DatePicker hiển thị theo dd/MM/yyyy, ta truyền trực tiếp các chuỗi này cho truy vấn
-        // (trong truy vấn SQL, ta sử dụng biểu thức CASE để tách phần ngày từ created_at)
+        // Chuyển chuỗi ngày sang đối tượng Date để so sánh
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        try {
+            Date startDate = sdf.parse(startDateStr);
+            Date endDate = sdf.parse(endDateStr);
+
+            // Kiểm tra: ngày bắt đầu phải trước ngày kết thúc
+            if (startDate.after(endDate)) {
+                statsTextView.setTextColor(ContextCompat.getColor(this, android.R.color.holo_red_dark));
+                statsTextView.setText("Ngày bắt đầu phải sớm hơn ngày kết thúc.");
+                // Hiển thị CardView để thông báo lỗi được thấy
+                findViewById(R.id.statsCardView).setVisibility(View.VISIBLE);
+                return;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+            statsTextView.setText("Định dạng ngày không hợp lệ.");
+            // Hiển thị CardView để thông báo lỗi được thấy
+            findViewById(R.id.statsCardView).setVisibility(View.VISIBLE);
+            return;
+        }
+
+        // Lấy dữ liệu thống kê
         List<OrderItem> bestSellingItems = databaseHelper.getBestSellingItems(startDateStr, endDateStr);
 
         if (bestSellingItems == null || bestSellingItems.isEmpty()) {
             statsTextView.setText("Không có dữ liệu doanh thu trong khoảng thời gian này.");
+            bestSellerTextView.setVisibility(View.GONE);
+            // Hiển thị CardView để thông báo lỗi được thấy
             findViewById(R.id.statsCardView).setVisibility(View.VISIBLE);
-            barChart.setVisibility(View.GONE);
-            pieChart.setVisibility(View.GONE);
         } else {
-            // Hiển thị top 5 món bán chạy nhất
-            StringBuilder stats = new StringBuilder();
-            int rank = 1;
-            for (OrderItem item : bestSellingItems) {
-                if (rank > 5) break;
-                stats.append("Top ").append(rank).append(": ").append(item.getFood_name());
-                stats.append(" | SL: ").append(item.getQuantity());
-                stats.append(" | Tổng tiền: ").append(item.getTotalPrice()).append(" VND\n");
-                rank++;
-            }
-            statsTextView.setText(stats.toString());
+            // Có dữ liệu: hiển thị tiêu đề và bảng thống kê
+            bestSellerTextView.setVisibility(View.VISIBLE);
+            bestSellerTextView.setText("Sản phẩm bán chạy nhất:");
+            displayTable(bestSellingItems);
 
-            // Nếu muốn hiển thị biểu đồ, gọi hàm setBarChartData và setPieChartData
+            // Hiển thị CardView và các biểu đồ thống kê
             findViewById(R.id.statsCardView).setVisibility(View.VISIBLE);
             barChart.setVisibility(View.VISIBLE);
             pieChart.setVisibility(View.VISIBLE);
             setBarChartData(bestSellingItems);
             setPieChartData(bestSellingItems);
+        }
+    }
+
+    private void displayTable(List<OrderItem> items) {
+        // Lấy TableLayout từ layout
+        TableLayout tableLayout = findViewById(R.id.statsTableLayout);
+        // Xóa toàn bộ các hàng cũ (nếu có)
+        tableLayout.removeAllViews();
+
+        // Tạo header cho bảng
+        TableRow headerRow = new TableRow(this);
+        headerRow.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
+        headerRow.setPadding(8, 8, 8, 8);
+
+        // Danh sách tiêu đề cột
+        String[] headers = {"Top", "Sản phẩm", "SL", "Tổng tiền"};
+        for (String header : headers) {
+            TextView tv = new TextView(this);
+            tv.setText(header);
+            tv.setTextColor(ContextCompat.getColor(this, R.color.white));
+            tv.setPadding(16, 16, 16, 16);
+            tv.setTextSize(16);
+            tv.setTypeface(null, Typeface.BOLD);
+            headerRow.addView(tv);
+        }
+        tableLayout.addView(headerRow);
+
+        // Hiển thị top 5 món bán chạy nhất (hoặc toàn bộ nếu số lượng ít hơn 5)
+        int limit = Math.min(items.size(), 5);
+        for (int i = 0; i < limit; i++) {
+            OrderItem item = items.get(i);
+            TableRow row = new TableRow(this);
+            row.setPadding(8, 8, 8, 8);
+
+            // Cột Top (Rank)
+            TextView tvRank = new TextView(this);
+            tvRank.setText(String.valueOf(i + 1));
+            tvRank.setPadding(16, 16, 16, 16);
+            tvRank.setTextSize(16);
+
+            // Cột tên sản phẩm
+            TextView tvFoodName = new TextView(this);
+            tvFoodName.setText(item.getFood_name());
+            tvFoodName.setPadding(16, 16, 16, 16);
+            tvFoodName.setTextSize(16);
+
+            // Cột số lượng bán được
+            TextView tvQuantity = new TextView(this);
+            tvQuantity.setText(String.valueOf(item.getQuantity()));
+            tvQuantity.setPadding(16, 16, 16, 16);
+            tvQuantity.setTextSize(16);
+
+            // Cột tổng tiền bán được
+            TextView tvTotalPrice = new TextView(this);
+            tvTotalPrice.setText(String.valueOf(item.getTotalPrice()) + " VND");
+            tvTotalPrice.setPadding(16, 16, 16, 16);
+            tvTotalPrice.setTextSize(16);
+
+            // Thêm các TextView vào hàng
+            row.addView(tvRank);
+            row.addView(tvFoodName);
+            row.addView(tvQuantity);
+            row.addView(tvTotalPrice);
+
+            // (Tùy chọn) Thêm viền cho hàng bằng drawable
+            row.setBackgroundResource(R.drawable.table_row_border);
+
+            // Thêm hàng vào TableLayout
+            tableLayout.addView(row);
         }
     }
 
@@ -164,16 +266,11 @@ public class StatisticsActivity extends AppCompatActivity {
         description.setYOffset(-10f);
         barChart.setDescription(description);
 
-        barChart.getXAxis().setValueFormatter(new ValueFormatter() {
-            @Override
-            public String getFormattedValue(float value) {
-                int index = Math.round(value);
-                if (index >= 0 && index < foodNames.size()) {
-                    return foodNames.get(index);
-                }
-                return "";
-            }
-        });
+        // Đặt granularity để trục X hiển thị giá trị nguyên
+        barChart.getXAxis().setGranularity(1f);
+        barChart.getXAxis().setGranularityEnabled(true);
+        // Sử dụng IndexAxisValueFormatter để gán tên món ăn cho trục X mà không bị lặp
+        barChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(foodNames));
         barChart.invalidate();
     }
 
@@ -194,12 +291,17 @@ public class StatisticsActivity extends AppCompatActivity {
                 ContextCompat.getColor(this, R.color.pieColor5)
         };
         dataSet.setColors(pieColors);
-        PieData data = new PieData(dataSet);
+        // Đặt màu cho giá trị (tổng tiền) thành trắng
+        dataSet.setValueTextColor(ContextCompat.getColor(this, android.R.color.white));
+        dataSet.setValueTextSize(12f);
 
+        PieData data = new PieData(dataSet);
         pieChart.setData(data);
         Description description = new Description();
         description.setText("Biểu đồ tròn (Tổng tiền bán được)");
         pieChart.setDescription(description);
+        // Đặt màu cho nhãn (tên món ăn) trên PieChart thành đen
+        pieChart.setEntryLabelColor(ContextCompat.getColor(this, android.R.color.black));
         pieChart.invalidate();
     }
 }
