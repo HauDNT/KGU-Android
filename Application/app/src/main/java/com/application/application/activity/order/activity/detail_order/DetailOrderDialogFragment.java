@@ -48,22 +48,28 @@ public class DetailOrderDialogFragment extends DialogFragment {
         dbHelper = new DatabaseHelper(requireActivity());
         initElements(dialog);
 
-        if (orderInfo.getOrder().getStatus() == OrderStatus.DELIVERED || orderInfo.getOrder().getStatus() == OrderStatus.CANCELLED) {
+        // Nếu đơn hàng có trạng thái là DELIVERED hoặc CANCELLED, ẩn các nút thanh toán và huỷ.
+        if (orderInfo != null && orderInfo.getOrder() != null &&
+                (orderInfo.getOrder().getStatus() == OrderStatus.DELIVERED ||
+                        orderInfo.getOrder().getStatus() == OrderStatus.CANCELLED)) {
             btnPayment.setVisibility(View.GONE);
             btnCancel.setVisibility(View.GONE);
         } else {
             paymentOrderBtnClick();
             cancelOrderBtnClick();
         }
-
         return dialog;
     }
 
     private void getOrderIdInBundle() {
         Bundle args = getArguments();
-        String getOrderId = args != null ? args.getString("order_id") : "";
-
-        if (!getOrderId.equals("")) orderId = Integer.parseInt(getOrderId);
+        if (args != null && args.containsKey("order_id")) {
+            try {
+                orderId = Integer.parseInt(args.getString("order_id"));
+            } catch (NumberFormatException e) {
+                orderId = -1;
+            }
+        }
     }
 
     private void initElements(Dialog dialog) {
@@ -85,38 +91,66 @@ public class DetailOrderDialogFragment extends DialogFragment {
         orderItemsListRecycleView = dialog.findViewById(R.id.dialog_detail_order_list);
         orderItemsListRecycleView.setLayoutManager(new LinearLayoutManager(requireActivity()));
 
-        // Lấy thông tin đơn hàng và các item bên trong đơn
+        // Lấy thông tin đơn hàng kèm các order item
         orderInfo = dbHelper.getOrder_OrderItems_Food(orderId);
+        if (orderInfo == null || orderInfo.getOrder() == null) {
+            Toast.makeText(requireActivity(), "Không tìm thấy thông tin đơn hàng", Toast.LENGTH_SHORT).show();
+            dismiss();
+            return;
+        }
         setOrderInfo(orderInfo.getOrder());
         Utils.setOrderStatus(orderInfo.getOrder().getStatus(), orderStatus);
 
-        // Nếu có item trong đơn hàng
-        if (orderInfo.getOrderItemList().size() > 0) {
-            // Cập nhật tổng tiền toàn bộ đơn hàng
+        if (orderInfo.getOrderItemList() != null && !orderInfo.getOrderItemList().isEmpty()) {
             setOrderAllTotalPrice(orderInfo.getOrderItemList());
             orderTotalPrice.setText(String.valueOf(orderAllTotalPrice));
-
-            // Áp dụng adapter vào recycle view để render ra dữ liệu item trong đơn hàng
             detailOrderItemsAdapter = new DetailOrderItemsAdapter(requireActivity(), orderInfo.getOrderItemList());
-        }  else {
-            // Nếu không thì set list rỗng và tổng tiền là 0
-            orderTotalPrice.setText(0);
+        } else {
+            orderTotalPrice.setText("0");
             detailOrderItemsAdapter = new DetailOrderItemsAdapter(requireActivity(), new ArrayList<>());
         }
 
+        // Đặt listener callback để refresh lại thông tin khi một item bị xoá
+        detailOrderItemsAdapter.setOnOrderItemDeletedListener(() -> refreshOrderDetails());
         orderItemsListRecycleView.setAdapter(detailOrderItemsAdapter);
     }
 
     private void setOrderInfo(Order orderInfo) {
         orderName.setText("Tên đơn hàng: " + orderInfo.getName());
         orderCreatedAt.setText("Thời gian tạo: " + orderInfo.getCreated_at());
-        orderFinishedAt.setText("Ngày giao / huỷ: " + orderInfo.getDelivery_at());
+        String finishedAt = (orderInfo.getDelivery_at() == null || orderInfo.getDelivery_at().trim().isEmpty())
+                ? "Chưa cập nhật" : orderInfo.getDelivery_at();
+        orderFinishedAt.setText("Ngày giao / huỷ: " + finishedAt);
     }
 
     private void setOrderAllTotalPrice(List<OrderItem> orderItemList) {
+        orderAllTotalPrice = 0;
         for (OrderItem item : orderItemList) {
             orderAllTotalPrice += item.getTotalPrice();
         }
+    }
+
+    // Phương thức refreshOrderDetails được gọi thông qua callback của adapter khi item bị xoá
+    private void refreshOrderDetails() {
+        // Reset tổng tiền về 0 trước khi tính lại
+        orderAllTotalPrice = 0;
+        orderInfo = dbHelper.getOrder_OrderItems_Food(orderId);
+        if (orderInfo == null || orderInfo.getOrder() == null) {
+            Toast.makeText(requireActivity(), "Không tìm thấy thông tin đơn hàng", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        setOrderInfo(orderInfo.getOrder());
+        Utils.setOrderStatus(orderInfo.getOrder().getStatus(), orderStatus);
+        if (orderInfo.getOrderItemList() != null && !orderInfo.getOrderItemList().isEmpty()) {
+            setOrderAllTotalPrice(orderInfo.getOrderItemList());
+            orderTotalPrice.setText(String.valueOf(orderAllTotalPrice));
+        } else {
+            orderTotalPrice.setText("0");
+        }
+        // Tạo adapter mới và đặt lại cho RecyclerView
+        detailOrderItemsAdapter = new DetailOrderItemsAdapter(requireActivity(), orderInfo.getOrderItemList());
+        detailOrderItemsAdapter.setOnOrderItemDeletedListener(() -> refreshOrderDetails());
+        orderItemsListRecycleView.setAdapter(detailOrderItemsAdapter);
     }
 
     public void paymentOrderBtnClick() {

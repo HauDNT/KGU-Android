@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.application.application.R;
+import com.application.application.database.enums.OrderStatus;
 import com.application.application.model.Order;
 
 import java.util.List;
@@ -44,16 +45,23 @@ public class ChooseOrderDialogAdapter extends RecyclerView.Adapter<ChooseOrderDi
         holder.order_title.setText(orderItem.getName());
         holder.order_created_at.setText(orderItem.getCreated_at());
 
-        holder.order_select.setChecked(orderItem.getId() == orderSelectedId);
-
-        holder.order_select.setOnCheckedChangeListener(((buttonView, isChecked) -> {
-            if (isChecked) {
-                orderSelectedId = orderItem.getId();
-                orderSelectedListener.onOrderSelected(orderItem.getId(), isChecked);
-            } else {
-                holder.order_select.setChecked(false);
-            }
-        }));
+        // Kiểm tra trạng thái đơn hàng: nếu là DELIVERED hoặc CANCELLED, ẩn CheckBox
+        if (orderItem.getStatus() == OrderStatus.DELIVERED ||
+                orderItem.getStatus() == OrderStatus.CANCELLED) {
+            holder.order_select.setVisibility(View.GONE);
+        } else {
+            holder.order_select.setVisibility(View.VISIBLE);
+            holder.order_select.setChecked(orderItem.getId() == orderSelectedId);
+            holder.order_select.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked) {
+                    orderSelectedId = orderItem.getId();
+                    orderSelectedListener.onOrderSelected(orderItem.getId(), true);
+                } else {
+                    // Nếu uncheck, đảm bảo checkbox giữ trạng thái false
+                    holder.order_select.setChecked(false);
+                }
+            });
+        }
     }
 
     @Override
