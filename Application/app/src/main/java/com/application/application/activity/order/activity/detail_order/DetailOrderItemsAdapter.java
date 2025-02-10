@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.application.application.R;
 import com.application.application.database.DatabaseHelper;
+import com.application.application.database.enums.OrderStatus;
 import com.application.application.model.OrderItem;
 
 import androidx.annotation.NonNull;
@@ -22,6 +23,17 @@ public class DetailOrderItemsAdapter extends RecyclerView.Adapter<DetailOrderIte
     private Context context;
     private List<OrderItem> orderItemsList;
     private DatabaseHelper dbHelper;
+    private int status; // Trạng thái đơn hàng tổng thể
+
+    // Getter cho status (nếu cần)
+    public int getStatus() {
+        return status;
+    }
+
+    // Setter cho status (nếu cần)
+    public void setStatus(int status) {
+        this.status = status;
+    }
 
     // Interface để callback khi một item bị xoá
     public interface OnOrderItemDeletedListener {
@@ -36,10 +48,11 @@ public class DetailOrderItemsAdapter extends RecyclerView.Adapter<DetailOrderIte
         this.onOrderItemDeletedListener = listener;
     }
 
-    public DetailOrderItemsAdapter(Context context, List<OrderItem> orderItemsList) {
+    public DetailOrderItemsAdapter(Context context, List<OrderItem> orderItemsList, int orderStatus) {
         this.context = context;
         this.orderItemsList = orderItemsList;
         this.dbHelper = new DatabaseHelper(context);
+        this.status = orderStatus;
     }
 
     @NonNull
@@ -74,20 +87,30 @@ public class DetailOrderItemsAdapter extends RecyclerView.Adapter<DetailOrderIte
         }
 
         // Xử lý sự kiện xoá item
-        holder.orderItemBtnDelete.setOnClickListener(v -> {
-            long result = dbHelper.deleteOrderItem(orderItem.getId());
-            if (result > 0) {
-                orderItemsList.remove(position);
-                notifyItemRemoved(position);
-                notifyItemRangeChanged(position, orderItemsList.size());
-                Toast.makeText(context, "Xoá item thành công", Toast.LENGTH_SHORT).show();
-                if (onOrderItemDeletedListener != null) {
-                    onOrderItemDeletedListener.onOrderItemDeleted();
+        // Trong onBindViewHolder
+        if (status == OrderStatus.DELIVERED.getStatusValue() ||
+                status == OrderStatus.CANCELLED.getStatusValue()) {
+            // Nếu đơn hàng đã giao hoặc đã huỷ, ẩn nút xóa
+            holder.orderItemBtnDelete.setVisibility(View.GONE);
+        } else {
+            // Nếu không, hiển thị nút xóa và thiết lập sự kiện xoá item
+            holder.orderItemBtnDelete.setVisibility(View.VISIBLE);
+            holder.orderItemBtnDelete.setOnClickListener(v -> {
+                long result = dbHelper.deleteOrderItem(orderItem.getId());
+                if (result > 0) {
+                    orderItemsList.remove(position);
+                    notifyItemRemoved(position);
+                    notifyItemRangeChanged(position, orderItemsList.size());
+                    Toast.makeText(context, "Xoá item thành công", Toast.LENGTH_SHORT).show();
+                    if (onOrderItemDeletedListener != null) {
+                        onOrderItemDeletedListener.onOrderItemDeleted();
+                    }
+                } else {
+                    Toast.makeText(context, "Xoá item thất bại", Toast.LENGTH_SHORT).show();
                 }
-            } else {
-                Toast.makeText(context, "Xoá item thất bại", Toast.LENGTH_SHORT).show();
-            }
-        });
+            });
+        }
+
     }
 
     @Override

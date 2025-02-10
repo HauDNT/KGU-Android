@@ -1,11 +1,7 @@
 package com.application.application.activity.order.activity;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.ContentValues;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -15,16 +11,24 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.application.application.R;
 import com.application.application.Utils;
-import com.application.application.activity.order.activity.detail_order.DetailOrderDialogFragment;
+import com.application.application.activity.account.AccountActivity;
+import com.application.application.activity.dashboard.DashboardActivity;
+import com.application.application.activity.sale.SaleActivity;
 import com.application.application.database.DatabaseHelper;
 import com.application.application.database.enums.OrderStatus;
 import com.application.application.model.Order;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.List;
 
-public class OrderActivity extends AppCompatActivity implements DetailOrderDialogFragment.OnOrderUpdatedListener {
+public class OrderActivity extends AppCompatActivity {
     private RecyclerView orderRecyclerView;
     private OrderActivityAdapter orderActivityAdapter;
     private List<Order> orderList;
@@ -37,16 +41,15 @@ public class OrderActivity extends AppCompatActivity implements DetailOrderDialo
         setContentView(R.layout.activity_order_list);
 
         initElements();
-        btnCreateNewOrder.setOnClickListener(v -> {
-            showCreateDialog();
-        });
+        setupBottomNavigation();
     }
 
     private void initElements() {
         dbHelper = new DatabaseHelper(this);
         btnCreateNewOrder = findViewById(R.id.btn_create_new_order);
-
         initOrderRecycleView();
+
+        btnCreateNewOrder.setOnClickListener(v -> showCreateDialog());
     }
 
     private void initOrderRecycleView() {
@@ -56,6 +59,30 @@ public class OrderActivity extends AppCompatActivity implements DetailOrderDialo
         orderList = dbHelper.getOrdersList();
         orderActivityAdapter = new OrderActivityAdapter(this, orderList);
         orderRecyclerView.setAdapter(orderActivityAdapter);
+    }
+
+    private void setupBottomNavigation() {
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setSelectedItemId(R.id.cart); // Mark "Cart" as selected
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            if (item.getItemId() == R.id.home) {
+                startActivity(new Intent(OrderActivity.this, DashboardActivity.class));
+                finish(); // Close OrderActivity
+                return true;
+            } else if (item.getItemId() == R.id.sale) {
+                startActivity(new Intent(OrderActivity.this, SaleActivity.class));
+                finish(); // Close OrderActivity
+                return true;
+            } else if (item.getItemId() == R.id.cart) {
+                return true; // Already in OrderActivity
+            } else if (item.getItemId() == R.id.account) {
+                startActivity(new Intent(OrderActivity.this, AccountActivity.class));
+                finish(); // Close OrderActivity
+                return true;
+            }
+            return false;
+        });
     }
 
     private void showCreateDialog() {
@@ -72,13 +99,8 @@ public class OrderActivity extends AppCompatActivity implements DetailOrderDialo
         builder.setView(createDialogView);
         final AlertDialog dialog = builder.create();
 
-        orderCreateButton.setOnClickListener(v -> {
-            createNewOrder(orderName, orderDescription, orderCreatedAt);
-        });
-
-        closeButton.setOnClickListener(v -> {
-            dialog.dismiss();
-        });
+        orderCreateButton.setOnClickListener(v -> createNewOrder(orderName, orderDescription, orderCreatedAt));
+        closeButton.setOnClickListener(v -> dialog.dismiss());
 
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.show();
@@ -113,8 +135,7 @@ public class OrderActivity extends AppCompatActivity implements DetailOrderDialo
                     Toast.makeText(this, "Thêm giỏ hàng thành công!", Toast.LENGTH_LONG).show();
                     orderActivityAdapter.refreshOrdersList();
                 }
-            }
-            else {
+            } else {
                 Toast.makeText(this, "Giỏ hàng đã tồn tại", Toast.LENGTH_LONG).show();
             }
         } else {
@@ -122,9 +143,16 @@ public class OrderActivity extends AppCompatActivity implements DetailOrderDialo
         }
     }
 
-    // Khi OrderDetailFragment cập nhật status thì OrderActivity cập nhật lại danh sách
     @Override
-    public void onOrderUpdated() {
-        orderActivityAdapter.refreshOrdersList();
+    public void onResume() {
+        super.onResume();
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setSelectedItemId(R.id.cart); // Set "Cart" as selected
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        // Logic is sufficient as is
     }
 }
