@@ -133,7 +133,6 @@ public class EditOrderDialogFragment extends DialogFragment {
                 }
             }
 
-            //Kiểm tra ngày giao hàng mới (định dạng yyyy-MM-dd HH:mm:ss)
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss - dd/MM/yyyy", Locale.getDefault());
             try {
                 Date newDeliveryDate = sdf.parse(newDeliveryAt);
