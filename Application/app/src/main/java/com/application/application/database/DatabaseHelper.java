@@ -655,24 +655,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //Hàm cập nhật thông tin đơn hàng
     //Nếu đơn hàng có trạng thái quá khứ (DELIVERED hoặc CANCELLED) hoặc nếu delivery_at đã thuộc quá khứ (theo ngày) thì không cho cập nhật (trả về 0). Ngược lại, cập nhật và trả về số dòng được cập nhật.
     public int updateOrder(int orderId, ContentValues values) {
-        //Lấy thông tin đơn hàng hiện có
+        // Lấy thông tin đơn hàng hiện có
         Order order = getOrderById(orderId);
         if (order != null) {
             OrderStatus currentStatus = order.getStatus();
-            //Nếu đơn hàng quá khứ theo trạng thái (DELIVERED hoặc CANCELLED) thì không cho cập nhật
+            // Nếu đơn hàng quá khứ theo trạng thái (DELIVERED hoặc CANCELLED) thì không cho cập nhật
             if (currentStatus == OrderStatus.DELIVERED || currentStatus == OrderStatus.CANCELLED) {
                 return 0;
             }
-            //Kiểm tra ngày giao hàng hiện có của đơn hàng (theo định dạng yyyy-MM-dd)
+
             String currentDeliveryAt = order.getDelivery_at();
             if (currentDeliveryAt != null && !currentDeliveryAt.trim().isEmpty()) {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                // Sử dụng cùng định dạng như trong dialog
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss - dd/MM/yyyy", Locale.getDefault());
                 try {
                     Date deliveryDate = sdf.parse(currentDeliveryAt);
-                    //Lấy ngày hiện tại (loại bỏ phần thời gian)
+                    // Lấy ngày hiện tại (loại bỏ phần thời gian)
                     Date today = sdf.parse(sdf.format(new Date()));
                     if (deliveryDate != null && deliveryDate.before(today)) {
-                        //Nếu ngày giao hàng hiện tại thuộc quá khứ thì không cho cập nhật
+                        // Nếu ngày giao hàng hiện tại thuộc quá khứ thì không cho cập nhật
                         return 0;
                     }
                 } catch (ParseException e) {
@@ -686,6 +687,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return rowsUpdated;
     }
+
 
 
     //Hàm xoá đơn hàng
@@ -737,8 +739,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             SQLiteDatabase db = this.getWritableDatabase();
             ContentValues values = new ContentValues();
             values.put("status", statusValue);
-            values.put("updated_at", DateFormat.format("yyyy-MM-dd HH:mm:ss", new Date()).toString());
-            values.put("delivery_at", DateFormat.format("yyyy-MM-dd HH:mm:ss", new Date()).toString());
+            values.put("updated_at", DateFormat.format("HH:mm:ss - dd/MM/yyyy", new Date()).toString());
+            values.put("delivery_at", DateFormat.format("HH:mm:ss - dd/MM/yyyy", new Date()).toString());
 
             long rowsUpdated = db.update("orders", values, "id = ?", new String[]{String.valueOf(orderId)});
             db.close();

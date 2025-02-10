@@ -104,11 +104,20 @@ public class DetailOrderDialogFragment extends DialogFragment {
         if (orderInfo.getOrderItemList() != null && !orderInfo.getOrderItemList().isEmpty()) {
             setOrderAllTotalPrice(orderInfo.getOrderItemList());
             orderTotalPrice.setText(String.valueOf(orderAllTotalPrice));
-            detailOrderItemsAdapter = new DetailOrderItemsAdapter(requireActivity(), orderInfo.getOrderItemList());
+            detailOrderItemsAdapter = new DetailOrderItemsAdapter(
+                    requireActivity(),
+                    orderInfo.getOrderItemList(),
+                    orderInfo.getOrder().getStatus().getStatusValue()
+            );
         } else {
             orderTotalPrice.setText("0");
-            detailOrderItemsAdapter = new DetailOrderItemsAdapter(requireActivity(), new ArrayList<>());
+            detailOrderItemsAdapter = new DetailOrderItemsAdapter(
+                    requireActivity(),
+                    new ArrayList<>(),
+                    orderInfo.getOrder().getStatus().getStatusValue()
+            );
         }
+
 
         // Đặt listener callback để refresh lại thông tin khi một item bị xoá
         detailOrderItemsAdapter.setOnOrderItemDeletedListener(() -> refreshOrderDetails());
@@ -148,7 +157,11 @@ public class DetailOrderDialogFragment extends DialogFragment {
             orderTotalPrice.setText("0");
         }
         // Tạo adapter mới và đặt lại cho RecyclerView
-        detailOrderItemsAdapter = new DetailOrderItemsAdapter(requireActivity(), orderInfo.getOrderItemList());
+        detailOrderItemsAdapter = new DetailOrderItemsAdapter(
+                requireActivity(),
+                orderInfo.getOrderItemList(),
+                orderInfo.getOrder().getStatus().getStatusValue()
+        );
         detailOrderItemsAdapter.setOnOrderItemDeletedListener(() -> refreshOrderDetails());
         orderItemsListRecycleView.setAdapter(detailOrderItemsAdapter);
     }
