@@ -293,7 +293,6 @@ public class StatisticsActivity extends AppCompatActivity {
                 ContextCompat.getColor(this, R.color.pieColor5)
         };
         dataSet.setColors(pieColors);
-        // Đặt màu cho giá trị (tổng tiền) thành trắng
         dataSet.setValueTextColor(ContextCompat.getColor(this, android.R.color.white));
         dataSet.setValueTextSize(12f);
 
@@ -302,7 +301,6 @@ public class StatisticsActivity extends AppCompatActivity {
         Description description = new Description();
         description.setText("Biểu đồ tròn (Tổng tiền bán được)");
         pieChart.setDescription(description);
-        // Đặt màu cho nhãn (tên món ăn) trên PieChart thành đen
         pieChart.setEntryLabelColor(ContextCompat.getColor(this, android.R.color.black));
         pieChart.invalidate();
     }
