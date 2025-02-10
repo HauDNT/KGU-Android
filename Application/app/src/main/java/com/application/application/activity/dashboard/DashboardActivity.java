@@ -17,15 +17,12 @@ import com.application.application.activity.bottomNav.OnBottomNavItemSelectedLis
 import com.application.application.R;
 import com.application.application.activity.account.AccountActivity;
 import com.application.application.activity.detail_food.DetailFoodActivity;
-
 import com.application.application.activity.food.FoodListActivity;
 import com.application.application.activity.foodlist.BurgerListActivity;
 import com.application.application.activity.foodlist.DrinkListActivity;
 import com.application.application.activity.foodlist.PizzaListActivity;
 import com.application.application.activity.foodlist.PopcornListActivity;
-
 import com.application.application.activity.order.activity.OrderActivity;
-
 import com.application.application.activity.sale.SaleActivity;
 import com.application.application.common.PosterAdapter;
 import com.application.application.model.Product;
@@ -158,16 +155,6 @@ public class DashboardActivity extends AppCompatActivity implements OnBottomNavI
         startActivity(intent);
     }
 
-    private void openProductDetailActivity(Product product) {
-        Intent intent = new Intent(DashboardActivity.this, DetailFoodActivity.class);
-        intent.putExtra("productName", product.getName());
-        intent.putExtra("productDescription", product.getDescription());
-        intent.putExtra("productPrice", product.getPrice());
-        intent.putExtra("productImage", product.getImageResource());
-        startActivity(intent);
-    }
-
-
     private void setupBottomNavigation() {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         BottomNavigationHelper.setupBottomNavigation(bottomNavigationView, this);
@@ -177,6 +164,7 @@ public class DashboardActivity extends AppCompatActivity implements OnBottomNavI
     public void onBottomNavItemSelected(int itemId) {
         if (itemId == R.id.home) {
             // Đang ở DashboardActivity, không cần chuyển
+            return; // Thêm return để không thực hiện gì cả
         } else if (itemId == R.id.sale) {
             startActivity(new Intent(DashboardActivity.this, SaleActivity.class));
         } else if (itemId == R.id.cart) {
@@ -186,14 +174,10 @@ public class DashboardActivity extends AppCompatActivity implements OnBottomNavI
         }
     }
 
-
-
-    private void openProductDetailActivity(String productName, String productDescription, String productPrice, int productImage) {
-        Intent intent = new Intent(DashboardActivity.this, DetailFoodActivity.class);
-        intent.putExtra("productName", productName);
-        intent.putExtra("productDescription", productDescription);
-        intent.putExtra("productPrice", productPrice);
-        intent.putExtra("productImage", productImage);
-        startActivity(intent);
+    @Override
+    protected void onResume() {
+        super.onResume();
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setSelectedItemId(R.id.home); // Đặt item "Home" là đã chọn
     }
 }
