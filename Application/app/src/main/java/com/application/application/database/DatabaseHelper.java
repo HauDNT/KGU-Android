@@ -749,6 +749,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return 0;
     }
 
+    // Phương thức xoá order item theo id
+    public long deleteOrderItem(int orderItemId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        long result = db.delete("order_item", "id = ?", new String[]{String.valueOf(orderItemId)});
+        db.close();
+        return result;
+    }
+
     // ---------------------------------------------------- statistic ----------------------------------------------------
     // Thêm phương thức thống kê đơn hàng bán chạy nhất trong khoảng thời gian
     public List<OrderItem> getBestSellingItems(String startDate, String endDate) {
@@ -757,31 +765,40 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = null;
 
         try {
-            String query = "SELECT oi.food_id, f.name AS food_name, SUM(oi.quantity) AS total_quantity " +
+            // Truy vấn sử dụng CASE để tách phần ngày từ created_at (với định dạng có thể khác nhau)
+            // Và dùng hàm replace để chuyển ':' thành '/' cho thống nhất định dạng
+            String query = "SELECT oi.food_id, f.name AS food_name, " +
+                    "SUM(oi.quantity) AS total_quantity, SUM(oi.total_price) AS total_money " +
                     "FROM order_item oi " +
                     "JOIN orders o ON oi.order_id = o.id " +
                     "JOIN foods f ON oi.food_id = f.id " +
-                    "WHERE o.created_at BETWEEN ? AND ? " +
+                    "WHERE replace((CASE " +
+                    "         WHEN o.created_at LIKE '% - %' THEN trim(substr(o.created_at, instr(o.created_at, '-') + 1)) " +
+                    "         ELSE substr(o.created_at, 1, 10) " +
+                    "       END), ':', '/') BETWEEN ? AND ? " +
+                    "AND o.status = ? " +
                     "GROUP BY oi.food_id " +
-                    "ORDER BY total_quantity DESC";
+                    "ORDER BY total_quantity DESC, total_money DESC";
 
-            cursor = db.rawQuery(query, new String[]{startDate, endDate});
+            // Giả sử startDate và endDate được truyền vào với định dạng "dd/MM/yyyy"
+            // Và chỉ tính các đơn hàng có trạng thái DELIVERED.
+            cursor = db.rawQuery(query, new String[]{
+                    startDate,
+                    endDate,
+                    String.valueOf(OrderStatus.DELIVERED.getStatusValue())
+            });
             if (cursor != null && cursor.moveToFirst()) {
                 do {
                     int foodId = cursor.getInt(cursor.getColumnIndexOrThrow("food_id"));
-                    //Lấy tên món ăn từ cột food_name
                     String foodName = cursor.getString(cursor.getColumnIndexOrThrow("food_name"));
                     int totalQuantity = cursor.getInt(cursor.getColumnIndexOrThrow("total_quantity"));
+                    float totalMoney = cursor.getFloat(cursor.getColumnIndexOrThrow("total_money"));
 
-                    //Lấy giá bán của sản phẩm theo foodId
-                    double foodPrice = getFoodPrice(foodId);
-
-                    //Tạo đối tượng OrderItem chứa thông tin thống kê của sản phẩm
                     OrderItem orderItem = new OrderItem();
                     orderItem.setFood_id(foodId);
                     orderItem.setFood_name(foodName);
                     orderItem.setQuantity(totalQuantity);
-                    orderItem.setTotalPrice((float) (totalQuantity * foodPrice));
+                    orderItem.setTotalPrice(totalMoney);
 
                     bestSellingItems.add(orderItem);
                 } while (cursor.moveToNext());
@@ -794,32 +811,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
             db.close();
         }
-
         return bestSellingItems;
-    }
-
-    //Hàm lấy giá món ăn
-    private double getFoodPrice(int foodId) {
-        double price = 0.0;
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = null;
-
-        try {
-            String query = "SELECT price FROM foods WHERE id = ?";
-            cursor = db.rawQuery(query, new String[]{String.valueOf(foodId)});
-
-            if (cursor != null && cursor.moveToFirst()) {
-                price = cursor.getDouble(cursor.getColumnIndexOrThrow("price"));
-            }
-        } catch (Exception e) {
-            Log.e("DatabaseHelper", "Error in getFoodPrice: " + e.getMessage());
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-            db.close();
-        }
-        return price;
     }
 }
 
