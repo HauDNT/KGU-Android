@@ -761,14 +761,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // ---------------------------------------------------- statistic ----------------------------------------------------
     // Thêm phương thức thống kê đơn hàng bán chạy nhất trong khoảng thời gian
-    public List<OrderItem> getBestSellingItems(String startDate, String endDate) {
+    public List<OrderItem> getBestSellingItems(String startDate, String endDate, String searchQuery) {
         List<OrderItem> bestSellingItems = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = null;
 
         try {
-            // Truy vấn sử dụng CASE để tách phần ngày từ created_at (với định dạng có thể khác nhau)
-            // Và dùng hàm replace để chuyển ':' thành '/' cho thống nhất định dạng
+            // Xây dựng truy vấn
             String query = "SELECT oi.food_id, f.name AS food_name, " +
                     "SUM(oi.quantity) AS total_quantity, SUM(oi.total_price) AS total_money " +
                     "FROM order_item oi " +
@@ -778,17 +777,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     "         WHEN o.created_at LIKE '% - %' THEN trim(substr(o.created_at, instr(o.created_at, '-') + 1)) " +
                     "         ELSE substr(o.created_at, 1, 10) " +
                     "       END), ':', '/') BETWEEN ? AND ? " +
-                    "AND o.status = ? " +
-                    "GROUP BY oi.food_id " +
+                    "AND o.status = ? ";
+
+            // Tạo danh sách đối số cho truy vấn
+            List<String> selectionArgs = new ArrayList<>();
+            selectionArgs.add(startDate);
+            selectionArgs.add(endDate);
+            selectionArgs.add(String.valueOf(OrderStatus.DELIVERED.getStatusValue()));
+
+            // Nếu người dùng nhập từ khóa tìm kiếm thì thêm điều kiện LIKE
+            if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+                query += "AND f.name LIKE ? ";
+                selectionArgs.add("%" + searchQuery + "%");
+            }
+
+            query += "GROUP BY oi.food_id " +
                     "ORDER BY total_quantity DESC, total_money DESC";
 
-            // Giả sử startDate và endDate được truyền vào với định dạng "dd/MM/yyyy"
-            // Và chỉ tính các đơn hàng có trạng thái DELIVERED.
-            cursor = db.rawQuery(query, new String[]{
-                    startDate,
-                    endDate,
-                    String.valueOf(OrderStatus.DELIVERED.getStatusValue())
-            });
+            cursor = db.rawQuery(query, selectionArgs.toArray(new String[0]));
             if (cursor != null && cursor.moveToFirst()) {
                 do {
                     int foodId = cursor.getInt(cursor.getColumnIndexOrThrow("food_id"));
@@ -815,5 +821,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return bestSellingItems;
     }
+
 }
 

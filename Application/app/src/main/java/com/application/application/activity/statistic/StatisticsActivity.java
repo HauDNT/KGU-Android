@@ -26,7 +26,6 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
-import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -41,7 +40,7 @@ public class StatisticsActivity extends AppCompatActivity {
 
     private DatabaseHelper databaseHelper;
     private TextView statsTextView, bestSellerTextView;
-    private TextInputEditText startDateEditText, endDateEditText;
+    private TextInputEditText startDateEditText, endDateEditText, searchFoodEditText;
     private Button statisticsButton;
     private BarChart barChart;
     private PieChart pieChart;
@@ -56,6 +55,7 @@ public class StatisticsActivity extends AppCompatActivity {
         bestSellerTextView = findViewById(R.id.bestSellerTextView);
         startDateEditText = findViewById(R.id.startDateEditText);
         endDateEditText = findViewById(R.id.endDateEditText);
+        searchFoodEditText = findViewById(R.id.searchFoodEditText);
         statisticsButton = findViewById(R.id.statisticsButton);
         barChart = findViewById(R.id.barChart);
         pieChart = findViewById(R.id.pieChart);
@@ -112,6 +112,8 @@ public class StatisticsActivity extends AppCompatActivity {
 
         String startDateStr = startDateEditText.getText().toString();
         String endDateStr = endDateEditText.getText().toString();
+        // Lấy từ khóa tìm kiếm (nếu người dùng nhập)
+        String searchQuery = searchFoodEditText.getText().toString().trim();
 
         // Kiểm tra xem người dùng đã chọn đầy đủ ngày chưa
         if (startDateStr.isEmpty() || endDateStr.isEmpty()) {
@@ -144,8 +146,8 @@ public class StatisticsActivity extends AppCompatActivity {
             return;
         }
 
-        // Lấy dữ liệu thống kê
-        List<OrderItem> bestSellingItems = databaseHelper.getBestSellingItems(startDateStr, endDateStr);
+        // Lấy dữ liệu thống kê từ database, sử dụng từ khóa tìm kiếm nếu có
+        List<OrderItem> bestSellingItems = databaseHelper.getBestSellingItems(startDateStr, endDateStr, searchQuery);
 
         if (bestSellingItems == null || bestSellingItems.isEmpty()) {
             statsTextView.setText("Không có dữ liệu doanh thu trong khoảng thời gian này.");
@@ -191,9 +193,8 @@ public class StatisticsActivity extends AppCompatActivity {
         }
         tableLayout.addView(headerRow);
 
-        // Hiển thị top 5 món bán chạy nhất (hoặc toàn bộ nếu số lượng ít hơn 5)
-        int limit = Math.min(items.size(), 5);
-        for (int i = 0; i < limit; i++) {
+        // Hiển thị toàn bộ danh sách các món ăn
+        for (int i = 0; i < items.size(); i++) {
             OrderItem item = items.get(i);
             TableRow row = new TableRow(this);
             row.setPadding(8, 8, 8, 8);
@@ -240,8 +241,8 @@ public class StatisticsActivity extends AppCompatActivity {
         List<BarEntry> entries = new ArrayList<>();
         List<String> foodNames = new ArrayList<>();
 
-        int limit = Math.min(items.size(), 5);
-        for (int i = 0; i < limit; i++) {
+        // Duyệt qua toàn bộ danh sách các món ăn
+        for (int i = 0; i < items.size(); i++) {
             OrderItem item = items.get(i);
             entries.add(new BarEntry(i, item.getQuantity()));
             foodNames.add(item.getFood_name());
@@ -269,15 +270,16 @@ public class StatisticsActivity extends AppCompatActivity {
         // Đặt granularity để trục X hiển thị giá trị nguyên
         barChart.getXAxis().setGranularity(1f);
         barChart.getXAxis().setGranularityEnabled(true);
-        // Sử dụng IndexAxisValueFormatter để gán tên món ăn cho trục X mà không bị lặp
+        // Sử dụng IndexAxisValueFormatter để gán tên món ăn cho trục X
         barChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(foodNames));
         barChart.invalidate();
     }
 
     private void setPieChartData(List<OrderItem> items) {
         List<PieEntry> entries = new ArrayList<>();
-        int limit = Math.min(items.size(), 5);
-        for (int i = 0; i < limit; i++) {
+
+        // Duyệt qua toàn bộ danh sách các món ăn
+        for (int i = 0; i < items.size(); i++) {
             OrderItem item = items.get(i);
             entries.add(new PieEntry((float) item.getTotalPrice(), item.getFood_name()));
         }
