@@ -20,6 +20,7 @@ import com.application.application.R;
 import com.application.application.Utils;
 import com.application.application.activity.account.AccountActivity;
 import com.application.application.activity.dashboard.DashboardActivity;
+import com.application.application.activity.order.activity.detail_order.DetailOrderDialogFragment;
 import com.application.application.activity.sale.SaleActivity;
 import com.application.application.database.DatabaseHelper;
 import com.application.application.database.enums.OrderStatus;
@@ -28,7 +29,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.List;
 
-public class OrderActivity extends AppCompatActivity {
+public class OrderActivity extends AppCompatActivity implements DetailOrderDialogFragment.OnOrderUpdatedListener {
     private RecyclerView orderRecyclerView;
     private OrderActivityAdapter orderActivityAdapter;
     private List<Order> orderList;
@@ -154,5 +155,10 @@ public class OrderActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         // Logic is sufficient as is
+    }
+    
+    @Override
+    public void onOrderUpdated() {
+        orderActivityAdapter.refreshOrdersList();
     }
 }
