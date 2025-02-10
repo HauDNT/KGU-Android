@@ -73,6 +73,25 @@
             android:layout_marginTop="24dp"
             app:cornerRadius="8dp" />
 
+        <!-- Thanh tìm kiếm tên món ăn -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/searchFoodInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:boxStrokeColor="@color/colorPrimary">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/searchFoodEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Tìm kiếm món ăn"
+                android:inputType="text"
+                android:drawableStart="@drawable/ic_search"
+                android:drawablePadding="8dp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
         <!-- Khu vực hiển thị kết quả thống kê dạng bảng -->
         <androidx.cardview.widget.CardView
             android:id="@+id/statsCardView"
