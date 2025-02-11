@@ -1,162 +1,175 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    android:padding="16dp">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:weightSum="10">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="0dp"
+        android:layout_weight="9"
+        android:background="@color/white"
+        android:padding="16dp">
 
-        <!-- Tiêu đề -->
-        <TextView
-            android:id="@+id/headerTextView"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="THỐNG KÊ ĐƠN HÀNG"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="@color/colorPrimary"
-            android:gravity="center"
-            android:padding="16dp" />
+            android:orientation="vertical">
 
-        <!-- Chọn ngày bắt đầu -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/startDateInputLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:boxStrokeColor="@color/colorPrimary">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/startDateEditText"
+            <!-- Tiêu đề -->
+            <TextView
+                android:id="@+id/headerTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Chọn ngày bắt đầu"
-                android:inputType="none"
-                android:focusable="false"
-                android:clickable="true" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:gravity="center"
+                android:padding="16dp"
+                android:text="THỐNG KÊ ĐƠN HÀNG"
+                android:textColor="@color/colorPrimary"
+                android:textSize="24sp"
+                android:textStyle="bold" />
 
-        <!-- Chọn ngày kết thúc -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/endDateInputLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:boxStrokeColor="@color/colorPrimary">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/endDateEditText"
+            <!-- Chọn ngày bắt đầu -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/startDateInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Chọn ngày kết thúc"
-                android:inputType="none"
-                android:focusable="false"
-                android:clickable="true" />
-        </com.google.android.material.textfield.TextInputLayout>
+                app:boxStrokeColor="@color/colorPrimary">
 
-        <!-- Nút thống kê -->
-        <Button
-            android:id="@+id/statisticsButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Thống kê"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:backgroundTint="@color/colorPrimary"
-            android:layout_marginTop="24dp"
-            app:cornerRadius="8dp" />
-
-        <!-- Thanh tìm kiếm tên món ăn -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/searchFoodInputLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:boxStrokeColor="@color/colorPrimary">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/searchFoodEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Tìm kiếm món ăn"
-                android:inputType="text"
-                android:drawableStart="@drawable/ic_search"
-                android:drawablePadding="8dp" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Khu vực hiển thị kết quả thống kê dạng bảng -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/statsCardView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="4dp"
-            android:padding="8dp"
-            android:visibility="gone">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <!-- TextView hiển thị tiêu đề phần thống kê (ví dụ: sản phẩm bán chạy nhất) -->
-                <TextView
-                    android:id="@+id/bestSellerTextView"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/startDateEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Sản phẩm bán chạy nhất:"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/colorPrimary"
-                    android:padding="8dp" />
+                    android:clickable="true"
+                    android:focusable="false"
+                    android:hint="Chọn ngày bắt đầu"
+                    android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- TextView hiển thị thông tin thống kê (các thông báo lỗi hay tổng hợp dữ liệu) -->
-                <TextView
-                    android:id="@+id/statsTextView"
+            <!-- Chọn ngày kết thúc -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/endDateInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:boxStrokeColor="@color/colorPrimary">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/endDateEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textColor="@color/black"
-                    android:padding="8dp" />
+                    android:clickable="true"
+                    android:focusable="false"
+                    android:hint="Chọn ngày kết thúc"
+                    android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- TableLayout hiển thị kết quả thống kê dạng bảng (tạo động từ code) -->
-                <TableLayout
-                    android:id="@+id/statsTableLayout"
+            <!-- Nút thống kê -->
+            <Button
+                android:id="@+id/statisticsButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:backgroundTint="@color/colorPrimary"
+                android:text="Thống kê"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                app:cornerRadius="8dp" />
+
+            <!-- Thanh tìm kiếm tên món ăn -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/searchFoodInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:boxStrokeColor="@color/colorPrimary">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/searchFoodEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="-40dp"
-                    android:stretchColumns="*"
-                    android:shrinkColumns="*"
-                    android:padding="8dp">
-                </TableLayout>
+                    android:drawableStart="@drawable/ic_search"
+                    android:drawablePadding="8dp"
+                    android:hint="Tìm kiếm món ăn"
+                    android:inputType="text" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Khu vực hiển thị kết quả thống kê dạng bảng -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/statsCardView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:padding="8dp"
+                android:visibility="gone"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <!-- TextView hiển thị tiêu đề phần thống kê (ví dụ: sản phẩm bán chạy nhất) -->
+                    <TextView
+                        android:id="@+id/bestSellerTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        android:text="Sản phẩm bán chạy nhất:"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+
+                    <!-- TextView hiển thị thông tin thống kê (các thông báo lỗi hay tổng hợp dữ liệu) -->
+                    <TextView
+                        android:id="@+id/statsTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
+
+                    <!-- TableLayout hiển thị kết quả thống kê dạng bảng (tạo động từ code) -->
+                    <TableLayout
+                        android:id="@+id/statsTableLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="-40dp"
+                        android:padding="8dp"
+                        android:shrinkColumns="*"
+                        android:stretchColumns="*"></TableLayout>
 
 
-            </LinearLayout>
+                </LinearLayout>
 
-        </androidx.cardview.widget.CardView>
+            </androidx.cardview.widget.CardView>
 
-        <!-- Biểu đồ cột -->
-        <com.github.mikephil.charting.charts.BarChart
-            android:id="@+id/barChart"
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:layout_marginTop="24dp" />
+            <!-- Biểu đồ cột -->
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/barChart"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_marginTop="24dp" />
 
-        <!-- Biểu đồ tròn -->
-        <com.github.mikephil.charting.charts.PieChart
-            android:id="@+id/pieChart"
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:layout_marginTop="24dp" />
+            <!-- Biểu đồ tròn -->
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/pieChart"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_marginTop="24dp" />
 
-    </LinearLayout>
-</ScrollView>
+        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        app:menu="@menu/bottom_navigation_menu"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+</LinearLayout>

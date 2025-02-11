@@ -19,9 +19,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.application.application.R;
 import com.application.application.Utils;
 import com.application.application.activity.account.AccountActivity;
+import com.application.application.activity.auth.LoginActivity;
 import com.application.application.activity.dashboard.DashboardActivity;
+import com.application.application.activity.food.FoodActivity;
 import com.application.application.activity.order.activity.detail_order.DetailOrderDialogFragment;
 import com.application.application.activity.sale.SaleActivity;
+import com.application.application.activity.statistic.StatisticsActivity;
 import com.application.application.database.DatabaseHelper;
 import com.application.application.database.enums.OrderStatus;
 import com.application.application.model.Order;
@@ -71,15 +74,21 @@ public class OrderActivity extends AppCompatActivity implements DetailOrderDialo
                 startActivity(new Intent(OrderActivity.this, DashboardActivity.class));
                 finish(); // Close OrderActivity
                 return true;
-            } else if (item.getItemId() == R.id.sale) {
-                startActivity(new Intent(OrderActivity.this, SaleActivity.class));
+            } else if (item.getItemId() == R.id.food) {
+                startActivity(new Intent(OrderActivity.this, FoodActivity.class));
                 finish(); // Close OrderActivity
                 return true;
             } else if (item.getItemId() == R.id.cart) {
                 return true; // Already in OrderActivity
-            } else if (item.getItemId() == R.id.account) {
-                startActivity(new Intent(OrderActivity.this, AccountActivity.class));
+            } else if (item.getItemId() == R.id.statistic) {
+                startActivity(new Intent(OrderActivity.this, StatisticsActivity.class));
                 finish(); // Close OrderActivity
+                return true;
+            } else if (item.getItemId() == R.id.logout) {
+                Intent intent = new Intent(OrderActivity.this, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
                 return true;
             }
             return false;
@@ -156,7 +165,7 @@ public class OrderActivity extends AppCompatActivity implements DetailOrderDialo
         super.onBackPressed();
         // Logic is sufficient as is
     }
-    
+
     @Override
     public void onOrderUpdated() {
         orderActivityAdapter.refreshOrdersList();

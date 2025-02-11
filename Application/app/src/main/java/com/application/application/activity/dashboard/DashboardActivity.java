@@ -12,11 +12,13 @@ import android.widget.ListView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.application.application.activity.auth.LoginActivity;
 import com.application.application.activity.bottomNav.BottomNavigationHelper;
 import com.application.application.activity.bottomNav.OnBottomNavItemSelectedListener;
 import com.application.application.R;
 import com.application.application.activity.account.AccountActivity;
 import com.application.application.activity.detail_food.DetailFoodActivity;
+import com.application.application.activity.food.FoodActivity;
 import com.application.application.activity.food.FoodListActivity;
 import com.application.application.activity.foodlist.BurgerListActivity;
 import com.application.application.activity.foodlist.DrinkListActivity;
@@ -24,6 +26,7 @@ import com.application.application.activity.foodlist.PizzaListActivity;
 import com.application.application.activity.foodlist.PopcornListActivity;
 import com.application.application.activity.order.activity.OrderActivity;
 import com.application.application.activity.sale.SaleActivity;
+import com.application.application.activity.statistic.StatisticsActivity;
 import com.application.application.common.PosterAdapter;
 import com.application.application.model.Product;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -165,12 +168,17 @@ public class DashboardActivity extends AppCompatActivity implements OnBottomNavI
         if (itemId == R.id.home) {
             // Đang ở DashboardActivity, không cần chuyển
             return; // Thêm return để không thực hiện gì cả
-        } else if (itemId == R.id.sale) {
-            startActivity(new Intent(DashboardActivity.this, SaleActivity.class));
+        } else if (itemId == R.id.food) {
+            startActivity(new Intent(DashboardActivity.this, FoodActivity.class));
         } else if (itemId == R.id.cart) {
             startActivity(new Intent(DashboardActivity.this, OrderActivity.class));
-        } else if (itemId == R.id.account) {
-            startActivity(new Intent(DashboardActivity.this, AccountActivity.class));
+        } else if (itemId == R.id.statistic) {
+            startActivity(new Intent(DashboardActivity.this, StatisticsActivity.class));
+        } else if (itemId == R.id.logout) {
+            Intent intent = new Intent(DashboardActivity.this, LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
         }
     }
 

@@ -1,5 +1,6 @@
 package com.application.application.activity.statistic;
 
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.format.DateFormat;
@@ -13,6 +14,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.application.application.R;
+import com.application.application.activity.auth.LoginActivity;
+import com.application.application.activity.dashboard.DashboardActivity;
+import com.application.application.activity.food.FoodActivity;
+import com.application.application.activity.order.activity.OrderActivity;
 import com.application.application.database.DatabaseHelper;
 import com.application.application.database.enums.OrderStatus;
 import com.application.application.model.OrderItem;
@@ -26,6 +31,7 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -94,6 +100,8 @@ public class StatisticsActivity extends AppCompatActivity {
 
         // Sự kiện khi nhấn nút "Thống kê"
         statisticsButton.setOnClickListener(v -> displayStatistics());
+
+        setupBottomNavigation();
     }
 
     private void displayStatistics() {
@@ -303,5 +311,44 @@ public class StatisticsActivity extends AppCompatActivity {
         pieChart.setDescription(description);
         pieChart.setEntryLabelColor(ContextCompat.getColor(this, android.R.color.black));
         pieChart.invalidate();
+    }
+
+    private void setupBottomNavigation() {
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setSelectedItemId(R.id.statistic);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            if (item.getItemId() == R.id.home) {
+                startActivity(new Intent(StatisticsActivity.this, DashboardActivity.class));
+                finish();
+                return true;
+            }
+            else if (item.getItemId() == R.id.food) {
+                startActivity(new Intent(StatisticsActivity.this, FoodActivity.class));
+                finish();
+                return true;
+            } else if (item.getItemId() == R.id.cart) {
+                startActivity(new Intent(StatisticsActivity.this, OrderActivity.class));
+                finish();
+                return true;
+            } else if (item.getItemId() == R.id.statistic) {
+                return true;
+            }
+            else if (item.getItemId() == R.id.logout) {
+                Intent intent = new Intent(StatisticsActivity.this, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+            }
+
+            return false;
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setSelectedItemId(R.id.statistic);
     }
 }

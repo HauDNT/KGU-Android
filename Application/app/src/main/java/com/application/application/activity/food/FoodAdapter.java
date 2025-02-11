@@ -50,6 +50,7 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
     public void onBindViewHolder(@NonNull FoodViewHolder holder, int position) {
         if (foodList != null && position < foodList.size()) {
             Food food = foodList.get(position);
+            int id = food.getId();
 
             if (food != null) {
                 // Hiển thị thông tin sản phẩm
