@@ -9,6 +9,5 @@ public class BottomNavigationHelper {
             listener.onBottomNavItemSelected(item.getItemId());
             return true;
         });
-
     }
 }

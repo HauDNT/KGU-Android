@@ -4,15 +4,19 @@
         android:icon="@drawable/home"
     android:title="Trang Chủ" />
     <item
-        android:id="@+id/sale"
-        android:icon="@drawable/discount"
-    android:title="Sale" />
+        android:id="@+id/food"
+        android:icon="@drawable/fastfood_ic"
+    android:title="Món ăn" />
     <item
         android:id="@+id/cart"
         android:icon="@drawable/shopping_cart"
     android:title="Giỏ Hàng" />
     <item
-        android:id="@+id/account"
-        android:icon="@drawable/user"
-    android:title="Thông Tin Khách Hàng" />
+        android:id="@+id/statistic"
+        android:icon="@drawable/chart_ic"
+    android:title="Thống kê" />
+    <item
+        android:id="@+id/logout"
+        android:icon="@drawable/logout_ic"
+        android:title="Đăng xuất" />
 </menu>

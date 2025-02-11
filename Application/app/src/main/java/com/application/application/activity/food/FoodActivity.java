@@ -29,10 +29,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.application.application.R;
+import com.application.application.activity.auth.LoginActivity;
 import com.application.application.activity.category.CategoryActivity;
+import com.application.application.activity.dashboard.DashboardActivity;
+import com.application.application.activity.order.activity.OrderActivity;
+import com.application.application.activity.statistic.StatisticsActivity;
 import com.application.application.database.DatabaseHelper;
 import com.application.application.model.Category;
 import com.application.application.model.Food;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
@@ -73,6 +78,7 @@ public class FoodActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
         }
 
+        setupBottomNavigation();
     }
 
     private void loadFoodList() {
@@ -405,5 +411,44 @@ public class FoodActivity extends AppCompatActivity {
 
         alertDialog.show();
         updateSelectedCategoriesDisplay(categoryInfo, chipGroupCategories); //Gọi hàm cập nhật
+    }
+
+    private void setupBottomNavigation() {
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setSelectedItemId(R.id.food);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            if (item.getItemId() == R.id.home) {
+                startActivity(new Intent(FoodActivity.this, DashboardActivity.class));
+                finish();
+                return true;
+            }
+            else if (item.getItemId() == R.id.food) {
+                return true;
+            } else if (item.getItemId() == R.id.cart) {
+                startActivity(new Intent(FoodActivity.this, OrderActivity.class));
+                finish();
+                return true;
+            } else if (item.getItemId() == R.id.statistic) {
+                startActivity(new Intent(FoodActivity.this, StatisticsActivity.class));
+                finish();
+                return true;
+            }
+            else if (item.getItemId() == R.id.logout) {
+                Intent intent = new Intent(FoodActivity.this, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+            }
+
+            return false;
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setSelectedItemId(R.id.food);
     }
 }
