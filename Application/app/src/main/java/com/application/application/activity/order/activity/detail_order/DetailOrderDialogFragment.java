@@ -93,17 +93,20 @@ public class DetailOrderDialogFragment extends DialogFragment {
 
         // Lấy thông tin đơn hàng kèm các order item
         orderInfo = dbHelper.getOrder_OrderItems_Food(orderId);
+
         if (orderInfo == null || orderInfo.getOrder() == null) {
             Toast.makeText(requireActivity(), "Không tìm thấy thông tin đơn hàng", Toast.LENGTH_SHORT).show();
             dismiss();
             return;
         }
+
         setOrderInfo(orderInfo.getOrder());
         Utils.setOrderStatus(orderInfo.getOrder().getStatus(), orderStatus);
 
         if (orderInfo.getOrderItemList() != null && !orderInfo.getOrderItemList().isEmpty()) {
             setOrderAllTotalPrice(orderInfo.getOrderItemList());
             orderTotalPrice.setText(String.valueOf(orderAllTotalPrice));
+
             detailOrderItemsAdapter = new DetailOrderItemsAdapter(
                     requireActivity(),
                     orderInfo.getOrderItemList(),
