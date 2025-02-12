@@ -249,7 +249,6 @@ public class StatisticsActivity extends AppCompatActivity {
         List<BarEntry> entries = new ArrayList<>();
         List<String> foodNames = new ArrayList<>();
 
-        // Duyệt qua toàn bộ danh sách các món ăn
         for (int i = 0; i < items.size(); i++) {
             OrderItem item = items.get(i);
             entries.add(new BarEntry(i, item.getQuantity()));
@@ -257,61 +256,85 @@ public class StatisticsActivity extends AppCompatActivity {
         }
 
         BarDataSet dataSet = new BarDataSet(entries, "Số lượng bán được");
-        int[] barColors = new int[] {
-                ContextCompat.getColor(this, R.color.barColor1),
-                ContextCompat.getColor(this, R.color.barColor2),
-                ContextCompat.getColor(this, R.color.barColor3),
-                ContextCompat.getColor(this, R.color.barColor4),
-                ContextCompat.getColor(this, R.color.barColor5)
-        };
-        dataSet.setColors(barColors);
+        ArrayList<Integer> dynamicColors = new ArrayList<>();
+        int itemCount = items.size();
+        for (int i = 0; i < itemCount; i++) {
+            float hue = (360f / itemCount) * i;
+            int color = android.graphics.Color.HSVToColor(new float[]{hue, 0.8f, 0.8f});
+            dynamicColors.add(color);
+        }
+        dataSet.setColors(dynamicColors);
+
         BarData data = new BarData(dataSet);
         data.setBarWidth(0.9f);
 
         barChart.setData(data);
         barChart.setFitBars(true);
+
+        // Cấu hình mô tả và trục X
         Description description = new Description();
         description.setText("Biểu đồ cột (Số lượng bán được)");
         description.setYOffset(-10f);
         barChart.setDescription(description);
 
-        // Đặt granularity để trục X hiển thị giá trị nguyên
-        barChart.getXAxis().setGranularity(1f);
-        barChart.getXAxis().setGranularityEnabled(true);
-        // Sử dụng IndexAxisValueFormatter để gán tên món ăn cho trục X
+        // Xoay nhãn trục X để tránh chồng lấn
+        barChart.getXAxis().setLabelRotationAngle(45f);
+        // Điều chỉnh kích thước chữ nhãn
+        barChart.getXAxis().setTextSize(10f);
+        // Giới hạn số lượng cột hiển thị cùng lúc
+        barChart.setVisibleXRangeMaximum(10f);
+        // Sử dụng IndexAxisValueFormatter để gán tên sản phẩm cho trục X
         barChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(foodNames));
         barChart.invalidate();
     }
 
-    private void setPieChartData(List<OrderItem> items) {
-        List<PieEntry> entries = new ArrayList<>();
 
-        // Duyệt qua toàn bộ danh sách các món ăn
-        for (int i = 0; i < items.size(); i++) {
-            OrderItem item = items.get(i);
+    private void setPieChartData(List<OrderItem> items) {
+        // Tạo danh sách các PieEntry từ dữ liệu OrderItem
+        List<PieEntry> entries = new ArrayList<>();
+        for (OrderItem item : items) {
+            // Sử dụng tổng tiền bán được của sản phẩm làm giá trị, tên sản phẩm làm nhãn
             entries.add(new PieEntry((float) item.getTotalPrice(), item.getFood_name()));
         }
 
+        // Tạo DataSet cho PieChart với nhãn "Tổng tiền bán được"
         PieDataSet dataSet = new PieDataSet(entries, "Tổng tiền bán được");
-        int[] pieColors = new int[] {
-                ContextCompat.getColor(this, R.color.pieColor1),
-                ContextCompat.getColor(this, R.color.pieColor2),
-                ContextCompat.getColor(this, R.color.pieColor3),
-                ContextCompat.getColor(this, R.color.pieColor4),
-                ContextCompat.getColor(this, R.color.pieColor5)
-        };
-        dataSet.setColors(pieColors);
+
+        // Tạo danh sách màu động cho từng phần của biểu đồ tròn
+        ArrayList<Integer> dynamicColors = new ArrayList<>();
+        int itemCount = items.size();
+        for (int i = 0; i < itemCount; i++) {
+            // Tính giá trị hue sao cho các màu được phân bố đều trên vòng 360 độ
+            float hue = (360f / itemCount) * i;
+            // Chuyển từ HSV sang RGB với độ bão hòa và độ sáng cố định (0.8f)
+            int color = android.graphics.Color.HSVToColor(new float[]{hue, 0.8f, 0.8f});
+            dynamicColors.add(color);
+        }
+        // Gán danh sách màu động cho DataSet
+        dataSet.setColors(dynamicColors);
         dataSet.setValueTextColor(ContextCompat.getColor(this, android.R.color.white));
         dataSet.setValueTextSize(12f);
 
+        // Tạo PieData từ DataSet và thiết lập cho PieChart
         PieData data = new PieData(dataSet);
         pieChart.setData(data);
+
+        // Để tránh trường hợp các nhãn bị đè lên nhau, ta tắt việc vẽ nhãn trực tiếp trên các phần của biểu đồ
+        pieChart.setDrawEntryLabels(false);
+
+        // Cấu hình Legend: hiển thị thông tin nhãn và cho phép xuống dòng nếu quá nhiều
+        pieChart.getLegend().setWordWrapEnabled(true);
+        pieChart.getLegend().setTextSize(12f);
+
+        // Thiết lập mô tả cho biểu đồ
         Description description = new Description();
         description.setText("Biểu đồ tròn (Tổng tiền bán được)");
         pieChart.setDescription(description);
-        pieChart.setEntryLabelColor(ContextCompat.getColor(this, android.R.color.black));
+
+        // Cập nhật lại PieChart
         pieChart.invalidate();
     }
+
 
     private void setupBottomNavigation() {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
