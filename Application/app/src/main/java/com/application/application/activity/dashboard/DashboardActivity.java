@@ -1,6 +1,7 @@
 package com.application.application.activity.dashboard;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -175,11 +176,20 @@ public class DashboardActivity extends AppCompatActivity implements OnBottomNavI
         } else if (itemId == R.id.statistic) {
             startActivity(new Intent(DashboardActivity.this, StatisticsActivity.class));
         } else if (itemId == R.id.logout) {
-            Intent intent = new Intent(DashboardActivity.this, LoginActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
+            logoutUser();
         }
+    }
+
+    private void logoutUser() {
+        SharedPreferences.Editor editor = getSharedPreferences("MyAppPrefs", MODE_PRIVATE).edit();
+        editor.clear(); 
+        editor.apply();
+
+        Intent intent = new Intent(DashboardActivity.this, LoginActivity.class);
+        // Xóa stack để không thể quay lại Dashboard bằng nút Back
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
     @Override

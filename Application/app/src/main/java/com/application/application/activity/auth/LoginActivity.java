@@ -1,6 +1,7 @@
 package com.application.application.activity.auth;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -33,6 +34,15 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Kiểm tra trạng thái đăng nhập trước khi hiển thị giao diện đăng nhập
+        if (isUserLoggedIn()) {
+            Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_login);
 
         databaseHelper = new DatabaseHelper(this);
@@ -47,6 +57,11 @@ public class LoginActivity extends AppCompatActivity {
 
         loginButton.setOnClickListener(v -> loginUser());
         setupRegisterLink();
+    }
+
+    private boolean isUserLoggedIn() {
+        SharedPreferences prefs = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
+        return prefs.getBoolean("isLoggedIn", false);
     }
 
     private void loginUser() {
@@ -90,6 +105,12 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         if (isLoginValid) {
+            // Lưu trạng thái đăng nhập
+            SharedPreferences.Editor editor = getSharedPreferences("MyAppPrefs", MODE_PRIVATE).edit();
+            editor.putBoolean("isLoggedIn", true);
+            editor.putString("username", usernameOrEmail);
+            editor.apply();
+
             Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
             startActivity(intent);
@@ -126,6 +147,5 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        databaseHelper.close();
     }
 }
