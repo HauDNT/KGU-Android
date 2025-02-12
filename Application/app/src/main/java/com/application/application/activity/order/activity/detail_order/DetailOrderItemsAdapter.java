@@ -110,7 +110,6 @@ public class DetailOrderItemsAdapter extends RecyclerView.Adapter<DetailOrderIte
                 }
             });
         }
-
     }
 
     @Override

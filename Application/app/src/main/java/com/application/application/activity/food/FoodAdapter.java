@@ -103,9 +103,11 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
                     // Nút thêm sản phẩm vào giỏ hàng
                     holder.iconCart.setOnClickListener(v -> {
                         ChooseOrderDialogFragment dialogFragment = new ChooseOrderDialogFragment();
+
                         Bundle dialogBundle = new Bundle();
                         dialogBundle.putString("food_id", String.valueOf(food.getId()));
                         dialogFragment.setArguments(dialogBundle);
+
                         dialogFragment.show(((AppCompatActivity) context).getSupportFragmentManager(), "Choose Cart Dialog");
                     });
                 }

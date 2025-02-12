@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:text="Get your food"
+        android:text="Chọn thức ăn của bạn"
         android:textColor="#7E7E7E"
         android:textSize="16sp" />
 
@@ -34,7 +34,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="Delivered!"
+        android:text="Giao hàng miễn phí!"
         android:textColor="#000"
         android:textSize="24sp"
         android:textStyle="bold" />

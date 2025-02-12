@@ -70,8 +70,8 @@ public class ChooseOrderDialogFragment extends DialogFragment implements ChooseO
         orderName = dialog.findViewById(R.id.dialog_choose_order_name);
         orderCreatedAt = dialog.findViewById(R.id.dialog_choose_order_created_at);
         orderCreatedAt.setText(Utils.getCurrentTime());
-
         createOrderBtn = dialog.findViewById(R.id.dialog_choose_order_btn_create);
+
         addOrderBtn = dialog.findViewById(R.id.dialog_choose_order_btn_add);
         orderQuantity = dialog.findViewById(R.id.dialog_choose_cart_text_quantity);
         upQuantityBtn = dialog.findViewById(R.id.dialog_choose_cart_btn_up_quantity);
