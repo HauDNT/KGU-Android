@@ -24,6 +24,15 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".activity.account.InformationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.account.ChangePasswordActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.account.ChangePersonalInfoActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.statistic.StatisticsActivity"
             android:exported="false" />
         <activity

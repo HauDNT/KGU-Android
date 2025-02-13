@@ -156,6 +156,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return valid;
     }
 
+    // Cập nhật thông tin cá nhân dựa trên username
+    public int updateUserPersonalInfo(String username, ContentValues values) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.update("users", values, "username = ?", new String[]{username});
+    }
+
+    // Cập nhật mật khẩu dựa trên username
+    public int updateUserPassword(String username, String hashedPassword) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("password", hashedPassword);
+        return db.update("users", values, "username = ?", new String[]{username});
+    }
+
+    public int deleteUser(String username) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete("users", "username = ?", new String[]{username});
+    }
+
+
     // ---------------------------------------------------- Foods ----------------------------------------------------
     public boolean isFoodExists(String foodName) {
         SQLiteDatabase db = this.getReadableDatabase();

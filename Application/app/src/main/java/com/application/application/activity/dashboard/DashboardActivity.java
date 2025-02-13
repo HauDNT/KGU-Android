@@ -13,6 +13,7 @@ import android.widget.ListView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.application.application.activity.account.InformationActivity;
 import com.application.application.activity.auth.LoginActivity;
 import com.application.application.activity.bottomNav.BottomNavigationHelper;
 import com.application.application.activity.bottomNav.OnBottomNavItemSelectedListener;
@@ -175,21 +176,9 @@ public class DashboardActivity extends AppCompatActivity implements OnBottomNavI
             startActivity(new Intent(DashboardActivity.this, OrderActivity.class));
         } else if (itemId == R.id.statistic) {
             startActivity(new Intent(DashboardActivity.this, StatisticsActivity.class));
-        } else if (itemId == R.id.logout) {
-            logoutUser();
+        } else if (itemId == R.id.account) {
+            startActivity(new Intent(DashboardActivity.this, InformationActivity.class));
         }
-    }
-
-    private void logoutUser() {
-        SharedPreferences.Editor editor = getSharedPreferences("MyAppPrefs", MODE_PRIVATE).edit();
-        editor.clear(); 
-        editor.apply();
-
-        Intent intent = new Intent(DashboardActivity.this, LoginActivity.class);
-        // Xóa stack để không thể quay lại Dashboard bằng nút Back
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
     }
 
     @Override
