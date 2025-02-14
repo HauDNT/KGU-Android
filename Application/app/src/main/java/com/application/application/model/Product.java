@@ -4,15 +4,17 @@ public class Product {
     private String name;
     private String description;
     private String price;
-    private int image;
+    private int imageResource; // Có thể để trống nếu không có hình ảnh
 
-    public Product(String name, String description, String price, int image) {
+    // Constructor
+    public Product(String name, String description, String price, int imageResource) {
         this.name = name;
         this.description = description;
         this.price = price;
-        this.image = image;
+        this.imageResource = imageResource;
     }
 
+    // Getters
     public String getName() {
         return name;
     }
@@ -25,14 +27,7 @@ public class Product {
         return price;
     }
 
-    public int getImage() {
-        return image;
-    }
-
-    public boolean getImageResource() {
-        // You need to implement the logic here.
-        // For example, you might return true if the image exists, or false otherwise.
-        // Here's a placeholder implementation:
-        return image != 0;  // Assuming 0 means no image, change as needed.
+    public int getImageResource() {
+        return imageResource; // Có thể trả về 0 hoặc -1 nếu không có hình ảnh
     }
 }

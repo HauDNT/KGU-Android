@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:text="Chọn thức ăn của bạn"
+        android:text="Get your food"
         android:textColor="#7E7E7E"
         android:textSize="16sp" />
 
@@ -34,7 +34,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="Giao hàng miễn phí!"
+        android:text="Delivered!"
         android:textColor="#000"
         android:textSize="24sp"
         android:textStyle="bold" />
@@ -46,140 +46,14 @@
         android:layout_height="180dp"
         android:layout_marginTop="16dp" />
 
-    <!-- Popular Now Section -->
-    <HorizontalScrollView
+    <!-- Popular Items RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewPopular"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <!-- Pizza -->
-            <LinearLayout
-                android:layout_width="120dp"
-                android:layout_height="150dp"
-                android:layout_marginEnd="8dp"
-                android:background="@drawable/bogoc"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:layout_width="63dp"
-                    android:layout_height="58dp"
-                    android:contentDescription="Pizza"
-                    android:src="@drawable/pizza" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Pizza"
-                    android:textColor="#000"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <Button
-                    android:id="@+id/button_pizza"
-                    android:layout_width="match_parent"
-                    android:layout_height="37dp"
-                    android:text="Xem Thêm" />
-            </LinearLayout>
-            <!-- Burger -->
-            <LinearLayout
-                android:layout_width="120dp"
-                android:layout_height="150dp"
-                android:layout_marginEnd="8dp"
-                android:background="@drawable/bogoc"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:contentDescription="Burger"
-                    android:src="@drawable/burger" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Burger"
-                    android:textColor="#000"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <Button
-                    android:id="@+id/button_burger"
-                    android:layout_width="match_parent"
-                    android:layout_height="37dp"
-                    android:text="Xem Thêm" />
-            </LinearLayout>
-            <!-- Popcorn -->
-            <LinearLayout
-                android:layout_width="120dp"
-                android:layout_height="150dp"
-                android:layout_marginEnd="8dp"
-                android:background="@drawable/bogoc"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:contentDescription="Popcorn"
-                    android:src="@drawable/popcorn" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Popcorn"
-                    android:textColor="#000"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <Button
-                    android:id="@+id/button_popcorn"
-                    android:layout_width="match_parent"
-                    android:layout_height="37dp"
-                    android:text="Xem Thêm" />
-            </LinearLayout>
-
-            <!-- Drink -->
-            <LinearLayout
-                android:layout_width="120dp"
-                android:layout_height="150dp"
-                android:layout_marginEnd="8dp"
-                android:background="@drawable/bogoc"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:contentDescription="Drink"
-                    android:src="@drawable/soda" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Drink"
-                    android:textColor="#000"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <Button
-                    android:id="@+id/button_drink"
-                    android:layout_width="match_parent"
-                    android:layout_height="37dp"
-                    android:text="Xem Thêm" />
-            </LinearLayout>
-        </LinearLayout>
-    </HorizontalScrollView>
+        android:padding="8dp"
+        android:scrollbars="horizontal"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -196,7 +70,7 @@
         android:id="@+id/productListView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" /> <!-- Thay đổi chiều cao thành 0dp và sử dụng layout_weight -->
+        android:layout_weight="1" />
 
     <!-- Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
