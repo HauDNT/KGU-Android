@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.application.application.R;
+import com.application.application.activity.account.InformationActivity;
 import com.application.application.activity.auth.LoginActivity;
 import com.application.application.activity.dashboard.DashboardActivity;
 import com.application.application.activity.food.FoodActivity;
@@ -357,8 +358,8 @@ public class StatisticsActivity extends AppCompatActivity {
             } else if (item.getItemId() == R.id.statistic) {
                 return true;
             }
-            else if (item.getItemId() == R.id.logout) {
-                Intent intent = new Intent(StatisticsActivity.this, LoginActivity.class);
+            else if (item.getItemId() == R.id.account) {
+                Intent intent = new Intent(StatisticsActivity.this, InformationActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 finish();

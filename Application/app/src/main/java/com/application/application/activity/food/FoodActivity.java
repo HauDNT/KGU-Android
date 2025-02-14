@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.application.application.R;
+import com.application.application.activity.account.InformationActivity;
 import com.application.application.activity.auth.LoginActivity;
 import com.application.application.activity.category.CategoryActivity;
 import com.application.application.activity.dashboard.DashboardActivity;
@@ -434,8 +435,8 @@ public class FoodActivity extends AppCompatActivity {
                 finish();
                 return true;
             }
-            else if (item.getItemId() == R.id.logout) {
-                Intent intent = new Intent(FoodActivity.this, LoginActivity.class);
+            else if (item.getItemId() == R.id.account) {
+                Intent intent = new Intent(FoodActivity.this, InformationActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 finish();

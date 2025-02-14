@@ -7,6 +7,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
+import com.application.application.activity.account.InformationActivity;
+import com.application.application.activity.auth.LoginActivity;
+import com.application.application.activity.bottomNav.BottomNavigationHelper;
+import com.application.application.activity.bottomNav.OnBottomNavItemSelectedListener;
 import com.application.application.R;
 import com.application.application.activity.account.AccountActivity;
 import com.application.application.activity.bottomNav.BottomNavigationHelper;
@@ -112,7 +116,9 @@ public class DashboardActivity extends AppCompatActivity implements OnBottomNavI
         } else if (itemId == R.id.home) {
             startActivity(new Intent(DashboardActivity.this, DashboardActivity.class));
         } else if (itemId == R.id.statistic) {
-            startActivity(new Intent(DashboardActivity.this, AccountActivity.class));
+            startActivity(new Intent(DashboardActivity.this, StatisticsActivity.class));
+        } else if (itemId == R.id.account) {
+            startActivity(new Intent(DashboardActivity.this, InformationActivity.class));
         }
     }
 }

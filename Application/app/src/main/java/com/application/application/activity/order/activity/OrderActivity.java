@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.application.application.R;
 import com.application.application.Utils;
 import com.application.application.activity.account.AccountActivity;
+import com.application.application.activity.account.InformationActivity;
 import com.application.application.activity.auth.LoginActivity;
 import com.application.application.activity.dashboard.DashboardActivity;
 import com.application.application.activity.food.FoodActivity;
@@ -84,8 +85,8 @@ public class OrderActivity extends AppCompatActivity implements DetailOrderDialo
                 startActivity(new Intent(OrderActivity.this, StatisticsActivity.class));
                 finish(); // Close OrderActivity
                 return true;
-            } else if (item.getItemId() == R.id.logout) {
-                Intent intent = new Intent(OrderActivity.this, LoginActivity.class);
+            } else if (item.getItemId() == R.id.account) {
+                Intent intent = new Intent(OrderActivity.this, InformationActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 finish();

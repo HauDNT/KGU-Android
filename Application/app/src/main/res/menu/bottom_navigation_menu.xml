@@ -16,7 +16,7 @@
         android:icon="@drawable/chart_ic"
     android:title="Thống kê" />
     <item
-        android:id="@+id/logout"
-        android:icon="@drawable/logout_ic"
-        android:title="Đăng xuất" />
+        android:id="@+id/account"
+        android:icon="@drawable/account_ic"
+        android:title="Tài khoản" />
 </menu>
