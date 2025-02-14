@@ -252,6 +252,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     // ---------------------------------------------------- Categories ----------------------------------------------------
+    public List<Category> getAllCategories() {
+        List<Category> categories = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM categories", null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                Category category = new Category(
+                        cursor.getInt(0),
+                        cursor.getString(1)
+                );
+                categories.add(category);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return categories;
+    }
+
     public List<Category> getCategoriesList(String[] columns) {
         List<Category> categories = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
