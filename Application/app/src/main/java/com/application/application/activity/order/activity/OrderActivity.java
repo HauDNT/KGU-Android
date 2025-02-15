@@ -18,13 +18,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.application.application.R;
 import com.application.application.Utils;
-import com.application.application.activity.account.AccountActivity;
 import com.application.application.activity.account.InformationActivity;
-import com.application.application.activity.auth.LoginActivity;
 import com.application.application.activity.dashboard.DashboardActivity;
 import com.application.application.activity.food.FoodActivity;
 import com.application.application.activity.order.activity.detail_order.DetailOrderDialogFragment;
-import com.application.application.activity.sale.SaleActivity;
 import com.application.application.activity.statistic.StatisticsActivity;
 import com.application.application.database.DatabaseHelper;
 import com.application.application.database.enums.OrderStatus;
@@ -68,7 +65,7 @@ public class OrderActivity extends AppCompatActivity implements DetailOrderDialo
 
     private void setupBottomNavigation() {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setSelectedItemId(R.id.cart); // Mark "Cart" as selected
+        bottomNavigationView.setSelectedItemId(R.id.order); // Mark "Cart" as selected
 
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             if (item.getItemId() == R.id.home) {
@@ -79,7 +76,7 @@ public class OrderActivity extends AppCompatActivity implements DetailOrderDialo
                 startActivity(new Intent(OrderActivity.this, FoodActivity.class));
                 finish(); // Close OrderActivity
                 return true;
-            } else if (item.getItemId() == R.id.cart) {
+            } else if (item.getItemId() == R.id.order) {
                 return true; // Already in OrderActivity
             } else if (item.getItemId() == R.id.statistic) {
                 startActivity(new Intent(OrderActivity.this, StatisticsActivity.class));
@@ -158,7 +155,7 @@ public class OrderActivity extends AppCompatActivity implements DetailOrderDialo
     public void onResume() {
         super.onResume();
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setSelectedItemId(R.id.cart); // Set "Cart" as selected
+        bottomNavigationView.setSelectedItemId(R.id.order); // Set "Cart" as selected
     }
 
     @Override

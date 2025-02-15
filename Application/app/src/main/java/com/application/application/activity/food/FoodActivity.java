@@ -1,8 +1,6 @@
 package com.application.application.activity.food;
 
 import android.content.ContentValues;
-import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -30,7 +28,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.application.application.R;
 import com.application.application.activity.account.InformationActivity;
-import com.application.application.activity.auth.LoginActivity;
 import com.application.application.activity.category.CategoryActivity;
 import com.application.application.activity.dashboard.DashboardActivity;
 import com.application.application.activity.order.activity.OrderActivity;
@@ -426,7 +423,7 @@ public class FoodActivity extends AppCompatActivity {
             }
             else if (item.getItemId() == R.id.food) {
                 return true;
-            } else if (item.getItemId() == R.id.cart) {
+            } else if (item.getItemId() == R.id.order) {
                 startActivity(new Intent(FoodActivity.this, OrderActivity.class));
                 finish();
                 return true;
