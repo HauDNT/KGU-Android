@@ -15,12 +15,10 @@ import androidx.core.content.ContextCompat;
 
 import com.application.application.R;
 import com.application.application.activity.account.InformationActivity;
-import com.application.application.activity.auth.LoginActivity;
 import com.application.application.activity.dashboard.DashboardActivity;
 import com.application.application.activity.food.FoodActivity;
 import com.application.application.activity.order.activity.OrderActivity;
 import com.application.application.database.DatabaseHelper;
-import com.application.application.database.enums.OrderStatus;
 import com.application.application.model.OrderItem;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
@@ -351,7 +349,7 @@ public class StatisticsActivity extends AppCompatActivity {
                 startActivity(new Intent(StatisticsActivity.this, FoodActivity.class));
                 finish();
                 return true;
-            } else if (item.getItemId() == R.id.cart) {
+            } else if (item.getItemId() == R.id.order) {
                 startActivity(new Intent(StatisticsActivity.this, OrderActivity.class));
                 finish();
                 return true;

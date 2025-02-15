@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.application.application.MainActivity;
 import com.application.application.Utils;
 import com.application.application.activity.dashboard.DashboardActivity;
 import com.application.application.R;
@@ -37,7 +38,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // Kiểm tra trạng thái đăng nhập trước khi hiển thị giao diện đăng nhập
         if (isUserLoggedIn()) {
-            Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
             finish();
             return;
