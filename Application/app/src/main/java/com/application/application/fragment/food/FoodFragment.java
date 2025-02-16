@@ -30,15 +30,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.application.application.R;
-import com.application.application.activity.account.InformationActivity;
 import com.application.application.activity.category.CategoryActivity;
-import com.application.application.activity.dashboard.DashboardActivity;
-import com.application.application.activity.order.activity.OrderActivity;
-import com.application.application.activity.statistic.StatisticsActivity;
 import com.application.application.database.DatabaseHelper;
 import com.application.application.model.Category;
 import com.application.application.model.Food;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 

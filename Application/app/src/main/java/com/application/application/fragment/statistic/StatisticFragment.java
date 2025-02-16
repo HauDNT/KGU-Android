@@ -1,6 +1,5 @@
 package com.application.application.fragment.statistic;
 
-import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.format.DateFormat;
@@ -16,13 +15,9 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.application.application.R;
-import com.application.application.activity.account.InformationActivity;
-import com.application.application.activity.dashboard.DashboardActivity;
-import com.application.application.activity.food.FoodActivity;
-import com.application.application.activity.order.activity.OrderActivity;
+
 import com.application.application.database.DatabaseHelper;
 import com.application.application.model.OrderItem;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputEditText;
 
