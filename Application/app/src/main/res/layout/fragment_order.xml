@@ -5,10 +5,55 @@
     android:layout_height="match_parent"
     tools:context=".fragment.order.OrderFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:orientation="vertical"
+        android:padding="4dp"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        tools:context=".activity.order.activity.OrderActivity">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="start"
+            android:weightSum="3">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:textStyle="bold"
+                android:textSize="25sp"
+                android:text="Đơn hàng"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_create_new_order"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Thêm"
+                android:textSize="@dimen/cud_btn_title_size"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/colorPrimary"
+                app:cornerRadius="@dimen/cud_btn_corner_radius"
+                app:strokeColor="@color/grayCorner"
+                app:strokeWidth="@dimen/cud_btn_corner_width"
+                app:icon="@drawable/ic_add"
+                app:iconTint="@android:color/white"
+                app:iconSize="@dimen/cud_btn_icon_size" />
+        </LinearLayout>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="16dp"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/order_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="8dp" />
+    </LinearLayout>
 </FrameLayout>

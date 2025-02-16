@@ -1,65 +1,131 @@
 package com.application.application.fragment.order;
 
+import android.app.AlertDialog;
+import android.content.ContentValues;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.application.application.R;
+import com.application.application.Utils;
+import com.application.application.database.DatabaseHelper;
+import com.application.application.database.enums.OrderStatus;
+import com.application.application.fragment.order.detail_order.DetailOrderDialogFragment;
+import com.application.application.model.Order;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link OrderFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class OrderFragment extends Fragment {
+import java.util.List;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+public class OrderFragment extends Fragment implements DetailOrderDialogFragment.OnOrderUpdatedListener {
+    private RecyclerView orderRecycleView;
+    private OrderFragmentAdapter orderFragmentAdapter;
+    private List<Order> orderList;
+    private DatabaseHelper dbHelper;
+    private Button btnCreateNewOrder;
 
     public OrderFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment OrderFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static OrderFragment newInstance(String param1, String param2) {
-        OrderFragment fragment = new OrderFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_order, container, false);
+        initElements(view);
+
+        return view;
+    }
+
+    private void initElements(View view) {
+        dbHelper = new DatabaseHelper(requireContext());
+        btnCreateNewOrder = view.findViewById(R.id.btn_create_new_order);
+        initOrderRecycleView(view);
+
+        btnCreateNewOrder.setOnClickListener(v -> showCreateDialog());
+    }
+
+    private void initOrderRecycleView(View view) {
+        orderRecycleView = view.findViewById(R.id.order_list);
+        orderRecycleView.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        orderList = dbHelper.getOrdersList();
+        orderFragmentAdapter = new OrderFragmentAdapter(requireContext(), orderList);
+        orderRecycleView.setAdapter(orderFragmentAdapter);
+    }
+
+    private void showCreateDialog() {
+        View createDialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_create_order_layout, null);
+        EditText orderName = createDialogView.findViewById(R.id.dialog_create_order_name);
+        EditText orderCreatedAt = createDialogView.findViewById(R.id.dialog_create_order_created_at);
+        orderCreatedAt.setText(Utils.getCurrentTime());
+
+        EditText orderDescription = createDialogView.findViewById(R.id.dialog_create_order_description);
+        Button orderCreateButton = createDialogView.findViewById(R.id.dialog_create_order_btn_create);
+        Button closeButton = createDialogView.findViewById(R.id.dialog_create_order_btn_close);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setView(createDialogView);
+        final AlertDialog dialog = builder.create();
+
+        orderCreateButton.setOnClickListener(v -> createNewOrder(orderName, orderDescription, orderCreatedAt));
+        closeButton.setOnClickListener(v -> dialog.dismiss());
+
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.show();
+    }
+
+    private void createNewOrder(EditText orderNameField, EditText orderDescriptionField, EditText orderCreatedAtField) {
+        String orderName = orderNameField.getText().toString().trim();
+        String orderDescription = orderDescriptionField.getText().toString().trim();
+        String orderCreatedAt = orderCreatedAtField.getText().toString();
+        String regex = getString(R.string.regex_cart_name);
+        boolean isValid = Utils.regexVerify(orderName, regex);
+
+        if (isValid) {
+            boolean checkExistOrder = dbHelper.isExistsOrder("name", orderName);
+
+            if (!checkExistOrder) {
+                ContentValues values = new ContentValues();
+                values.put("name", orderName);
+                values.put("description", orderDescription);
+                values.put("created_at", orderCreatedAt);
+                values.put("updated_at", orderCreatedAt);
+                values.put("status", String.valueOf(OrderStatus.PENDING.getStatusValue()));
+
+                long result = dbHelper.createOrder(values);
+
+                if (result > 0) {
+                    orderNameField.setText("");
+                    orderCreatedAtField.setText(Utils.getCurrentTime());
+                    orderDescriptionField.setText("");
+
+                    Toast.makeText(requireContext(), "Thêm giỏ hàng thành công!", Toast.LENGTH_LONG).show();
+                    orderFragmentAdapter.refreshOrdersList();
+                }
+            } else {
+                Toast.makeText(requireContext(), "Giỏ hàng đã tồn tại", Toast.LENGTH_LONG).show();
+            }
+        } else {
+            Toast.makeText(requireContext(), "Tên giỏ hàng không hợp lệ", Toast.LENGTH_LONG).show();
         }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_order, container, false);
+    public void onOrderUpdated() {
+        Toast.makeText(requireContext(), "Check...", Toast.LENGTH_SHORT).show();
+        orderFragmentAdapter.refreshOrdersList();
     }
 }

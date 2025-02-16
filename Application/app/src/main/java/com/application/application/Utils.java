@@ -7,6 +7,7 @@ import com.application.application.database.enums.OrderStatus;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -94,6 +95,23 @@ public class Utils {
             default:
                 statusField.setText("Không xác định");
                 break;
+        }
+    }
+
+    public static String convertStringDateValid(String dateString, String inputFormat, String outputFormat) {
+        if (dateString == null || dateString.isEmpty()) {
+            return ""; // Trả về chuỗi rỗng nếu giá trị đầu vào không hợp lệ
+        }
+
+        SimpleDateFormat inputFormatter = new SimpleDateFormat(inputFormat);
+        SimpleDateFormat outputFormatter = new SimpleDateFormat(outputFormat);
+
+        try {
+            Date date = inputFormatter.parse(dateString); // Chuyển String thành Date
+            return outputFormatter.format(date); // Chuyển Date thành String với định dạng mới
+        } catch (ParseException e) {
+            e.printStackTrace(); // Debug lỗi nếu có vấn đề với định dạng
+            return dateString; // Trả về giá trị gốc nếu lỗi xảy ra
         }
     }
 }
