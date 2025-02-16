@@ -3,22 +3,25 @@ package com.application.application.activity.dashboard;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
+import com.application.application.R;
 import com.application.application.activity.account.InformationActivity;
 import com.application.application.activity.bottomNav.BottomNavigationHelper;
 import com.application.application.activity.bottomNav.OnBottomNavItemSelectedListener;
-import com.application.application.R;
+import com.application.application.activity.dashboard.CategoryDetailActivity;
+import com.application.application.activity.food.FoodAdapter;
 import com.application.application.activity.sale.SaleActivity;
 import com.application.application.activity.statistic.StatisticsActivity;
 import com.application.application.common.PosterAdapter;
 import com.application.application.database.DatabaseHelper;
 import com.application.application.model.Category;
+import com.application.application.model.Food;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class DashboardActivity extends AppCompatActivity implements OnBottomNavItemSelectedListener {
@@ -36,6 +39,7 @@ public class DashboardActivity extends AppCompatActivity implements OnBottomNavI
         super.onCreate(savedInstanceState);
         setContentView(R.layout.menu);
 
+        // Khởi tạo databaseHelper
         databaseHelper = new DatabaseHelper(this);
 
         // Khởi tạo RecyclerView
@@ -47,17 +51,16 @@ public class DashboardActivity extends AppCompatActivity implements OnBottomNavI
         // Khởi tạo Bottom Navigation
         setupBottomNavigation();
 
-        categoryList = new ArrayList<>();
-        databaseHelper = new DatabaseHelper(this);
     }
-    private void initializeCategoryList() {
-        DatabaseHelper dbHelper = new DatabaseHelper(this);
-        categoryList = dbHelper.getAllCategories(); // Lấy danh sách danh mục từ DB
-    }
+
     @Override
     protected void onResume() {
         super.onResume();
-        initializeCategoryList();
+        loadCategories(); // Load lại danh mục khi quay lại màn hình
+    }
+
+    private void loadCategories() {
+        categoryList = databaseHelper.getAllCategories();
         if (dashboardCategoryAdapter != null) {
             dashboardCategoryAdapter.updateList(categoryList);
         }
@@ -73,7 +76,7 @@ public class DashboardActivity extends AppCompatActivity implements OnBottomNavI
     }
 
     private void openCategoryDetailActivity(Category category) {
-        Intent intent = new Intent(DashboardActivity.this, DashboardActivity.class);
+        Intent intent = new Intent(DashboardActivity.this, CategoryDetailActivity.class);
         intent.putExtra("categoryId", category.getId());
         intent.putExtra("categoryName", category.getName());
         startActivity(intent);
@@ -90,7 +93,7 @@ public class DashboardActivity extends AppCompatActivity implements OnBottomNavI
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (currentPage == posterImages.length) {
+                if (currentPage >= posterImages.length) {
                     currentPage = 0;
                 }
                 viewPager.setCurrentItem(currentPage++, true);
@@ -106,12 +109,8 @@ public class DashboardActivity extends AppCompatActivity implements OnBottomNavI
 
     @Override
     public void onBottomNavItemSelected(int itemId) {
-        if (itemId == R.id.home) {
-            // Đang ở DashboardActivity, không cần chuyển
-        } else if (itemId == R.id.food) {
+        if (itemId == R.id.food) {
             startActivity(new Intent(DashboardActivity.this, SaleActivity.class));
-        } else if (itemId == R.id.home) {
-            startActivity(new Intent(DashboardActivity.this, DashboardActivity.class));
         } else if (itemId == R.id.statistic) {
             startActivity(new Intent(DashboardActivity.this, StatisticsActivity.class));
         } else if (itemId == R.id.account) {

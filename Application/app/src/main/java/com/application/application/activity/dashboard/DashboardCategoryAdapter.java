@@ -1,6 +1,7 @@
 package com.application.application.activity.dashboard;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.application.application.R;
 import com.application.application.model.Category;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DashboardCategoryAdapter extends RecyclerView.Adapter<DashboardCategoryAdapter.ViewHolder> {
@@ -23,7 +25,9 @@ public class DashboardCategoryAdapter extends RecyclerView.Adapter<DashboardCate
         this.categoryList = categoryList;
         this.listener = listener;
     }
-
+    public interface OnCategoryClickListener {
+        void onCategoryClick(Category category);
+    }
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -36,6 +40,13 @@ public class DashboardCategoryAdapter extends RecyclerView.Adapter<DashboardCate
         Category category = categoryList.get(position);
         holder.categoryName.setText(category.getName());
         holder.viewMoreButton.setOnClickListener(v -> listener.onCategoryClick(category));
+        // Mở `CategoryDetailActivity` khi nhấn vào danh mục
+        holder.viewMoreButton.setOnClickListener(v -> {
+            Intent intent = new Intent(context, CategoryDetailActivity.class);
+            intent.putExtra("category_id", category.getId()); // Truyền ID danh mục
+            intent.putExtra("category_name", category.getName()); // Truyền tên danh mục
+            context.startActivity(intent);
+        });
     }
 
     @Override
@@ -54,14 +65,12 @@ public class DashboardCategoryAdapter extends RecyclerView.Adapter<DashboardCate
         }
     }
 
-    public interface OnCategoryClickListener {
-        void onCategoryClick(Category category);
-    }
-
     // ✅ Cập nhật danh sách danh mục mới
     public void updateList(List<Category> newCategories) {
-        this.categoryList.clear();
-        this.categoryList.addAll(newCategories);
-        notifyDataSetChanged();
+        if (newCategories != null) {
+            this.categoryList.clear();
+            this.categoryList.addAll(newCategories);
+            notifyDataSetChanged();
+        }
     }
 }

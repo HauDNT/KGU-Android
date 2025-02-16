@@ -860,6 +860,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return bestSellingItems;
     }
+    public List<Food> getFoodsByCategory(int categoryId) {
+        List<Food> foodList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String query = "SELECT f.id, f.name, f.description, f.price, f.status, f.image_url " +
+                "FROM foods f " +
+                "INNER JOIN food_category fc ON f.id = fc.food_id " +
+                "WHERE fc.category_id = ?";
+
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(categoryId)});
+
+        if (cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(0);
+                String name = cursor.getString(1);
+                String description = cursor.getString(2);
+                double price = cursor.getDouble(3);
+                int status = cursor.getInt(4);
+                String imageUrl = cursor.getString(5);
+
+                Food food = new Food(id, name, description, price, status, imageUrl);
+                foodList.add(food);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+
+        return foodList;
+    }
 
 }
 

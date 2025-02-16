@@ -4,12 +4,12 @@ public class Food {
     private int id;
     private String name;
     private String description;
-    private Integer price;
+    private double price;
     private int status; //0: Còn hàng, 1: Hết hàng
     private String imageUrl;
 
     //Constructor
-    public Food(int id, String name, String description, Integer price, int status, String imageUrl) {
+    public Food(int id, String name, String description, double price, int status, String imageUrl) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -28,8 +28,8 @@ public class Food {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    public Integer getPrice() { return price; }
-    public void setPrice(Integer price) { this.price = price; }
+    public double getPrice() { return price; }
+    public void setPrice(double price) { this.price = price; }
 
     public int getStatus() { return status; }
     public void setStatus(int status) { this.status = status; }
