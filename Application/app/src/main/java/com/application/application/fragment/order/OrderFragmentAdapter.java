@@ -50,26 +50,31 @@ public class OrderFragmentAdapter extends RecyclerView.Adapter<OrderFragmentAdap
         holder.order_created_at.setText(orderItem.getCreated_at());
         Utils.setOrderStatus(orderItem.getStatus(), holder.order_status);
 
-        //Nếu đơn hàng quá khứ (DELIVERED hoặc CANCELLED) thì ẩn nút xoá.
+        //Nếu đơn hàng có trạng thái DELIVERED hoặc CANCELLED thì ẩn cả nút xóa và nút chỉnh sửa
         if (orderItem.getStatus() == OrderStatus.DELIVERED || orderItem.getStatus() == OrderStatus.CANCELLED) {
             holder.btn_delete_order.setVisibility(View.GONE);
+            holder.btn_edit_order.setVisibility(View.GONE);
         } else {
             holder.btn_delete_order.setVisibility(View.VISIBLE);
             holder.btn_delete_order.setOnClickListener(v -> removeOrderDB(position, orderItem.getId()));
-        }
-        // Xoá bỏ 1 đơn hàng
-        holder.btn_delete_order.setOnClickListener(v -> removeOrderDB(position, orderItem.getId()));
 
-        // Xem/chỉnh sửa thông tin đơn hàng
-        holder.btn_edit_order.setOnClickListener(v -> {
-            EditOrderDialogFragment dialogFragment = EditOrderDialogFragment.newInstance(orderItem);
+            holder.btn_edit_order.setVisibility(View.VISIBLE);
+            holder.btn_edit_order.setEnabled(true);
+            holder.btn_edit_order.setAlpha(1.0f);
+            holder.btn_edit_order.setOnClickListener(v -> {
+                EditOrderDialogFragment dialogFragment = EditOrderDialogFragment.newInstance(orderItem);
 
-            dialogFragment.setOnOrderUpdatedListener(() -> {
-                refreshOrdersList();
+                Bundle args = dialogFragment.getArguments();
+                if (args == null) {
+                    args = new Bundle();
+                }
+                args.putBoolean("is_editable", true);
+                dialogFragment.setArguments(args);
+
+                dialogFragment.setOnOrderUpdatedListener(() -> refreshOrdersList());
+                dialogFragment.show(((AppCompatActivity) context).getSupportFragmentManager(), "EditOrderDialog");
             });
-
-            dialogFragment.show(((AppCompatActivity) context).getSupportFragmentManager(), "EditOrderDialog");
-        });
+        }
 
         //Khi click vào item, mở dialog chi tiết đơn hàng
         holder.order_bound.setOnClickListener(v -> {

@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,6 +36,7 @@ public class DashboardCategoryAdapter extends RecyclerView.Adapter<DashboardCate
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Category category = categoryList.get(position);
         holder.categoryName.setText(category.getName());
+        holder.itemImage.setImageResource(R.drawable.ic_category_item);
         holder.viewMoreButton.setOnClickListener(v -> listener.onCategoryClick(category));
     }
 
@@ -44,11 +46,13 @@ public class DashboardCategoryAdapter extends RecyclerView.Adapter<DashboardCate
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
+        ImageView itemImage;
         TextView categoryName;
         Button viewMoreButton;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            itemImage = itemView.findViewById(R.id.item_image);
             categoryName = itemView.findViewById(R.id.item_name);
             viewMoreButton = itemView.findViewById(R.id.button_view_more);
         }

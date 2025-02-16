@@ -17,6 +17,7 @@ import com.application.application.common.PosterAdapter;
 import com.application.application.database.DatabaseHelper;
 import com.application.application.fragment.category.CategoryFragment;
 import com.application.application.model.Category;
+import com.application.application.model.OrderItem;
 
 import java.util.List;
 
@@ -28,6 +29,11 @@ public class DashboardFragment extends Fragment {
     private Handler handler = new Handler();
     private int currentPage = 0;
     private DatabaseHelper databaseHelper;
+
+    // Các biến cho phần hiển thị món ăn phổ biến
+    private RecyclerView recyclerViewPopularFood;
+    private PopularFoodAdapter popularFoodAdapter;
+    private List<OrderItem> popularItems;
 
     public DashboardFragment() {
         // Required empty public constructor
@@ -49,6 +55,9 @@ public class DashboardFragment extends Fragment {
         // Khởi tạo ViewPager2 cho banner quảng cáo
         setupViewPager(view);
 
+        // Thêm phần hiển thị món ăn phổ biến
+        setupPopularFoodRecyclerView(view);
+
         return view;
     }
 
@@ -61,17 +70,34 @@ public class DashboardFragment extends Fragment {
         recyclerViewPopular.setAdapter(dashboardCategoryAdapter);
     }
 
+    // Phương thức mới: thiết lập RecyclerView hiển thị món ăn phổ biến
+    private void setupPopularFoodRecyclerView(View view) {
+        recyclerViewPopularFood = view.findViewById(R.id.recyclerViewPopularFood);
+        // Sử dụng hướng dọc (VERTICAL)
+        recyclerViewPopularFood.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
+
+        // Lấy danh sách món ăn phổ biến (6 món bán chạy nhất)
+        popularItems = databaseHelper.getPopularItems("");
+        popularFoodAdapter = new PopularFoodAdapter(requireContext(), popularItems);
+        recyclerViewPopularFood.setAdapter(popularFoodAdapter);
+    }
+
+
     private void initializeCategoryList() {
         DatabaseHelper dbHelper = new DatabaseHelper(requireContext());
         categoryList = dbHelper.getAllCategories(); // Lấy danh sách danh mục từ DB
     }
 
-    @Override
     public void onResume() {
         super.onResume();
         initializeCategoryList();
         if (dashboardCategoryAdapter != null) {
             dashboardCategoryAdapter.updateList(categoryList);
+        }
+        // Cập nhật lại danh sách món ăn phổ biến
+        popularItems = databaseHelper.getPopularItems("");
+        if (popularFoodAdapter != null) {
+            popularFoodAdapter.updateList(popularItems);
         }
     }
 
