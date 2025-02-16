@@ -12,9 +12,10 @@ import com.application.application.fragment.account.AccountFragment;
 import com.application.application.fragment.dashboard.DashboardFragment;
 import com.application.application.fragment.food.FoodFragment;
 import com.application.application.fragment.order.OrderFragment;
+import com.application.application.fragment.order.detail_order.DetailOrderDialogFragment;
 import com.application.application.fragment.statistic.StatisticFragment;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements DetailOrderDialogFragment.OnOrderUpdatedListener {
     ActivityMainBinding binding;
 
     @Override
@@ -54,5 +55,14 @@ public class MainActivity extends AppCompatActivity {
 
         fragmentTransaction.replace(R.id.mainFrameLayout, fragment);
         fragmentTransaction.commit();
+    }
+
+    @Override
+    public void onOrderUpdated() {
+        /*  Thay thế Fragment Order chứa dữ liệu cũ thành Fragment
+            Order mới để load lại dữ liệu mới.
+         */
+
+        replaceFragment(new OrderFragment());
     }
 }
