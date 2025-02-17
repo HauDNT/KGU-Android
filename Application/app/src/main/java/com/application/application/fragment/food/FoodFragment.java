@@ -1,5 +1,6 @@
-package com.application.application.activity.food;
+package com.application.application.fragment.food;
 
+import android.Manifest;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -10,6 +11,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,25 +19,21 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.Manifest;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.application.application.R;
-import com.application.application.activity.account.InformationActivity;
 import com.application.application.activity.category.CategoryActivity;
-import com.application.application.activity.dashboard.DashboardActivity;
-import com.application.application.activity.order.activity.OrderActivity;
-import com.application.application.activity.statistic.StatisticsActivity;
 import com.application.application.database.DatabaseHelper;
 import com.application.application.model.Category;
 import com.application.application.model.Food;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
@@ -45,58 +43,65 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FoodActivity extends AppCompatActivity {
+public class FoodFragment extends Fragment {
+
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final int PERMISSION_REQUEST_CODE = 100;
 
     private RecyclerView recyclerView;
-    private FoodAdapter foodAdapter;
+    private FoodFragmentAdapter foodFragmentAdapter;
     private DatabaseHelper dbHelper;
     private Button btnCreateFood;
     private Uri imageUri;
     private View dialogView;
     private List<String> selectedCategories;
-    private List<Food> foodList;
+
+    public FoodFragment() {
+        // Required empty public constructor
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_food, container, false);
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_list_food);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        recyclerView = findViewById(R.id.food_list);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView = view.findViewById(R.id.food_list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        dbHelper = new DatabaseHelper(this);
+        dbHelper = new DatabaseHelper(getContext());
         loadFoodList();
 
-        btnCreateFood = findViewById(R.id.btn_create_food);
+        btnCreateFood = view.findViewById(R.id.btn_create_food);
         btnCreateFood.setOnClickListener(v -> showCreateFoodDialog());
 
-        //Kiểm tra quyền truy cập
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
+        // Kiểm tra quyền truy cập
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(),
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    PERMISSION_REQUEST_CODE);
         }
-
-        setupBottomNavigation();
-
-        DatabaseHelper dbHelper = new DatabaseHelper(this);
-        FoodAdapter foodAdapter = new FoodAdapter(this, foodList, dbHelper, this);
     }
 
     private void loadFoodList() {
         List<Food> foodList = dbHelper.getAllFoods();
-        if (foodList.size() > 0) {
-            foodAdapter = new FoodAdapter(this, foodList, dbHelper, this);
-            recyclerView.setAdapter(foodAdapter);
-        }
-        else {
-            Toast.makeText(this,"Không có dữ liệu món ăn", Toast.LENGTH_SHORT).show();
+        if (!foodList.isEmpty()) {
+            foodFragmentAdapter = new FoodFragmentAdapter(getContext(), foodList, dbHelper, FoodFragment.this);
+            recyclerView.setAdapter(foodFragmentAdapter);
+        } else {
+            Toast.makeText(getContext(), "Không có dữ liệu món ăn", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void showCreateFoodDialog() {
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        LayoutInflater inflater = this.getLayoutInflater();
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+        LayoutInflater inflater = getLayoutInflater();
         dialogView = inflater.inflate(R.layout.dialog_create_food_layout, null);
         dialogBuilder.setView(dialogView);
 
@@ -114,11 +119,11 @@ public class FoodActivity extends AppCompatActivity {
 
         selectedCategories = new ArrayList<>();
 
-        //Thiết lập giá trị cho Spinner trạng thái
+        // Thiết lập giá trị cho Spinner trạng thái
         setupSpinner(spinnerStatus);
 
-        //Thiết lập sự kiện cho loại sản phẩm
-        categoryInfo.setOnClickListener(v -> showCategorySelectionDialog(categoryInfo, chipGroupCategories)); // Gọi hàm hiển thị dialog
+        // Thiết lập sự kiện cho loại sản phẩm
+        categoryInfo.setOnClickListener(v -> showCategorySelectionDialog(categoryInfo, chipGroupCategories));
 
         AlertDialog alertDialog = dialogBuilder.create();
 
@@ -146,17 +151,17 @@ public class FoodActivity extends AppCompatActivity {
 
             int status = spinnerStatus.getSelectedItemPosition();
 
-            //Kiểm tra trùng tên
+            // Kiểm tra trùng tên
             if (dbHelper.isFoodExists(name)) {
                 alertText.setText("Sản phẩm với tên '" + name + "' đã tồn tại.");
                 alertText.setVisibility(View.VISIBLE);
                 return;
             }
 
-            //Chuyển danh sách categories đã chọn thành chuỗi
             String categories = String.join(", ", selectedCategories);
 
-            Log.d("FoodActivity", "Creating food: Name=" + name + ", Description=" + description + ", Price=" + price + ", Status=" + status + ", Categories=" + categories + ", Image URI=" + imageUri);
+            Log.d("FoodFragment", "Creating food: Name=" + name + ", Description=" + description +
+                    ", Price=" + price + ", Status=" + status + ", Categories=" + categories + ", Image URI=" + imageUri);
 
             ContentValues values = new ContentValues();
             values.put("name", name);
@@ -173,11 +178,11 @@ public class FoodActivity extends AppCompatActivity {
                         dbHelper.insertFoodCategory(newRowId, categoryId);
                     }
                 }
-                Toast.makeText(FoodActivity.this, "Thêm sản phẩm thành công", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Thêm sản phẩm thành công", Toast.LENGTH_SHORT).show();
                 alertDialog.dismiss();
                 loadFoodList();
             } else {
-                Toast.makeText(FoodActivity.this, "Lỗi khi thêm sản phẩm", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Lỗi khi thêm sản phẩm", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -188,13 +193,14 @@ public class FoodActivity extends AppCompatActivity {
 
     private void setupSpinner(Spinner spinnerStatus) {
         String[] statuses = {"Còn hàng", "Hết hàng"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, statuses);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, statuses);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerStatus.setAdapter(adapter);
     }
+
     private void showCategorySelectionDialog(TextView categoryInfo, ChipGroup chipGroup) {
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        LayoutInflater inflater = this.getLayoutInflater();
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+        LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_select_category, null);
         dialogBuilder.setView(dialogView);
 
@@ -202,13 +208,13 @@ public class FoodActivity extends AppCompatActivity {
         Button buttonConfirm = dialogView.findViewById(R.id.button_confirm_selection);
         Button btnAddCategory = dialogView.findViewById(R.id.button_add_category);
 
-        //Lấy danh sách loại sản phẩm từ db
+        // Lấy danh sách loại sản phẩm từ db
         String[] columns = {"id", "name", "created_at", "updated_at"};
         List<Category> categories = dbHelper.getCategoriesList(columns);
 
         for (Category category : categories) {
-            Chip chip = new Chip(this);
-            chip.setText(category.getName()); //Lấy tên từ Category
+            Chip chip = new Chip(getContext());
+            chip.setText(category.getName());
             chip.setCheckable(true);
 
             chip.setChipBackgroundColorResource(R.color.chip_background);
@@ -244,9 +250,9 @@ public class FoodActivity extends AppCompatActivity {
             alertDialog.dismiss();
         });
 
-        //Xử lý sự kiện click cho nút "Thêm loại"
+        // Xử lý sự kiện click cho nút "Thêm loại"
         btnAddCategory.setOnClickListener(v -> {
-            Intent intent = new Intent(FoodActivity.this, CategoryActivity.class);
+            Intent intent = new Intent(requireActivity(), CategoryActivity.class);
             startActivity(intent);
             alertDialog.dismiss();
         });
@@ -255,7 +261,7 @@ public class FoodActivity extends AppCompatActivity {
     }
 
     private void updateSelectedCategoriesDisplay(TextView categoryInfo, ChipGroup chipGroup) {
-        chipGroup.removeAllViews(); //Xóa các tag hiện tại
+        chipGroup.removeAllViews();
 
         if (selectedCategories.isEmpty()) {
             categoryInfo.setVisibility(View.VISIBLE);
@@ -263,7 +269,7 @@ public class FoodActivity extends AppCompatActivity {
         } else {
             categoryInfo.setVisibility(View.GONE);
             for (String category : selectedCategories) {
-                Chip chip = new Chip(this);
+                Chip chip = new Chip(getContext());
                 chip.setText(category);
                 chip.setCloseIconVisible(true);
                 chip.setOnCloseIconClickListener(v -> {
@@ -275,6 +281,7 @@ public class FoodActivity extends AppCompatActivity {
             categoryInfo.setText("Loại sản phẩm: " + String.join(", ", selectedCategories));
         }
     }
+
     private void openFileChooser() {
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -283,15 +290,16 @@ public class FoodActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == requireActivity().RESULT_OK
+                && data != null && data.getData() != null) {
             imageUri = data.getData();
             try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), imageUri);
                 ImageView imagePreview = dialogView.findViewById(R.id.image_preview);
                 imagePreview.setImageBitmap(bitmap);
-                saveImageToInternalStorage(bitmap, "food_image"); //Lưu hình ảnh
+                saveImageToInternalStorage(bitmap, "food_image");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -299,23 +307,26 @@ public class FoodActivity extends AppCompatActivity {
     }
 
     private void saveImageToInternalStorage(Bitmap bitmap, String name) {
-        File directory = new File(getFilesDir(), "images");
+        File directory = new File(requireActivity().getFilesDir(), "images");
         if (!directory.exists()) {
-            directory.mkdirs(); //Tạo thư mục nếu chưa tồn tại
+            directory.mkdirs();
         }
-        String uniqueName = name + "_" + System.currentTimeMillis() + ".jpg"; //Tên tệp độc nhất
+        String uniqueName = name + "_" + System.currentTimeMillis() + ".jpg";
         File file = new File(directory, uniqueName);
         try (FileOutputStream out = new FileOutputStream(file)) {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-            imageUri = Uri.fromFile(file); //Lưu đường dẫn
+            imageUri = Uri.fromFile(file);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void showEditFoodDialog(Food food) {
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        LayoutInflater inflater = this.getLayoutInflater();
+        // Reset imageUri để tránh dùng ảnh của sản phẩm trước đó
+        imageUri = null;
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+        LayoutInflater inflater = getLayoutInflater();
         dialogView = inflater.inflate(R.layout.dialog_edit_food_layout, null);
         dialogBuilder.setView(dialogView);
 
@@ -331,24 +342,24 @@ public class FoodActivity extends AppCompatActivity {
         TextView categoryInfo = dialogView.findViewById(R.id.dialog_edit_food_category_info);
         Button btnUpload = dialogView.findViewById(R.id.dialog_edit_food_btn_upload);
 
-        //Điền thông tin sản phẩm vào các trường
+        // Điền thông tin sản phẩm vào các trường
         editName.setText(food.getName());
         editDescription.setText(food.getDescription());
         editPrice.setText(String.valueOf((int) food.getPrice()));
 
-        //Tải ảnh
-        Uri imageUri = Uri.parse(food.getImageUrl());
-        imagePreview.setImageURI(imageUri);
+        // Tải ảnh ban đầu: sử dụng biến cục bộ currentImageUri để hiển thị ảnh gốc
+        Uri currentImageUri = Uri.parse(food.getImageUrl());
+        imagePreview.setImageURI(currentImageUri);
 
-        //Cập nhật danh sách loại sản phẩm đã chọn
+        // Cập nhật danh sách loại sản phẩm đã chọn
         selectedCategories = dbHelper.getCategoriesForFood(food.getId());
-        updateSelectedCategoriesDisplay(categoryInfo, chipGroupCategories); //Gọi hàm cập nhật
+        updateSelectedCategoriesDisplay(categoryInfo, chipGroupCategories);
 
-        //Thiết lập giá trị cho Spinner trạng thái
+        // Thiết lập giá trị cho Spinner trạng thái
         setupSpinner(spinnerStatus);
 
-        //Thêm sự kiện click cho danh mục
-        categoryInfo.setOnClickListener(v -> showCategorySelectionDialog(categoryInfo, chipGroupCategories)); // Gọi hàm hiển thị dialog
+        // Thêm sự kiện click cho danh mục
+        categoryInfo.setOnClickListener(v -> showCategorySelectionDialog(categoryInfo, chipGroupCategories));
 
         AlertDialog alertDialog = dialogBuilder.create();
 
@@ -374,7 +385,7 @@ public class FoodActivity extends AppCompatActivity {
                 return;
             }
 
-            //Kiểm tra trùng tên
+            // Kiểm tra trùng tên
             if (dbHelper.isFoodExists(name) && !name.equals(food.getName())) {
                 alertText.setText("Sản phẩm với tên '" + name + "' đã tồn tại.");
                 alertText.setVisibility(View.VISIBLE);
@@ -389,68 +400,34 @@ public class FoodActivity extends AppCompatActivity {
             values.put("price", price);
             values.put("status", status);
 
-            // Nếu người dùng không chọn ảnh mới, giữ nguyên URL ảnh cũ
-            if (imageUri != null) {
-                values.put("image_url", imageUri.toString());
+            // Nếu người dùng chọn ảnh mới, biến toàn cục imageUri đã được cập nhật qua onActivityResult()
+            if (this.imageUri != null) {
+                values.put("image_url", this.imageUri.toString());
             } else {
-                //Giữ nguyên hình ảnh cũ nếu không có hình ảnh mới
                 values.put("image_url", food.getImageUrl());
             }
 
-            //Cập nhật sản phẩm trong cơ sở dữ liệu
+            // Cập nhật sản phẩm trong cơ sở dữ liệu
             int rowsUpdated = dbHelper.updateFood(food.getId(), values);
             if (rowsUpdated > 0) {
                 dbHelper.updateFoodCategories(food.getId(), selectedCategories);
-                Toast.makeText(FoodActivity.this, "Cập nhật sản phẩm thành công", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Cập nhật sản phẩm thành công", Toast.LENGTH_SHORT).show();
                 alertDialog.dismiss();
                 loadFoodList();
             } else {
-                Toast.makeText(FoodActivity.this, "Lỗi khi cập nhật sản phẩm", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Lỗi khi cập nhật sản phẩm", Toast.LENGTH_SHORT).show();
             }
         });
 
         btnClose.setOnClickListener(v -> alertDialog.dismiss());
 
         alertDialog.show();
-        updateSelectedCategoriesDisplay(categoryInfo, chipGroupCategories); //Gọi hàm cập nhật
-    }
-
-    private void setupBottomNavigation() {
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setSelectedItemId(R.id.food);
-
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-            if (item.getItemId() == R.id.home) {
-                startActivity(new Intent(FoodActivity.this, DashboardActivity.class));
-                finish();
-                return true;
-            }
-            else if (item.getItemId() == R.id.food) {
-                return true;
-            } else if (item.getItemId() == R.id.order) {
-                startActivity(new Intent(FoodActivity.this, OrderActivity.class));
-                finish();
-                return true;
-            } else if (item.getItemId() == R.id.statistic) {
-                startActivity(new Intent(FoodActivity.this, StatisticsActivity.class));
-                finish();
-                return true;
-            }
-            else if (item.getItemId() == R.id.account) {
-                Intent intent = new Intent(FoodActivity.this, InformationActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                finish();
-            }
-
-            return false;
-        });
+        updateSelectedCategoriesDisplay(categoryInfo, chipGroupCategories);
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setSelectedItemId(R.id.food);
+        foodFragmentAdapter.refreshFoodlist();
     }
 }

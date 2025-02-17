@@ -34,7 +34,7 @@ public class AccountActivity extends AppCompatActivity {
 //                startActivity(new Intent(AccountActivity.this, SaleActivity.class));
 //                finish(); // Kết thúc AccountActivity
 //                return true;
-//            } else if (item.getItemId() == R.id.cart) {
+//            } else if (item.getItemId() == R.id.order) {
 //                startActivity(new Intent(AccountActivity.this, OrderActivity.class));
 //                finish(); // Kết thúc AccountActivity
 //                return true;

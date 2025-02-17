@@ -860,6 +860,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return bestSellingItems;
     }
+
     public List<Food> getFoodsByCategory(int categoryId) {
         List<Food> foodList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -890,6 +891,53 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return foodList;
     }
+    
+  // ---------------------------------------------------- dashboard ----------------------------------------------------
+    public List<OrderItem> getPopularItems(String searchQuery) {
+        List<OrderItem> popularItems = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
 
+        try {
+            String query = "SELECT oi.food_id, f.name AS food_name, " +
+                    "SUM(oi.quantity) AS total_quantity, SUM(oi.total_price) AS total_money " +
+                    "FROM order_item oi " +
+                    "JOIN orders o ON oi.order_id = o.id " +
+                    "JOIN foods f ON oi.food_id = f.id " +
+                    "WHERE o.status = ? ";
+
+            List<String> selectionArgs = new ArrayList<>();
+            selectionArgs.add(String.valueOf(OrderStatus.DELIVERED.getStatusValue()));
+
+            query += "GROUP BY oi.food_id " +
+                    "ORDER BY total_quantity DESC, total_money DESC " +
+                    "LIMIT 10";
+
+            cursor = db.rawQuery(query, selectionArgs.toArray(new String[0]));
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    int foodId = cursor.getInt(cursor.getColumnIndexOrThrow("food_id"));
+                    String foodName = cursor.getString(cursor.getColumnIndexOrThrow("food_name"));
+                    int totalQuantity = cursor.getInt(cursor.getColumnIndexOrThrow("total_quantity"));
+                    float totalMoney = cursor.getFloat(cursor.getColumnIndexOrThrow("total_money"));
+
+                    OrderItem orderItem = new OrderItem();
+                    orderItem.setFood_id(foodId);
+                    orderItem.setFood_name(foodName);
+                    orderItem.setQuantity(totalQuantity);
+                    orderItem.setTotalPrice(totalMoney);
+
+                    popularItems.add(orderItem);
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e("DatabaseHelper", "Error in getPopularItems: " + e.getMessage());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+            db.close();
+        }
+        return popularItems;
+    }
 }
-
