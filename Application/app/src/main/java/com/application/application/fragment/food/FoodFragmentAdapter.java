@@ -116,10 +116,10 @@ public class FoodFragmentAdapter extends RecyclerView.Adapter<FoodFragmentAdapte
         return foodList != null ? foodList.size() : 0;
     }
 
-    public void refreshFoodlist() {
-        this.foodList = dbHelper.getAllFoods();
-        notifyDataSetChanged();
-    }
+//    public void refreshFoodlist() {
+//        this.foodList = dbHelper.getAllFoods();
+//        notifyDataSetChanged();
+//    }
 
     public static class FoodViewHolder extends RecyclerView.ViewHolder {
         TextView foodTitle, foodPrice, foodDescription, foodCode, foodStatus, foodType;

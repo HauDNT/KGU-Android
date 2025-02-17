@@ -428,6 +428,6 @@ public class FoodFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        foodFragmentAdapter.refreshFoodlist();
+        //foodFragmentAdapter.refreshFoodlist();
     }
 }

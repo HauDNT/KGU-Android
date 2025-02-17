@@ -12,12 +12,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.application.application.MainActivity;
 import com.application.application.R;
 import com.application.application.common.PosterAdapter;
 import com.application.application.database.DatabaseHelper;
 import com.application.application.fragment.category.CategoryFragment;
 import com.application.application.model.Category;
 import com.application.application.model.OrderItem;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.List;
 
