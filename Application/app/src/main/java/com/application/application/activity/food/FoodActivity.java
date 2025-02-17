@@ -427,7 +427,7 @@ public class FoodActivity extends AppCompatActivity {
             }
             else if (item.getItemId() == R.id.food) {
                 return true;
-            } else if (item.getItemId() == R.id.order) {
+            } else if (item.getItemId() == R.id.category) {
                 startActivity(new Intent(FoodActivity.this, OrderActivity.class));
                 finish();
                 return true;

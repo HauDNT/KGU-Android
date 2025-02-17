@@ -100,8 +100,8 @@ public class EditOrderDialogFragment extends DialogFragment {
         orderNameEditText.setText(order.getName());
         orderDescriptionEditText.setText(order.getDescription());
 
-        // deliveryAtEditText.setText(order.getDelivery_at());          // --> Đoạn này gây ra lỗi "Lỗi định dạng ngày"
-//        SimpleDateFormat orderDelivery = order.getDelivery_at();
+        // deliveryAtEditText.setText(category.getDelivery_at());          // --> Đoạn này gây ra lỗi "Lỗi định dạng ngày"
+//        SimpleDateFormat orderDelivery = category.getDelivery_at();
 //        SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
 //        deliveryAtEditText.setText(format.format(orderDelivery));
 

@@ -146,7 +146,7 @@ public class InformationActivity extends AppCompatActivity {
                 startActivity(new Intent(InformationActivity.this, FoodActivity.class));
                 finish();
                 return true;
-            } else if (id == R.id.order) {
+            } else if (id == R.id.category) {
                 startActivity(new Intent(InformationActivity.this, OrderActivity.class));
                 finish();
                 return true;
