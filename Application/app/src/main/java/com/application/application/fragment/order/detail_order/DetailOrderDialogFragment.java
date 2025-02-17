@@ -90,7 +90,7 @@ public class DetailOrderDialogFragment extends DialogFragment {
         orderItemsListRecycleView = dialog.findViewById(R.id.dialog_detail_order_list);
         orderItemsListRecycleView.setLayoutManager(new LinearLayoutManager(requireActivity()));
 
-        // Lấy thông tin đơn hàng kèm các order item
+        // Lấy thông tin đơn hàng kèm các category item
         orderInfo = dbHelper.getOrder_OrderItems_Food(orderId);
 
         if (orderInfo == null || orderInfo.getOrder() == null) {
@@ -201,7 +201,7 @@ public class DetailOrderDialogFragment extends DialogFragment {
         });
     }
 
-    // Tạo một interface update listener interface để ghi nhận việc cập nhật status order và gửi nó đến OrderActivity
+    // Tạo một interface update listener interface để ghi nhận việc cập nhật status category và gửi nó đến OrderActivity
     public interface OnOrderUpdatedListener {
         void onOrderUpdated();
     }

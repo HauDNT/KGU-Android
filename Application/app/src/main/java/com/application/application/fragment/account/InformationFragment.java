@@ -18,6 +18,7 @@ import com.application.application.R;
 import com.application.application.activity.auth.LoginActivity;
 import com.application.application.database.DatabaseHelper;
 import com.application.application.fragment.order.OrderFragment;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class InformationFragment extends Fragment {
 

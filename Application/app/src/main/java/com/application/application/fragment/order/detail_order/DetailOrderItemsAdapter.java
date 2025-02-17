@@ -68,7 +68,7 @@ public class DetailOrderItemsAdapter extends RecyclerView.Adapter<DetailOrderIte
             return;
         }
 
-        // Lấy đối tượng order item theo vị trí
+        // Lấy đối tượng category item theo vị trí
         OrderItem orderItem = orderItemsList.get(position);
         if (orderItem == null) return;
 

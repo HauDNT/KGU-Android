@@ -8,8 +8,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.application.application.databinding.ActivityMainBinding;
-import com.application.application.fragment.account.ChangePasswordFragment;
 import com.application.application.fragment.account.InformationFragment;
+import com.application.application.fragment.category.CategoryFragment;
 import com.application.application.fragment.dashboard.DashboardFragment;
 import com.application.application.fragment.food.FoodFragment;
 import com.application.application.fragment.order.OrderFragment;
@@ -35,8 +35,8 @@ public class MainActivity extends AppCompatActivity implements DetailOrderDialog
                 case R.id.food:
                     replaceFragment(new FoodFragment());
                     break;
-                case R.id.order:
-                    replaceFragment(new OrderFragment());
+                case R.id.category:
+                    replaceFragment(new CategoryFragment());
                     break;
                 case R.id.statistic:
                     replaceFragment(new StatisticFragment());

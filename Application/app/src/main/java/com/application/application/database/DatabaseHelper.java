@@ -559,7 +559,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result;
     }
 
-    // Hàm kiểm tra xem đã có item (order id và food id trong bảng 'order_item') chưa?
+    // Hàm kiểm tra xem đã có item (category id và food id trong bảng 'order_item') chưa?
     public OrderItem getExistOrderItem(int foodId, int orderId) {
         SQLiteDatabase db = this.getReadableDatabase();
         OrderItem orderItem;
@@ -671,7 +671,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return order;
     }
 
-    // Hàm lấy ra order và order_item theo id của order
+    // Hàm lấy ra category và order_item theo id của category
     public OrderWithItems getOrder_OrderItems_Food(int orderId) {
         OrderWithItems orderWithItems = null;
         Order order = getOrderById(orderId);
@@ -755,7 +755,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
             db.setTransactionSuccessful();
         } catch (Exception e) {
-            Log.e("DatabaseHelper", "Error when delete order " + orderId + ": " + e.getMessage());
+            Log.e("DatabaseHelper", "Error when delete category " + orderId + ": " + e.getMessage());
         } finally {
             db.endTransaction();
             db.close();
@@ -790,7 +790,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return 0;
     }
 
-    // Phương thức xoá order item theo id
+    // Phương thức xoá category item theo id
     public long deleteOrderItem(int orderItemId) {
         SQLiteDatabase db = this.getWritableDatabase();
         long result = db.delete("order_item", "id = ?", new String[]{String.valueOf(orderItemId)});

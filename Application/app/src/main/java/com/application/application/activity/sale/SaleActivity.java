@@ -33,7 +33,7 @@ public class SaleActivity extends AppCompatActivity {
 //            } else if (item.getItemId() == R.id.sale) {
 //                // Đang ở SaleActivity, không cần chuyển
 //                return true;
-//            } else if (item.getItemId() == R.id.order) {
+//            } else if (item.getItemId() == R.id.category) {
 //                startActivity(new Intent(SaleActivity.this, OrderActivity.class));
 //                finish(); // Kết thúc SaleActivity
 //                return true;

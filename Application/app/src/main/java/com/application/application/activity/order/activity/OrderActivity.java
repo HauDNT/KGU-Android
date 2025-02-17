@@ -65,7 +65,7 @@ public class OrderActivity extends AppCompatActivity implements DetailOrderDialo
 
     private void setupBottomNavigation() {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setSelectedItemId(R.id.order); // Mark "Cart" as selected
+        bottomNavigationView.setSelectedItemId(R.id.category); // Mark "Cart" as selected
 
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             if (item.getItemId() == R.id.home) {
@@ -76,7 +76,7 @@ public class OrderActivity extends AppCompatActivity implements DetailOrderDialo
                 startActivity(new Intent(OrderActivity.this, FoodActivity.class));
                 finish(); // Close OrderActivity
                 return true;
-            } else if (item.getItemId() == R.id.order) {
+            } else if (item.getItemId() == R.id.category) {
                 return true; // Already in OrderActivity
             } else if (item.getItemId() == R.id.statistic) {
                 startActivity(new Intent(OrderActivity.this, StatisticsActivity.class));
@@ -155,7 +155,7 @@ public class OrderActivity extends AppCompatActivity implements DetailOrderDialo
     public void onResume() {
         super.onResume();
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setSelectedItemId(R.id.order); // Set "Cart" as selected
+        bottomNavigationView.setSelectedItemId(R.id.category); // Set "Cart" as selected
     }
 
     @Override

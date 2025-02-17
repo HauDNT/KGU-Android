@@ -349,7 +349,7 @@ public class StatisticsActivity extends AppCompatActivity {
                 startActivity(new Intent(StatisticsActivity.this, FoodActivity.class));
                 finish();
                 return true;
-            } else if (item.getItemId() == R.id.order) {
+            } else if (item.getItemId() == R.id.category) {
                 startActivity(new Intent(StatisticsActivity.this, OrderActivity.class));
                 finish();
                 return true;

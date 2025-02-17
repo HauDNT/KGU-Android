@@ -8,9 +8,9 @@
         android:icon="@drawable/fastfood_ic"
     android:title="Món ăn" />
     <item
-        android:id="@+id/order"
-        android:icon="@drawable/shopping_cart"
-    android:title="Giỏ Hàng" />
+        android:id="@+id/category"
+        android:icon="@drawable/category_ic"
+    android:title="Danh mục" />
     <item
         android:id="@+id/statistic"
         android:icon="@drawable/chart_ic"
