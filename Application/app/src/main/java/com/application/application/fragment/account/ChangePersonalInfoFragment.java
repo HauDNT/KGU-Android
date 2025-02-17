@@ -1,4 +1,4 @@
-package com.application.application.activity.account;
+package com.application.application.fragment.account;
 
 import android.content.ContentValues;
 import android.os.Bundle;
