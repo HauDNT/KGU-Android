@@ -56,6 +56,7 @@ public class FoodActivity extends AppCompatActivity {
     private Uri imageUri;
     private View dialogView;
     private List<String> selectedCategories;
+    private List<Food> foodList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +78,9 @@ public class FoodActivity extends AppCompatActivity {
         }
 
         setupBottomNavigation();
+
+        DatabaseHelper dbHelper = new DatabaseHelper(this);
+        FoodAdapter foodAdapter = new FoodAdapter(this, foodList, dbHelper, this);
     }
 
     private void loadFoodList() {
