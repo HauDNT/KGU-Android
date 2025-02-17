@@ -121,6 +121,7 @@ public class FoodFragmentAdapter extends RecyclerView.Adapter<FoodFragmentAdapte
 //        notifyDataSetChanged();
 //    }
 
+
     public static class FoodViewHolder extends RecyclerView.ViewHolder {
         TextView foodTitle, foodPrice, foodDescription, foodCode, foodStatus, foodType;
         ImageView foodImage, iconDelete, iconCart;
