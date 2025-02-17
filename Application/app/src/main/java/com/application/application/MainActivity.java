@@ -1,14 +1,15 @@
 package com.application.application;
 
+import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.os.Bundle;
-
 import com.application.application.databinding.ActivityMainBinding;
 import com.application.application.fragment.account.ChangePasswordFragment;
+import com.application.application.fragment.account.InformationFragment;
 import com.application.application.fragment.dashboard.DashboardFragment;
 import com.application.application.fragment.food.FoodFragment;
 import com.application.application.fragment.order.OrderFragment;
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements DetailOrderDialog
                     replaceFragment(new StatisticFragment());
                     break;
                 case R.id.account:
-                    replaceFragment(new ChangePasswordFragment());
+                    replaceFragment(new InformationFragment());
                     break;
             }
 
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements DetailOrderDialog
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         fragmentTransaction.replace(R.id.mainFrameLayout, fragment);
+        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
 

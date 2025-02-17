@@ -13,15 +13,11 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+import com.application.application.MainActivity;
 import com.application.application.R;
-import com.application.application.activity.account.ChangePersonalInfoFragment;
 import com.application.application.activity.auth.LoginActivity;
-import com.application.application.activity.dashboard.DashboardActivity;
-import com.application.application.activity.food.FoodActivity;
-import com.application.application.activity.order.activity.OrderActivity;
-import com.application.application.activity.statistic.StatisticsActivity;
 import com.application.application.database.DatabaseHelper;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.application.application.fragment.order.OrderFragment;
 
 public class InformationFragment extends Fragment {
 
@@ -51,8 +47,6 @@ public class InformationFragment extends Fragment {
         // Set up click listeners for the buttons/cards
         setupCardListeners(rootView);
 
-        setupBottomNavigation(rootView);
-
         return rootView;
     }
 
@@ -80,23 +74,53 @@ public class InformationFragment extends Fragment {
         View cardLogout = rootView.findViewById(R.id.cardLogout);
 
         cardPersonalInfo.setOnClickListener(view -> {
-            Intent intent = new Intent(getActivity(), ChangePersonalInfoFragment.class);
-            intent.putExtra("username", currentUsername);
-            startActivity(intent);
+            MainActivity mainActivity = (MainActivity) getActivity();
+            if (mainActivity != null) {
+                // Truyền args vào đây (Tương tự như dòng 138 - DashboardFragment) rồi mới
+                // chuyển Fragment
+
+
+
+
+
+
+                mainActivity.replaceFragment(new ChangePersonalInfoFragment());
+            }
         });
 
         cardChangePassword.setOnClickListener(view -> {
-            Intent intent = new Intent(getActivity(), ChangePasswordFragment.class);
-            intent.putExtra("username", currentUsername);
-            startActivity(intent);
+            // Truyền args vào đây (Tương tự như dòng 138 - DashboardFragment) rồi mới
+            // chuyển Fragment
+
+
+
+
+            MainActivity mainActivity = (MainActivity) getActivity();
+            if (mainActivity != null) {
+                mainActivity.replaceFragment(new ChangePasswordFragment());
+            }
         });
 
         cardListCart.setOnClickListener(view -> {
-            Intent intent = new Intent(getActivity(), OrderActivity.class);
-            startActivity(intent);
+            MainActivity mainActivity = (MainActivity) getActivity();
+            if (mainActivity != null) {
+                mainActivity.replaceFragment(new OrderFragment());
+            }
         });
 
         cardDelAcc.setOnClickListener(view -> {
+            // Thêm thông báo YES / NO đi nghe
+
+
+
+
+
+
+
+
+
+
+
             // Xóa tài khoản khỏi database
             int result = databaseHelper.deleteUser(currentUsername);
             if (result > 0) {
@@ -126,39 +150,8 @@ public class InformationFragment extends Fragment {
         });
     }
 
-    private void setupBottomNavigation(View rootView) {
-        BottomNavigationView bottomNavigationView = rootView.findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setSelectedItemId(R.id.account);
-
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-            int id = item.getItemId();
-            if (id == R.id.home) {
-                startActivity(new Intent(getActivity(), DashboardActivity.class));
-                getActivity().finish();
-                return true;
-            } else if (id == R.id.food) {
-                startActivity(new Intent(getActivity(), FoodActivity.class));
-                getActivity().finish();
-                return true;
-            } else if (id == R.id.order) {
-                startActivity(new Intent(getActivity(), OrderActivity.class));
-                getActivity().finish();
-                return true;
-            } else if (id == R.id.statistic) {
-                startActivity(new Intent(getActivity(), StatisticsActivity.class));
-                getActivity().finish();
-                return true;
-            } else if (id == R.id.account) {
-                return true;
-            }
-            return false;
-        });
-    }
-
     @Override
     public void onResume() {
         super.onResume();
-        BottomNavigationView bottomNavigationView = getView().findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setSelectedItemId(R.id.account);
     }
 }
