@@ -1,5 +1,6 @@
 package com.application.application.database;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -195,6 +196,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public int deleteUser(String username) {
         SQLiteDatabase db = this.getWritableDatabase();
         return db.delete("users", "username = ?", new String[]{username});
+    }
+
+    // ---------------------------------------------------- User -----------------------------------------------------
+    @SuppressLint("Range")
+    public String loadUserInfoByUsername(String username) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(
+                "SELECT fullname FROM users WHERE username = ?", new String[]{username});
+        String fullname = "";
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                fullname = cursor.getString(cursor.getColumnIndex("fullname"));
+            }
+            cursor.close();
+        }
+
+        return fullname;
     }
 
 

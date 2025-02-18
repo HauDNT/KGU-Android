@@ -1,7 +1,9 @@
 package com.application.application.fragment.order.detail_order;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +34,7 @@ public class DetailOrderDialogFragment extends DialogFragment {
     private int orderId = -1;
     private int orderAllTotalPrice = 0;
     private OrderWithItems orderInfo;
-    private TextView orderName, orderCreatedAt, orderFinishedAt, orderStatus, orderTotalPrice;
+    private TextView orderName, orderCreatedAt, orderFinishedAt, orderUserFullname, orderStatus, orderTotalPrice;
     private Button btnPayment, btnCancel;
     private RecyclerView orderItemsListRecycleView;
     private DetailOrderItemsAdapter detailOrderItemsAdapter;
@@ -77,6 +79,7 @@ public class DetailOrderDialogFragment extends DialogFragment {
         orderName = dialog.findViewById(R.id.dialog_detail_order_name);
         orderCreatedAt = dialog.findViewById(R.id.dialog_detail_order_created_at);
         orderFinishedAt = dialog.findViewById(R.id.dialog_detail_order_finish_at);
+        orderUserFullname = dialog.findViewById(R.id.dialog_detail_order_userfullname);
         orderStatus = dialog.findViewById(R.id.dialog_detail_order_status);
         orderTotalPrice = dialog.findViewById(R.id.dialog_detail_order_total_price);
         btnPayment = dialog.findViewById(R.id.dialog_detail_order_btn_payment);
@@ -125,9 +128,17 @@ public class DetailOrderDialogFragment extends DialogFragment {
         orderItemsListRecycleView.setAdapter(detailOrderItemsAdapter);
     }
 
+    @SuppressLint("SetTextI18n")
     private void setOrderInfo(Order orderInfo) {
         orderName.setText("Tên đơn hàng: " + orderInfo.getName());
         orderCreatedAt.setText("Thời gian tạo: " + orderInfo.getCreated_at());
+
+        // Lấy thông tin người dùng
+        SharedPreferences prefs = getContext().getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE);
+        String currentUsername = prefs.getString("username", null);
+
+        orderUserFullname.setText("Người tạo: " + dbHelper.loadUserInfoByUsername(currentUsername));
+
         String finishedAt = (orderInfo.getDelivery_at() == null || orderInfo.getDelivery_at().trim().isEmpty())
                 ? "Chưa cập nhật" : orderInfo.getDelivery_at();
         orderFinishedAt.setText("Ngày giao / huỷ: " + finishedAt);

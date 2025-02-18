@@ -66,6 +66,15 @@
         android:layout_marginBottom="4dp"/>
 
     <TextView
+        android:id="@+id/dialog_detail_order_userfullname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Người tạo: Dung Fix Bug Mãi Mãi"
+        android:textSize="18dp"
+        android:textStyle="normal"
+        android:layout_marginBottom="4dp"/>
+
+    <TextView
         android:id="@+id/dialog_detail_order_status"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

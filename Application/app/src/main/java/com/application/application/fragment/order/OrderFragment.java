@@ -2,6 +2,8 @@ package com.application.application.fragment.order;
 
 import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
