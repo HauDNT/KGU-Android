@@ -90,7 +90,7 @@ public class DetailOrderDialogFragment extends DialogFragment {
         orderItemsListRecycleView = dialog.findViewById(R.id.dialog_detail_order_list);
         orderItemsListRecycleView.setLayoutManager(new LinearLayoutManager(requireActivity()));
 
-        // Lấy thông tin đơn hàng kèm các category item
+        // Lấy thông tin đơn hàng kèm các category item theo trạng thái đơn hàng
         orderInfo = dbHelper.getOrder_OrderItems_Food(orderId);
 
         if (orderInfo == null || orderInfo.getOrder() == null) {

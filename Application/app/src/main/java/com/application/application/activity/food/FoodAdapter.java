@@ -88,7 +88,7 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.FoodViewHolder
 
                 // Nút xoá sản phẩm
                 holder.iconDelete.setOnClickListener(v -> {
-                    dbHelper.deleteFood(food.getId());
+                    dbHelper.softDeleteFood(food.getId());
                     foodList.remove(position);
                     notifyItemRemoved(position);
                     notifyItemRangeChanged(position, foodList.size());

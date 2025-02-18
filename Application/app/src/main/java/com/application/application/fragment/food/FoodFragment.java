@@ -90,7 +90,7 @@ public class FoodFragment extends Fragment {
     }
 
     private void loadFoodList() {
-        List<Food> foodList = dbHelper.getAllFoods();
+        List<Food> foodList = dbHelper.getAllFoodsByStatus(false);
         if (!foodList.isEmpty()) {
             foodFragmentAdapter = new FoodFragmentAdapter(getContext(), foodList, dbHelper, FoodFragment.this);
             recyclerView.setAdapter(foodFragmentAdapter);

@@ -133,14 +133,14 @@ public class DashboardFragment extends Fragment {
         */
 
         // Ta sử dụng FragmentTransaction để truyền tải dữ liệu
-        CategoryFragment categoryFragment = new CategoryFragment();
+        CategoryDetailFragment categoryDetailFragment = new CategoryDetailFragment();
         Bundle args = new Bundle();
         args.putInt("categoryId", category.getId());
         args.putString("categoryName", category.getName());
-        categoryFragment.setArguments(args);
+        categoryDetailFragment.setArguments(args);
 
         FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.mainFrameLayout, categoryFragment);
+        transaction.replace(R.id.mainFrameLayout, categoryDetailFragment);
         transaction.addToBackStack(null); // Cho phép quay lại Fragment trước đó
         transaction.commit();
     }
