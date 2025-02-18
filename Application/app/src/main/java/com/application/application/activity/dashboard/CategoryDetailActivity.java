@@ -37,6 +37,7 @@ public class CategoryDetailActivity extends AppCompatActivity {
             Toast.makeText(this, "Lỗi: Không tìm thấy danh mục", Toast.LENGTH_SHORT).show();
             return;
         }
+
         List<Food> foodList = databaseHelper.getFoodsByCategory(categoryId);
         foodAdapter = new FoodAdapter(this, foodList, databaseHelper, null);
         recyclerView.setAdapter(foodAdapter);

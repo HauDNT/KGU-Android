@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.application.application.BuildConfig;
 import com.application.application.Utils;
+import com.application.application.database.enums.FoodStatus;
 import com.application.application.database.enums.OrderStatus;
 import com.application.application.model.Category;
 import com.application.application.model.Food;
@@ -177,6 +178,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     // ---------------------------------------------------- Foods ----------------------------------------------------
+    // Kiểm tra tồn tại thức ăn
     public boolean isFoodExists(String foodName) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM foods WHERE name = ?", new String[]{foodName});
@@ -210,12 +212,62 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //Xóa món ăn
-    public void deleteFood(int id) {
+    public void softDeleteFood(int foodId) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete("foods", "id = ?", new String[]{String.valueOf(id)});
+        ContentValues values = new ContentValues();
+        values.put("status", FoodStatus.DISABLE.getStatusValue());
+
+        // Đưa food vào trạng thái DISABLE
+        db.update("foods", values, "id = ?", new String[]{String.valueOf(foodId)});
+
+        // Xoá food trong các đơn chứa nó và đơn đó phải đang ở trạng thái PENDING
+        db.execSQL(
+                "DELETE FROM order_item WHERE food_id = ? AND order_id IN (SELECT id FROM orders WHERE status = ?)",
+                new Object[]{foodId, OrderStatus.PENDING.getStatusValue()}
+        );
+
+        db.close();
     }
 
-    //Hàm truy xuất tất cả các món ăn từ cơ sở dữ liệu và trả về danh sách các đối tượng
+    // Hàm truy xuất tất cả các món ăn từ cơ sở dữ liệu và trả về danh sách các đối tượng theo điều kiện status
+    // Nếu đặt isTakeAllFoods = true --> Lấy tất cả các foods
+    // Nếu đặt isTakeAllFoods = false --> Lấy các foods có trường status != DISABLE (tức là != false)
+    public List<Food> getAllFoodsByStatus(boolean isTakeAllFoods) {
+        List<Food> foodList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+
+        try {
+            if (isTakeAllFoods) {
+                cursor = db.query("foods", null, null, null, null, null, null);
+            } else {
+                cursor = db.query("foods", null, "status != ?", new String[]{String.valueOf(FoodStatus.DISABLE.getStatusValue())}, null, null, null);
+            }
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                    String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+                    String description = cursor.getString(cursor.getColumnIndexOrThrow("description"));
+                    int price = cursor.getInt(cursor.getColumnIndexOrThrow("price"));
+                    int status = cursor.getInt(cursor.getColumnIndexOrThrow("status"));
+                    String imageUrl = cursor.getString(cursor.getColumnIndexOrThrow("image_url")); //Lấy đường dẫn hình ảnh
+
+                    Food food = new Food(id, name, description, price, status, imageUrl);
+                    foodList.add(food);
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e("DatabaseHelper", "Error getting all foods: " + e.getMessage());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return foodList;
+    }
+
+    // Hàm truy xuất tất cả các món ăn từ cơ sở dữ liệu và trả về danh sách các đối tượng
     public List<Food> getAllFoods() {
         List<Food> foodList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -532,7 +584,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<OrderItem> orderItems = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.rawQuery("SELECT * FROM order_item where order_id = ?", new String[]{String.valueOf(orderId)});
+        Cursor cursor = db.rawQuery("SELECT * FROM order_item WHERE order_id = ?", new String[]{String.valueOf(orderId)});
 
         if (cursor.moveToFirst()) {
             do {
