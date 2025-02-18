@@ -156,18 +156,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return valid;
     }
 
-    // Cập nhật thông tin cá nhân dựa trên username
+    // Cập nhật thông tin cá nhân dựa trên username (của activity, có thể xóa thế xóa activity)
     public int updateUserPersonalInfo(String username, ContentValues values) {
         SQLiteDatabase db = this.getWritableDatabase();
         return db.update("users", values, "username = ?", new String[]{username});
     }
 
-    // Cập nhật mật khẩu dựa trên username
+    // Cập nhật mật khẩu dựa trên username (của activity, có thể xóa thế xóa activity)
     public int updateUserPassword(String username, String hashedPassword) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("password", hashedPassword);
         return db.update("users", values, "username = ?", new String[]{username});
+    }
+
+    // Cập nhật thông tin cá nhân dựa trên username (của fragment, ko đc xóa)
+    public boolean updateUser(String username, String fullname, String email, String phoneNumber, String address) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("fullname", fullname);
+        values.put("email", email);
+        values.put("phone_number", phoneNumber);
+        values.put("address", address);
+        int result = db.update("users", values, "username = ?", new String[]{username});
+        return result > 0;
+    }
+
+    // Cập nhật mật khẩu (của fragment, ko đc xóa)
+    public boolean updatePassword(String username, String newPassword) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("password", newPassword);
+        int result = db.update("users", values, "username = ?", new String[]{username});
+        return result > 0;
     }
 
     public int deleteUser(String username) {
