@@ -42,26 +42,12 @@ public class InformationFragment extends Fragment {
             return rootView;
         }
 
-        loadUserInfo(rootView);
+        String fullname = databaseHelper.loadUserInfoByUsername(currentUsername);
+        userNameTextView.setText(fullname);
+
         setupCardListeners(rootView);
 
         return rootView;
-    }
-
-    private void loadUserInfo(View rootView) {
-        Cursor cursor = databaseHelper.getReadableDatabase().rawQuery(
-                "SELECT fullname FROM users WHERE username = ?", new String[]{currentUsername});
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                @SuppressLint("Range") String fullname = cursor.getString(cursor.getColumnIndex("fullname"));
-                if (!fullname.isEmpty()) {
-                    userNameTextView.setText(fullname);
-                } else {
-                    userNameTextView.setText(currentUsername);
-                }
-            }
-            cursor.close();
-        }
     }
 
     private void setupCardListeners(View rootView) {
