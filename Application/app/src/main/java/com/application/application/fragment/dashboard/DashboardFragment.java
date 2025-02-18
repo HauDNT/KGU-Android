@@ -1,5 +1,6 @@
 package com.application.application.fragment.dashboard;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -124,14 +125,6 @@ public class DashboardFragment extends Fragment {
     }
 
     private void openCategoryDetailFragment(Category category) {
-        // Không sử dụng Intent để truyền dữ liệu giữa các Fragments
-        /*
-        Intent intent = new Intent(DashboardActivity.this, DashboardActivity.class);
-        intent.putExtra("categoryId", category.getId());
-        intent.putExtra("categoryName", category.getName());
-        startActivity(intent);
-        */
-
         // Ta sử dụng FragmentTransaction để truyền tải dữ liệu
         CategoryDetailFragment categoryDetailFragment = new CategoryDetailFragment();
         Bundle args = new Bundle();
