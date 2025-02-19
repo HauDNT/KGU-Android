@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -155,9 +157,10 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     public void removeCategoryOnUI(int position) {
         if (position >= 0 && position < categoryList.size()) {
             categoryList.remove(position);
-            notifyItemChanged(position);
+            notifyDataSetChanged();
         }
     }
+
 
     // Hàm xoá danh mục bên trong DB
     public void removeCategoryDB(int position, int id) {
