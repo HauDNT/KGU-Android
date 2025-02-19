@@ -79,18 +79,18 @@
                 android:textColorHint="@android:color/darker_gray"
                 android:textSize="16sp" />
         </com.google.android.material.textfield.TextInputLayout>
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp">
 
+            <!-- Nút đăng nhập được căn lề phải -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/login_button"
                 android:layout_width="160dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:layout_gravity="center"
+                android:layout_centerVertical="true"
                 android:layout_marginTop="10dp"
                 android:padding="12dp"
                 android:text="Đăng nhập"
@@ -99,17 +99,27 @@
                 app:backgroundTint="#FF3300"
                 app:cornerRadius="20dp" />
 
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@id/login_button"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="8dp"
+                app:srcCompat="@drawable/ic_scan" />
+
             <TextView
                 android:id="@+id/register_link"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/login_button"
-                android:layout_alignParentEnd="true"
+                android:layout_alignEnd="@id/login_button"
                 android:layout_marginTop="12dp"
                 android:clickable="true"
                 android:text="Chưa có tài khoản? Đăng ký"
                 android:textColor="#0000AA"
                 android:textSize="12sp" />
         </RelativeLayout>
+
     </LinearLayout>
 </RelativeLayout>
