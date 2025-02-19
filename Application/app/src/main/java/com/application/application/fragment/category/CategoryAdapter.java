@@ -150,7 +150,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         long result = dbHelper.deleteCategory(id);
         if (result != 0) {
             Log.d("Category size", String.valueOf(categoryList.size()));
-            // removeCategoryOnUI(position);
+            removeCategoryOnUI(position);
             Toast.makeText(context, "Xoá danh mục thành công", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(context, "Xoá danh mục thất bại", Toast.LENGTH_SHORT).show();

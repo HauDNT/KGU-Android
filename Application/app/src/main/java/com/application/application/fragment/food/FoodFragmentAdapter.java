@@ -17,7 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.application.application.R;
-import com.application.application.activity.order.choose_order.ChooseOrderDialogFragment;
+import com.application.application.fragment.order.choose_order.ChooseOrderDialogFragment;
 import com.application.application.database.DatabaseHelper;
 import com.application.application.model.Food;
 

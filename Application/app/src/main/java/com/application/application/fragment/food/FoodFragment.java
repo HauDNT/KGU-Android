@@ -29,8 +29,11 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.application.application.MainActivity;
 import com.application.application.R;
 import com.application.application.activity.category.CategoryActivity;
+import com.application.application.fragment.account.ChangePersonalInfoFragment;
+import com.application.application.fragment.category.CategoryFragment;
 import com.application.application.database.DatabaseHelper;
 import com.application.application.model.Category;
 import com.application.application.model.Food;

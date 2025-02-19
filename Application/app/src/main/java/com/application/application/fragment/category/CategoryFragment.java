@@ -21,7 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.application.application.R;
 import com.application.application.Utils;
-import com.application.application.activity.category.CategoryAdapter;
+import com.application.application.fragment.category.CategoryAdapter;
 import com.application.application.database.DatabaseHelper;
 import com.application.application.model.Category;
 

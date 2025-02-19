@@ -163,9 +163,9 @@ public class ChooseOrderDialogFragment extends DialogFragment implements ChooseO
             }
 
             long result = dbHelper.addOrUpdateFoodToOrders(
-                    foodId,
-                    ordersSelected,
-                    Integer.parseInt(orderQuantity.getText().toString())
+                    foodId,         // id
+                    ordersSelected, // danh sach gio hang
+                    Integer.parseInt(orderQuantity.getText().toString())    // so luong
             );
 
             if (result > 0) {
