@@ -3,6 +3,7 @@ package com.application.application.fragment.statistic;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import com.application.application.model.OrderItem;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -154,54 +156,88 @@ public class StatisticFragment extends Fragment {
         TableRow headerRow = new TableRow(getContext());
         headerRow.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
         headerRow.setPadding(8, 8, 8, 8);
+        // Căn giữa các ô trong header
+        headerRow.setGravity(Gravity.CENTER);
 
-        String[] headers = {"Top", "Sản phẩm", "SL", "Tổng tiền"};
-        for (String header : headers) {
+        String[] headers = {"Top", "Sản phẩm", "SL", "Thành tiền (VND)"};
+        for (int i = 0; i < headers.length; i++) {
             TextView tv = new TextView(getContext());
-            tv.setText(header);
+            tv.setText(headers[i]);
             tv.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
             tv.setPadding(16, 16, 16, 16);
             tv.setTextSize(16);
             tv.setTypeface(null, Typeface.BOLD);
+            // Căn giữa nội dung trong ô
+            tv.setGravity(Gravity.CENTER);
+
+            // Sử dụng LayoutParams với width=0 và weight=1 để các cột co giãn đều nhau
+            TableRow.LayoutParams params = new TableRow.LayoutParams(
+                    0, TableRow.LayoutParams.WRAP_CONTENT, 1f);
+            tv.setLayoutParams(params);
+
             headerRow.addView(tv);
         }
         tableLayout.addView(headerRow);
+
+        // Format định dạng hiển thị cho cột "Thành tiền (VND)"
+        NumberFormat formatter = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
+        formatter.setGroupingUsed(true);
+        formatter.setMaximumFractionDigits(0);
 
         // Hiển thị từng dòng dữ liệu thống kê
         for (int i = 0; i < items.size(); i++) {
             OrderItem item = items.get(i);
             TableRow row = new TableRow(getContext());
             row.setPadding(8, 8, 8, 8);
+            // Căn giữa các ô trong từng dòng dữ liệu
+            row.setGravity(Gravity.CENTER);
+
+            // Định nghĩa chung LayoutParams cho mỗi ô
+            TableRow.LayoutParams params = new TableRow.LayoutParams(
+                    0, TableRow.LayoutParams.WRAP_CONTENT, 1f);
 
             TextView tvRank = new TextView(getContext());
             tvRank.setText(String.valueOf(i + 1));
             tvRank.setPadding(16, 16, 16, 16);
             tvRank.setTextSize(16);
+            tvRank.setGravity(Gravity.CENTER);
+            tvRank.setLayoutParams(params);
 
             TextView tvFoodName = new TextView(getContext());
             tvFoodName.setText(item.getFood_name());
             tvFoodName.setPadding(16, 16, 16, 16);
             tvFoodName.setTextSize(16);
+            tvFoodName.setGravity(Gravity.CENTER);
+            tvFoodName.setLayoutParams(params);
 
             TextView tvQuantity = new TextView(getContext());
             tvQuantity.setText(String.valueOf(item.getQuantity()));
             tvQuantity.setPadding(16, 16, 16, 16);
             tvQuantity.setTextSize(16);
+            tvQuantity.setGravity(Gravity.CENTER);
+            tvQuantity.setLayoutParams(params);
 
             TextView tvTotalPrice = new TextView(getContext());
-            tvTotalPrice.setText(String.valueOf(item.getTotalPrice()) + " VND");
+            // Định dạng số theo kiểu "100.000"
+            tvTotalPrice.setText(formatter.format(item.getTotalPrice()));
             tvTotalPrice.setPadding(16, 16, 16, 16);
             tvTotalPrice.setTextSize(16);
+            tvTotalPrice.setGravity(Gravity.CENTER);
+            tvTotalPrice.setLayoutParams(params);
 
+            // Thêm các ô vào dòng
             row.addView(tvRank);
             row.addView(tvFoodName);
             row.addView(tvQuantity);
             row.addView(tvTotalPrice);
 
+            // Nếu có drawable border cho từng dòng (hoặc bỏ nếu không cần)
             row.setBackgroundResource(R.drawable.table_row_border);
             tableLayout.addView(row);
         }
     }
+
+
 
     @Override
     public void onResume() {

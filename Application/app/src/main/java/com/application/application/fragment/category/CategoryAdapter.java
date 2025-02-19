@@ -4,6 +4,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,13 +19,17 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.application.application.R;
 import com.application.application.Utils;
 import com.application.application.database.DatabaseHelper;
+import com.application.application.fragment.dashboard.DashboardFragment;
 import com.application.application.model.Category;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder> {
@@ -139,20 +146,25 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         return false;
     }
 
-    public void removeCategoryOnUI(int position) {
-        if (position >= 0 && position < categoryList.size()) {
-            categoryList.remove(position);
-            notifyItemRemoved(position);
-        }
-    }
-
     public void removeCategoryDB(int position, int id) {
         long result = dbHelper.deleteCategory(id);
         if (result != 0) {
+            Log.d("Category size", String.valueOf(categoryList.size()));
             removeCategoryOnUI(position);
             Toast.makeText(context, "Xoá danh mục thành công", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(context, "Xoá danh mục thất bại", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void removeCategoryOnUI(int position) {
+        if (position >= 0 && position < categoryList.size()) {
+            categoryList.remove(position);
+
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                notifyItemRemoved(position);
+                notifyItemRangeChanged(position, categoryList.size());
+            }, 1000);
         }
     }
 }
