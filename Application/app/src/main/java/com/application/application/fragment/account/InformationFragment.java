@@ -1,9 +1,7 @@
 package com.application.application.fragment.account;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.os.Bundle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
@@ -43,6 +41,9 @@ public class InformationFragment extends Fragment {
         }
 
         String fullname = databaseHelper.loadUserInfoByUsername(currentUsername);
+        if (fullname == null || fullname.trim().isEmpty()){
+            fullname = currentUsername; // Hoặc "Chưa cập nhật thông tin"
+        }
         userNameTextView.setText(fullname);
 
         setupCardListeners(rootView);
@@ -81,17 +82,15 @@ public class InformationFragment extends Fragment {
             }
         });
 
-        // Xử lý xóa tài khoản với xác nhận AlertDialog
+        // Xử lý xóa tài khoản với AlertDialog
         cardDelAcc.setOnClickListener(view -> {
             new AlertDialog.Builder(getContext())
                     .setTitle("Xác nhận")
                     .setMessage("Bạn có chắc chắn muốn xóa tài khoản không?")
                     .setPositiveButton("YES", (dialog, which) -> {
-                        // Xóa tài khoản khỏi database
                         int result = databaseHelper.deleteUser(currentUsername);
                         if (result > 0) {
                             Toast.makeText(getActivity(), "Xóa tài khoản thành công!", Toast.LENGTH_SHORT).show();
-                            // Xóa trạng thái đăng nhập
                             SharedPreferences.Editor editor = getContext().getSharedPreferences("MyAppPrefs", getContext().MODE_PRIVATE).edit();
                             editor.clear();
                             editor.apply();
@@ -111,18 +110,15 @@ public class InformationFragment extends Fragment {
         // Xử lý đăng xuất
         cardLogout.setOnClickListener(view -> {
             Toast.makeText(getActivity(), "Đăng xuất", Toast.LENGTH_SHORT).show();
-            SharedPreferences.Editor editor = getContext().getSharedPreferences("MyAppPrefs", getContext().MODE_PRIVATE).edit();
-            editor.clear();
+            SharedPreferences prefs = getContext().getSharedPreferences("MyAppPrefs", getContext().MODE_PRIVATE);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("isLoggedIn", false); // Chỉ đánh dấu đã đăng xuất
+            // Không xóa key "username" để lần sau dùng cho đăng nhập vân tay
             editor.apply();
             Intent intent = new Intent(getActivity(), LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             getActivity().finish();
         });
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
     }
 }
