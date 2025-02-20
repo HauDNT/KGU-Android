@@ -10,7 +10,6 @@ import android.text.format.DateFormat;
 import android.util.Log;
 
 import com.application.application.BuildConfig;
-import com.application.application.Utils;
 import com.application.application.database.enums.FoodStatus;
 import com.application.application.database.enums.OrderStatus;
 import com.application.application.model.Category;
@@ -200,7 +199,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // ---------------------------------------------------- User -----------------------------------------------------
     @SuppressLint("Range")
-    public String loadUserInfoByUsername(String username) {
+    public String loadUserFullnameByUsername(String username) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(
                 "SELECT fullname FROM users WHERE username = ?", new String[]{username});
@@ -624,16 +623,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<OrderItem> orderItems = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.rawQuery("SELECT * FROM order_item WHERE order_id = ?", new String[]{String.valueOf(orderId)});
+//        Cursor cursor = db.rawQuery("SELECT * FROM order_item WHERE order_id = ?", new String[]{String.valueOf(orderId)});
+
+        Cursor cursor = db.rawQuery(
+                "SELECT \n" +
+                        "\toi.id as id,\n" +
+                        "    oi.order_id as order_id,\n" +
+                        "    f.id as food_id,\n" +
+                        "    f.name as food_name, \n" +
+                        "    f.price,\n" +
+                        "    oi.quantity, \n" +
+                        "    oi.total_price\n" +
+                        "FROM order_item oi\n" +
+                        "INNER JOIN foods f ON oi.food_id = f.id\n" +
+                        "WHERE oi.order_id = ?",
+                new String[]{String.valueOf(orderId)});
 
         if (cursor.moveToFirst()) {
             do {
                 int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                int order_id = cursor.getInt(cursor.getColumnIndexOrThrow("order_id"));
                 int food_id = cursor.getInt(cursor.getColumnIndexOrThrow("food_id"));
+                String food_name = cursor.getString(cursor.getColumnIndexOrThrow("food_name"));
                 int quantity = cursor.getInt(cursor.getColumnIndexOrThrow("quantity"));
                 double total_price = cursor.getDouble(cursor.getColumnIndexOrThrow("total_price"));
 
-                orderItems.add(new OrderItem(id, food_id, orderId, quantity, total_price));
+                orderItems.add(new OrderItem(
+                        id,
+                        food_id,
+                        food_name,
+                        order_id,
+                        quantity,
+                        total_price
+                ));
             } while (cursor.moveToNext());
         }
 
@@ -820,7 +842,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-
     //Hàm xoá đơn hàng
     //Nếu đơn hàng có trạng thái DELIVERED hoặc CANCELLED thì không cho xoá (trả về -1).
     //Ngược lại, xoá đơn hàng và các dòng tương ứng trong bảng order_item trong một transaction.
@@ -983,8 +1004,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return foodList;
     }
-    
-  // ---------------------------------------------------- dashboard ----------------------------------------------------
+
+    // ---------------------------------------------------- dashboard ----------------------------------------------------
     public List<OrderItem> getPopularItems(String searchQuery) {
         List<OrderItem> popularItems = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();

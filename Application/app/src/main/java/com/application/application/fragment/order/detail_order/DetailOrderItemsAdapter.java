@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.application.application.R;
+import com.application.application.Utils;
 import com.application.application.database.DatabaseHelper;
 import com.application.application.database.enums.OrderStatus;
 import com.application.application.model.OrderItem;
@@ -77,10 +78,10 @@ public class DetailOrderItemsAdapter extends RecyclerView.Adapter<DetailOrderIte
 
         holder.orderItemName.setText(foodName);
         holder.orderItemQuantity.setText(String.valueOf(orderItem.getQuantity()));
-        holder.orderItemTotal.setText(String.valueOf(orderItem.getTotalPrice()));
+        holder.orderItemTotal.setText(Utils.formatCurrency((int) orderItem.getTotalPrice()));
         // Tính đơn giá (nếu quantity khác 0)
         if (orderItem.getQuantity() != 0) {
-            holder.orderItemPrice.setText(String.valueOf(orderItem.getTotalPrice() / orderItem.getQuantity()));
+            holder.orderItemPrice.setText(Utils.formatCurrency((int) (orderItem.getTotalPrice() / orderItem.getQuantity())));
         } else {
             holder.orderItemPrice.setText("0");
         }

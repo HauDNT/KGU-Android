@@ -40,7 +40,7 @@ public class InformationFragment extends Fragment {
             return rootView;
         }
 
-        String fullname = databaseHelper.loadUserInfoByUsername(currentUsername);
+        String fullname = databaseHelper.loadUserFullnameByUsername(currentUsername);
         if (fullname == null || fullname.trim().isEmpty()){
             fullname = currentUsername; // Hoặc "Chưa cập nhật thông tin"
         }

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,12 +20,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.application.application.R;
 import com.application.application.Utils;
+import com.application.application.common.pdf.InvoicePDFGenerator;
 import com.application.application.database.DatabaseHelper;
 import com.application.application.database.enums.OrderStatus;
 import com.application.application.model.Order;
 import com.application.application.model.OrderItem;
 import com.application.application.model.OrderWithItems;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,9 +36,11 @@ public class DetailOrderDialogFragment extends DialogFragment {
     private OnOrderUpdatedListener onOrderUpdatedListener;
     private int orderId = -1;
     private int orderAllTotalPrice = 0;
+    private String userFullname = "";
     private OrderWithItems orderInfo;
     private TextView orderName, orderCreatedAt, orderFinishedAt, orderUserFullname, orderStatus, orderTotalPrice;
     private Button btnPayment, btnCancel;
+    private ImageView btnCreatePdf;
     private RecyclerView orderItemsListRecycleView;
     private DetailOrderItemsAdapter detailOrderItemsAdapter;
 
@@ -50,15 +55,24 @@ public class DetailOrderDialogFragment extends DialogFragment {
         initElements(dialog);
 
         // Nếu đơn hàng có trạng thái là DELIVERED hoặc CANCELLED, ẩn các nút thanh toán và huỷ.
+        // Và nếu nó là trạng thái thanh toán thì hiện nút in PDF hoá đơn ra
         if (orderInfo != null && orderInfo.getOrder() != null &&
                 (orderInfo.getOrder().getStatus() == OrderStatus.DELIVERED ||
                         orderInfo.getOrder().getStatus() == OrderStatus.CANCELLED)) {
+
+            if (orderInfo.getOrder().getStatus() == OrderStatus.DELIVERED) {
+                btnCreatePdf.setVisibility(View.VISIBLE);
+                createPdfOrderBtnClick();
+            }
+
             btnPayment.setVisibility(View.GONE);
             btnCancel.setVisibility(View.GONE);
         } else {
             paymentOrderBtnClick();
             cancelOrderBtnClick();
         }
+
+
         return dialog;
     }
 
@@ -84,6 +98,7 @@ public class DetailOrderDialogFragment extends DialogFragment {
         orderTotalPrice = dialog.findViewById(R.id.dialog_detail_order_total_price);
         btnPayment = dialog.findViewById(R.id.dialog_detail_order_btn_payment);
         btnCancel = dialog.findViewById(R.id.dialog_detail_order_btn_cancel);
+        btnCreatePdf = dialog.findViewById(R.id.dialog_detail_order_btn_create_pdf);
 
         initOrderRecycleView(dialog);
     }
@@ -107,7 +122,7 @@ public class DetailOrderDialogFragment extends DialogFragment {
 
         if (orderInfo.getOrderItemList() != null && !orderInfo.getOrderItemList().isEmpty()) {
             setOrderAllTotalPrice(orderInfo.getOrderItemList());
-            orderTotalPrice.setText(String.valueOf(orderAllTotalPrice));
+            orderTotalPrice.setText(Utils.formatCurrency(orderAllTotalPrice) + " VND");
 
             detailOrderItemsAdapter = new DetailOrderItemsAdapter(
                     requireActivity(),
@@ -137,7 +152,8 @@ public class DetailOrderDialogFragment extends DialogFragment {
         SharedPreferences prefs = getContext().getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE);
         String currentUsername = prefs.getString("username", null);
 
-        orderUserFullname.setText("Người tạo: " + dbHelper.loadUserInfoByUsername(currentUsername));
+        userFullname = dbHelper.loadUserFullnameByUsername(currentUsername);
+        orderUserFullname.setText("Người tạo: " + userFullname);
 
         String finishedAt = (orderInfo.getDelivery_at() == null || orderInfo.getDelivery_at().trim().isEmpty())
                 ? "Chưa cập nhật" : orderInfo.getDelivery_at();
@@ -208,6 +224,16 @@ public class DetailOrderDialogFragment extends DialogFragment {
                 getDialog().dismiss();
             } else {
                 Toast.makeText(requireActivity(), "Huỷ đơn hàng thất bại", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void createPdfOrderBtnClick() {
+        btnCreatePdf.setOnClickListener(v -> {
+            try {
+                InvoicePDFGenerator.createInvoicePDF(requireContext(), orderInfo, userFullname, String.valueOf(orderAllTotalPrice));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         });
     }
