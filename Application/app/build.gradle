@@ -79,7 +79,10 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
-    //thư viện sinh trắc học
+    // Thư viện sinh trắc học
     implementation "androidx.biometric:biometric:1.2.0-alpha03"
+
+    // Thư viện iText dành cho tạo giao diện PDF
+    implementation 'com.itextpdf:itext7-core:7.2.5'
 
 }

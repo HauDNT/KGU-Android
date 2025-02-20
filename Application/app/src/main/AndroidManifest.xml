@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
 
     <application
         android:allowBackup="true"
@@ -24,46 +25,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.statistic.StatisticsActivity"
-            android:exported="true"/>
-        <activity
-            android:name=".activity.account.InformationActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activity.account.ChangePasswordActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activity.account.ChangePersonalInfoActivity"
-            android:exported="false" />
-        <activity
             android:name=".MainActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.dashboard.DashboardActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activity.food.FoodActivity"
-            android:exported="false" />
-        <activity
             android:name=".activity.auth.RegisterActivity"
-            android:exported="true" />
-        <activity android:name=".activity.detail_food.DetailFoodActivity" />
-        <activity android:name=".activity.food.FoodListActivity" />
-        <activity
-            android:name=".activity.order.activity.OrderActivity"
             android:exported="false" />
         <activity
             android:name=".activity.category.CategoryActivity"
-            android:exported="true" />
-        <activity
-            android:name=".activity.dashboard.CategoryDetailActivity"
-            android:exported="true" />
-        <activity android:name=".activity.account.AccountActivity" />
-        <activity android:name=".activity.sale.SaleActivity" />
-        <activity android:name=".activity.foodlist.DrinkListActivity" />
-        <activity android:name=".activity.foodlist.BurgerListActivity" />
-        <activity android:name=".activity.foodlist.PizzaListActivity" />
-        <activity android:name=".activity.foodlist.PopcornListActivity" />
+            android:exported="false" />
     </application>
 
 </manifest>

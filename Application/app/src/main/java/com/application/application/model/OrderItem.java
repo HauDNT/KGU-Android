@@ -1,5 +1,7 @@
 package com.application.application.model;
 
+import com.application.application.database.DatabaseHelper;
+
 public class OrderItem {
     private int id;
     private int food_id;
@@ -14,6 +16,15 @@ public class OrderItem {
     public OrderItem(int id, int food_id, int order_id, int quantity, double totalPrice) {
         this.id = id;
         this.food_id = food_id;
+        this.order_id = order_id;
+        this.quantity = quantity;
+        this.totalPrice = totalPrice;
+    }
+
+    public OrderItem(int id, int food_id, String food_name, int order_id, int quantity, double totalPrice) {
+        this.id = id;
+        this.food_id = food_id;
+        this.food_name = food_name;
         this.order_id = order_id;
         this.quantity = quantity;
         this.totalPrice = totalPrice;

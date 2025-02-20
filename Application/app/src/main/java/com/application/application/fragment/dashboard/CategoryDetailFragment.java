@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.application.application.R;
-import com.application.application.activity.food.FoodAdapter;
+import com.application.application.fragment.food.FoodFragmentAdapter;
 import com.application.application.database.DatabaseHelper;
 import com.application.application.model.Food;
 
@@ -22,7 +22,7 @@ import java.util.List;
 public class CategoryDetailFragment extends Fragment {
 
     private RecyclerView recyclerView;
-    private FoodAdapter foodAdapter;
+    private FoodFragmentAdapter foodAdapter;
     private DatabaseHelper databaseHelper;
     private int categoryId;
 
@@ -64,7 +64,7 @@ public class CategoryDetailFragment extends Fragment {
             return;
         }
         List<Food> foodList = databaseHelper.getFoodsByCategory(categoryId);
-        foodAdapter = new FoodAdapter(requireContext(), foodList, databaseHelper, null);
+        foodAdapter = new FoodFragmentAdapter(requireContext(), foodList, databaseHelper, null);
         recyclerView.setAdapter(foodAdapter);
     }
 }

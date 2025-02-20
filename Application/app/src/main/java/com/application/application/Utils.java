@@ -7,9 +7,11 @@ import com.application.application.database.enums.OrderStatus;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -113,5 +115,11 @@ public class Utils {
             e.printStackTrace(); // Debug lỗi nếu có vấn đề với định dạng
             return dateString; // Trả về giá trị gốc nếu lỗi xảy ra
         }
+    }
+
+    // Hàm format lại tiền tệ theo VND
+    public static String formatCurrency(int amount) {
+        NumberFormat formatter = NumberFormat.getInstance(new Locale("vi", "VN"));
+        return formatter.format(amount);
     }
 }
